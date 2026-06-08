@@ -1,0 +1,43 @@
+# Learned more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+
+# dependencies
+node_modules/
+
+# NestJS
+dist/
+build/
+
+# TypeScript
+*.tsbuildinfo
+
+# Node
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+.env*.local
+.env
+
+# lockfiles
+package-lock.json
+yarn.lock
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+
+# uploads (if any)
+uploads/
+
+# personal files
+docs/
