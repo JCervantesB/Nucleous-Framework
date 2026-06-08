@@ -37,6 +37,10 @@ export class RecordEvent {
     });
   }
 
+  static fromProps(props: RecordEventProps): RecordEvent {
+    return new RecordEvent(props);
+  }
+
   get id() { return this.props.id; }
   get businessId() { return this.props.businessId; }
   get userId() { return this.props.userId; }

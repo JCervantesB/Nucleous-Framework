@@ -31,6 +31,10 @@ export class ConfigParameter {
     });
   }
 
+  static fromProps(props: ConfigParameterProps): ConfigParameter {
+    return new ConfigParameter(props);
+  }
+
   getValue<T>(): T {
     try {
       return JSON.parse(this.props.value) as T;

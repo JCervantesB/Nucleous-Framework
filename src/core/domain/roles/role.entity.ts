@@ -31,6 +31,10 @@ export class Role {
     });
   }
 
+  static fromProps(props: RoleProps): Role {
+    return new Role(props);
+  }
+
   get id() { return this.props.id; }
   get businessId() { return this.props.businessId; }
   get name() { return this.props.name; }

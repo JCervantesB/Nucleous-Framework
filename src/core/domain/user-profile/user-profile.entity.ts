@@ -44,6 +44,10 @@ export class UserProfile {
     });
   }
 
+  static fromProps(props: UserProfileProps): UserProfile {
+    return new UserProfile(props);
+  }
+
   get id() { return this.props.id; }
   get userId() { return this.props.userId; }
   get primaryBusinessId() { return this.props.primaryBusinessId; }
@@ -53,4 +57,5 @@ export class UserProfile {
   get locale() { return this.props.locale; }
   get userType() { return this.props.userType; }
   get createdAt() { return this.props.createdAt; }
+  get updatedAt() { return this.props.updatedAt; }
 }
