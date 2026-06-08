@@ -1,11 +1,11 @@
-import { Body, Controller, Get, Param, Post, Req } from "@nestjs/common";
-import type { Request } from "express";
-import { CreateBusinessUseCase } from "../../domain/use-cases/create-business.use-case.js";
-import { DrizzleBusinessRepository } from "../persistence/drizzle-business.repository.js";
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import type { Request } from 'express';
+import { CreateBusinessUseCase } from '../../domain/use-cases/create-business.use-case.js';
+import { DrizzleBusinessRepository } from '../persistence/drizzle-business.repository.js';
 
 class CreateBusinessDto {
-  name: string;
-  slug: string;
+  name!: string;
+  slug!: string;
   legalName?: string;
   countryCode?: string;
   timezone?: string;
@@ -13,7 +13,7 @@ class CreateBusinessDto {
   publicName?: string;
 }
 
-@Controller("core/business")
+@Controller('core/business')
 export class BusinessController {
   private readonly createBusinessUseCase: CreateBusinessUseCase;
 
@@ -23,9 +23,7 @@ export class BusinessController {
   }
 
   @Post()
-  async create(@Body() body: CreateBusinessDto, @Req() req: Request) {
-    const userId = (req as any).user?.id ?? "system";
-
+  async create(@Body() body: CreateBusinessDto) {
     const result = await this.createBusinessUseCase.execute({
       name: body.name,
       slug: body.slug,
@@ -43,13 +41,13 @@ export class BusinessController {
     };
   }
 
-  @Get(":id")
-  async getById(@Param("id") id: string) {
+  @Get(':id')
+  async getById(@Param('id') id: string) {
     const businessRepo = new DrizzleBusinessRepository();
     const business = await businessRepo.findById(id);
 
     if (!business) {
-      return { error: "Business not found" };
+      return { error: 'Business not found' };
     }
 
     return {
