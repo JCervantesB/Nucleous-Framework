@@ -1,0 +1,16 @@
+import { Contact } from "./contact.entity.js";
+
+export interface ListContactsOptions {
+  search?: string;
+  isCustomer?: boolean;
+  isSupplier?: boolean;
+  isEmployee?: boolean;
+  page?: number;
+  pageSize?: number;
+}
+
+export interface ContactRepository {
+  create(contact: Contact): Promise<Contact>;
+  findById(id: string, businessId: string): Promise<Contact | null>;
+  listByBusiness(businessId: string, options?: ListContactsOptions): Promise<{ data: Contact[]; total: number }>;
+}
