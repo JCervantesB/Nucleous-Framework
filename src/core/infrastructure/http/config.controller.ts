@@ -1,54 +1,42 @@
-import { Body, Controller, Get, Param, Post, Query, Req } from "@nestjs/common";
-import type { Request } from "express";
-import { GetConfigParameterUseCase } from "../../domain/config-parameter/use-cases/get-config-parameter.use-case.js";
-import { SetConfigParameterUseCase } from "../../domain/config-parameter/use-cases/set-config-parameter.use-case.js";
-import { DrizzleConfigParameterRepository } from "../persistence/drizzle-config-parameter.repository.js";
-import { CurrentBusinessService } from "../../application/current-business.service.js";
+import { Body, Controller, Get, Param, Post, Query, Req } from '@nestjs/common';
+import type { Request } from 'express';
+import { GetConfigParameterUseCase } from '../../domain/config-parameter/use-cases/get-config-parameter.use-case.js';
+import { SetConfigParameterUseCase } from '../../domain/config-parameter/use-cases/set-config-parameter.use-case.js';
+import { ListConfigParametersUseCase } from '../../domain/config-parameter/use-cases/list-config-parameters.use-case.js';
+import { CurrentBusinessService } from '../../application/current-business.service.js';
 
 class SetConfigDto {
-  key: string;
-  value: string;
+  key!: string;
+  value!: string;
 }
 
-@Controller("core/config")
+@Controller('core/config')
 export class ConfigController {
-  private readonly configRepo = new DrizzleConfigParameterRepository();
-  private readonly getConfigUseCase = new GetConfigParameterUseCase(this.configRepo);
-  private readonly setConfigUseCase = new SetConfigParameterUseCase(this.configRepo);
-
-  constructor(private readonly currentBusiness: CurrentBusinessService) {}
+  constructor(
+    private readonly getConfigUseCase: GetConfigParameterUseCase,
+    private readonly setConfigUseCase: SetConfigParameterUseCase,
+    private readonly listConfigParametersUseCase: ListConfigParametersUseCase,
+    private readonly currentBusiness: CurrentBusinessService,
+  ) {}
 
   @Get()
-  async list(@Query("businessId") businessIdQuery: string | undefined) {
+  async list(@Query('businessId') businessIdQuery: string | undefined) {
     let businessId = businessIdQuery;
     if (!businessId) {
       try {
         businessId = this.currentBusiness.getBusinessId();
       } catch {
-        const globalParams = await this.configRepo.listGlobal();
-        return {
-          data: globalParams.map((param) => ({
-            id: param.id,
-            key: param.key,
-            value: param.value,
-          })),
-        };
+        return this.listConfigParametersUseCase.execute(undefined);
       }
     }
-
-    const params = await this.configRepo.listByBusiness(businessId!);
-    return {
-      data: params.map((param) => ({
-        id: param.id,
-        key: param.key,
-        value: param.value,
-        businessId: param.businessId,
-      })),
-    };
+    return this.listConfigParametersUseCase.execute(businessId);
   }
 
-  @Get(":key")
-  async get(@Param("key") key: string, @Query("businessId") businessIdQuery: string | undefined) {
+  @Get(':key')
+  async get(
+    @Param('key') key: string,
+    @Query('businessId') businessIdQuery: string | undefined,
+  ) {
     let businessId = businessIdQuery;
     if (!businessId) {
       try {
@@ -67,8 +55,12 @@ export class ConfigController {
   }
 
   @Post()
-  async set(@Body() body: SetConfigDto, @Req() req: Request, @Query("businessId") businessIdQuery: string | undefined) {
-    const userId = (req as any).user?.id ?? undefined;
+  async set(
+    @Body() body: SetConfigDto,
+    @Req() req: Request,
+    @Query('businessId') businessIdQuery: string | undefined,
+  ) {
+    const userId = req.user?.id ?? undefined;
     let businessId = businessIdQuery;
     if (!businessId) {
       try {

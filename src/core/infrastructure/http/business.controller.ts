@@ -1,7 +1,6 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import type { Request } from 'express';
 import { CreateBusinessUseCase } from '../../domain/use-cases/create-business.use-case.js';
-import { DrizzleBusinessRepository } from '../persistence/drizzle-business.repository.js';
+import { GetBusinessUseCase } from '../../domain/use-cases/get-business.use-case.js';
 
 class CreateBusinessDto {
   name!: string;
@@ -15,12 +14,10 @@ class CreateBusinessDto {
 
 @Controller('core/business')
 export class BusinessController {
-  private readonly createBusinessUseCase: CreateBusinessUseCase;
-
-  constructor() {
-    const businessRepo = new DrizzleBusinessRepository();
-    this.createBusinessUseCase = new CreateBusinessUseCase(businessRepo);
-  }
+  constructor(
+    private readonly createBusinessUseCase: CreateBusinessUseCase,
+    private readonly getBusinessUseCase: GetBusinessUseCase,
+  ) {}
 
   @Post()
   async create(@Body() body: CreateBusinessDto) {
@@ -43,12 +40,13 @@ export class BusinessController {
 
   @Get(':id')
   async getById(@Param('id') id: string) {
-    const businessRepo = new DrizzleBusinessRepository();
-    const business = await businessRepo.findById(id);
+    const result = await this.getBusinessUseCase.execute({ id });
 
-    if (!business) {
-      return { error: 'Business not found' };
+    if (!result.business) {
+      return { error: 'Negocio no encontrado' };
     }
+
+    const business = result.business;
 
     return {
       id: business.id,
