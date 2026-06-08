@@ -55,6 +55,10 @@ export class Contact {
     });
   }
 
+  static fromProps(props: ContactProps): Contact {
+    return new Contact(props);
+  }
+
   get id() { return this.props.id; }
   get businessId() { return this.props.businessId; }
   get type() { return this.props.type; }
@@ -67,4 +71,6 @@ export class Contact {
   get isEmployee() { return this.props.isEmployee; }
   get createdAt() { return this.props.createdAt; }
   get createdBy() { return this.props.createdBy; }
+  get updatedAt() { return this.props.updatedAt; }
+  get updatedBy() { return this.props.updatedBy; }
 }

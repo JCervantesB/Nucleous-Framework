@@ -44,6 +44,10 @@ export class Business {
     });
   }
 
+  static fromProps(props: BusinessProps): Business {
+    return new Business(props);
+  }
+
   get id() { return this.props.id; }
   get name() { return this.props.name; }
   get legalName() { return this.props.legalName; }

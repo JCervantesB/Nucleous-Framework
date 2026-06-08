@@ -57,6 +57,10 @@ export class Activity {
     });
   }
 
+  static fromProps(props: ActivityProps): Activity {
+    return new Activity(props);
+  }
+
   markDone(userId: string): void {
     if (this.props.status === "DONE") return;
     this.props.status = "DONE";
@@ -88,4 +92,6 @@ export class Activity {
   get isPinned() { return this.props.isPinned; }
   get createdAt() { return this.props.createdAt; }
   get createdBy() { return this.props.createdBy; }
+  get updatedAt() { return this.props.updatedAt; }
+  get updatedBy() { return this.props.updatedBy; }
 }
