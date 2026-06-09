@@ -1,4 +1,4 @@
-export type ActivityStatus = "PENDING" | "DONE" | "CANCELLED";
+export type ActivityStatus = 'PENDING' | 'DONE' | 'CANCELLED';
 
 export interface ActivityProps {
   id: string;
@@ -45,7 +45,7 @@ export class Activity {
       relatedTable: params.relatedTable,
       relatedId: params.relatedId,
       type: params.type,
-      status: "PENDING",
+      status: 'PENDING',
       title: params.title,
       note: params.note ?? null,
       dueDate: params.dueDate ?? null,
@@ -62,14 +62,14 @@ export class Activity {
   }
 
   markDone(userId: string): void {
-    if (this.props.status === "DONE") return;
-    this.props.status = "DONE";
+    if (this.props.status === 'DONE') return;
+    this.props.status = 'DONE';
     this.touch(userId);
   }
 
   cancel(userId: string): void {
-    if (this.props.status === "CANCELLED") return;
-    this.props.status = "CANCELLED";
+    if (this.props.status === 'CANCELLED') return;
+    this.props.status = 'CANCELLED';
     this.touch(userId);
   }
 
@@ -79,19 +79,49 @@ export class Activity {
     this.props.updatedBy = userId;
   }
 
-  get id() { return this.props.id; }
-  get businessId() { return this.props.businessId; }
-  get userId() { return this.props.userId; }
-  get relatedTable() { return this.props.relatedTable; }
-  get relatedId() { return this.props.relatedId; }
-  get type() { return this.props.type; }
-  get status() { return this.props.status; }
-  get title() { return this.props.title; }
-  get note() { return this.props.note; }
-  get dueDate() { return this.props.dueDate; }
-  get isPinned() { return this.props.isPinned; }
-  get createdAt() { return this.props.createdAt; }
-  get createdBy() { return this.props.createdBy; }
-  get updatedAt() { return this.props.updatedAt; }
-  get updatedBy() { return this.props.updatedBy; }
+  get id() {
+    return this.props.id;
+  }
+  get businessId() {
+    return this.props.businessId;
+  }
+  get userId() {
+    return this.props.userId;
+  }
+  get relatedTable() {
+    return this.props.relatedTable;
+  }
+  get relatedId() {
+    return this.props.relatedId;
+  }
+  get type() {
+    return this.props.type;
+  }
+  get status() {
+    return this.props.status;
+  }
+  get title() {
+    return this.props.title;
+  }
+  get note() {
+    return this.props.note;
+  }
+  get dueDate() {
+    return this.props.dueDate;
+  }
+  get isPinned() {
+    return this.props.isPinned;
+  }
+  get createdAt() {
+    return this.props.createdAt;
+  }
+  get createdBy() {
+    return this.props.createdBy;
+  }
+  get updatedAt() {
+    return this.props.updatedAt;
+  }
+  get updatedBy() {
+    return this.props.updatedBy;
+  }
 }

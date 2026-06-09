@@ -41,12 +41,28 @@ export class RecordEvent {
     return new RecordEvent(props);
   }
 
-  get id() { return this.props.id; }
-  get businessId() { return this.props.businessId; }
-  get userId() { return this.props.userId; }
-  get relatedTable() { return this.props.relatedTable; }
-  get relatedId() { return this.props.relatedId; }
-  get type() { return this.props.type; }
-  get message() { return this.props.message; }
-  get createdAt() { return this.props.createdAt; }
+  get id() {
+    return this.props.id;
+  }
+  get businessId() {
+    return this.props.businessId;
+  }
+  get userId() {
+    return this.props.userId;
+  }
+  get relatedTable() {
+    return this.props.relatedTable;
+  }
+  get relatedId() {
+    return this.props.relatedId;
+  }
+  get type() {
+    return this.props.type;
+  }
+  get message() {
+    return this.props.message;
+  }
+  get createdAt() {
+    return this.props.createdAt;
+  }
 }

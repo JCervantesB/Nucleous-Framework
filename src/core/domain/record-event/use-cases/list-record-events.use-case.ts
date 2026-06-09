@@ -1,7 +1,13 @@
-import { RecordEventRepository } from '../record-event.repository.js';
+import { Inject, Injectable } from '@nestjs/common';
+import type { RecordEventRepository } from '../record-event.repository.js';
+import { RECORD_EVENT_REPOSITORY } from '../record-event.repository.js';
 
+@Injectable()
 export class ListRecordEventsUseCase {
-  constructor(private readonly recordEventRepo: RecordEventRepository) {}
+  constructor(
+    @Inject(RECORD_EVENT_REPOSITORY)
+    private readonly recordEventRepo: RecordEventRepository,
+  ) {}
 
   async execute(params: {
     businessId: string;

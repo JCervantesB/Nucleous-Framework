@@ -1,5 +1,7 @@
-import { Business } from "../entities/business.entity.js";
-import { BusinessRepository } from "../repositories/business.repository.js";
+import { Inject, Injectable } from '@nestjs/common';
+import { Business } from '../entities/business.entity.js';
+import type { BusinessRepository } from '../repositories/business.repository.js';
+import { BUSINESS_REPOSITORY } from '../repositories/business.repository.js';
 
 interface CreateBusinessInput {
   name: string;
@@ -15,8 +17,10 @@ interface CreateBusinessOutput {
   business: Business;
 }
 
+@Injectable()
 export class CreateBusinessUseCase {
   constructor(
+    @Inject(BUSINESS_REPOSITORY)
     private readonly businessRepo: BusinessRepository,
   ) {}
 

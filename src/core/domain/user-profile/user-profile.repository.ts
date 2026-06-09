@@ -1,4 +1,4 @@
-import { UserProfile } from "./user-profile.entity.js";
+import { UserProfile } from './user-profile.entity.js';
 
 export interface UserProfileRepository {
   create(profile: UserProfile): Promise<UserProfile>;

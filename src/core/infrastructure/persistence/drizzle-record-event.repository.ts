@@ -1,12 +1,19 @@
-import { and, eq, asc } from "drizzle-orm";
-import { db } from "../../../db/client.js";
-import { recordEvent } from "@app/database/schema/core.js";
-import { RecordEvent, type RecordEventProps } from "../../domain/record-event/record-event.entity.js";
-import { type RecordEventRepository } from "../../domain/record-event/record-event.repository.js";
+import { Injectable, Inject } from '@nestjs/common';
+import { and, eq, asc } from 'drizzle-orm';
+import { db } from '../../../db/client.js';
+import { recordEvent } from '@app/database/schema/core.js';
+import {
+  RecordEvent,
+  type RecordEventProps,
+} from '../../domain/record-event/record-event.entity.js';
+import type { RecordEventRepository } from '../../domain/record-event/record-event.repository.js';
 
+@Injectable()
 export class DrizzleRecordEventRepository implements RecordEventRepository {
+  constructor(@Inject('DB') private readonly _db: typeof db) {}
+
   async create(entity: RecordEvent): Promise<RecordEvent> {
-    await db.insert(recordEvent).values({
+    await this._db.insert(recordEvent).values({
       id: entity.id,
       businessId: entity.businessId,
       userId: entity.userId,
@@ -24,12 +31,16 @@ export class DrizzleRecordEventRepository implements RecordEventRepository {
     relatedTable: string;
     relatedId: string;
   }): Promise<RecordEvent[]> {
-    const rows = await db.select().from(recordEvent)
-      .where(and(
-        eq(recordEvent.businessId, params.businessId),
-        eq(recordEvent.relatedTable, params.relatedTable),
-        eq(recordEvent.relatedId, params.relatedId),
-      ))
+    const rows = await this._db
+      .select()
+      .from(recordEvent)
+      .where(
+        and(
+          eq(recordEvent.businessId, params.businessId),
+          eq(recordEvent.relatedTable, params.relatedTable),
+          eq(recordEvent.relatedId, params.relatedId),
+        ),
+      )
       .orderBy(asc(recordEvent.createdAt));
 
     return rows.map((row) => this.mapToEntity(row));

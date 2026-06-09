@@ -1,8 +1,8 @@
-import { eq, and, isNull } from "drizzle-orm";
-import { db } from "../../../db/client.js";
-import { role } from "@app/database/schema/core.js";
-import { Role, type RoleProps } from "../../domain/roles/role.entity.js";
-import { type RoleRepository } from "../../domain/roles/role.repository.js";
+import { eq, and, isNull } from 'drizzle-orm';
+import { db } from '../../../db/client.js';
+import { role } from '@app/database/schema/core.js';
+import { Role, type RoleProps } from '../../domain/roles/role.entity.js';
+import { type RoleRepository } from '../../domain/roles/role.repository.js';
 
 export class DrizzleRoleRepository implements RoleRepository {
   async create(entity: Role): Promise<Role> {
@@ -27,11 +27,15 @@ export class DrizzleRoleRepository implements RoleRepository {
   async findBySlug(slug: string, businessId?: string): Promise<Role | null> {
     let rows;
     if (businessId) {
-      rows = await db.select().from(role)
+      rows = await db
+        .select()
+        .from(role)
         .where(and(eq(role.slug, slug), eq(role.businessId, businessId)))
         .limit(1);
     } else {
-      rows = await db.select().from(role)
+      rows = await db
+        .select()
+        .from(role)
         .where(and(eq(role.slug, slug), isNull(role.businessId)))
         .limit(1);
     }
@@ -41,7 +45,9 @@ export class DrizzleRoleRepository implements RoleRepository {
   }
 
   async listByBusiness(businessId: string): Promise<Role[]> {
-    const rows = await db.select().from(role)
+    const rows = await db
+      .select()
+      .from(role)
       .where(eq(role.businessId, businessId));
     return rows.map((row) => this.mapToEntity(row));
   }

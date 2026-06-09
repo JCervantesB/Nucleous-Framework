@@ -1,4 +1,4 @@
-export type ContactType = "PERSON" | "COMPANY";
+export type ContactType = 'PERSON' | 'COMPANY';
 
 export interface ContactProps {
   id: string;
@@ -59,18 +59,46 @@ export class Contact {
     return new Contact(props);
   }
 
-  get id() { return this.props.id; }
-  get businessId() { return this.props.businessId; }
-  get type() { return this.props.type; }
-  get name() { return this.props.name; }
-  get email() { return this.props.email; }
-  get phone() { return this.props.phone; }
-  get taxId() { return this.props.taxId; }
-  get isCustomer() { return this.props.isCustomer; }
-  get isSupplier() { return this.props.isSupplier; }
-  get isEmployee() { return this.props.isEmployee; }
-  get createdAt() { return this.props.createdAt; }
-  get createdBy() { return this.props.createdBy; }
-  get updatedAt() { return this.props.updatedAt; }
-  get updatedBy() { return this.props.updatedBy; }
+  get id() {
+    return this.props.id;
+  }
+  get businessId() {
+    return this.props.businessId;
+  }
+  get type() {
+    return this.props.type;
+  }
+  get name() {
+    return this.props.name;
+  }
+  get email() {
+    return this.props.email;
+  }
+  get phone() {
+    return this.props.phone;
+  }
+  get taxId() {
+    return this.props.taxId;
+  }
+  get isCustomer() {
+    return this.props.isCustomer;
+  }
+  get isSupplier() {
+    return this.props.isSupplier;
+  }
+  get isEmployee() {
+    return this.props.isEmployee;
+  }
+  get createdAt() {
+    return this.props.createdAt;
+  }
+  get createdBy() {
+    return this.props.createdBy;
+  }
+  get updatedAt() {
+    return this.props.updatedAt;
+  }
+  get updatedBy() {
+    return this.props.updatedBy;
+  }
 }

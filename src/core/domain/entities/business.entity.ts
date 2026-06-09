@@ -48,15 +48,37 @@ export class Business {
     return new Business(props);
   }
 
-  get id() { return this.props.id; }
-  get name() { return this.props.name; }
-  get legalName() { return this.props.legalName; }
-  get slug() { return this.props.slug; }
-  get countryCode() { return this.props.countryCode; }
-  get timezone() { return this.props.timezone; }
-  get currencyCode() { return this.props.currencyCode; }
-  get publicName() { return this.props.publicName; }
-  get isActive() { return this.props.isActive; }
-  get createdAt() { return this.props.createdAt; }
-  get updatedAt() { return this.props.updatedAt; }
+  get id() {
+    return this.props.id;
+  }
+  get name() {
+    return this.props.name;
+  }
+  get legalName() {
+    return this.props.legalName;
+  }
+  get slug() {
+    return this.props.slug;
+  }
+  get countryCode() {
+    return this.props.countryCode;
+  }
+  get timezone() {
+    return this.props.timezone;
+  }
+  get currencyCode() {
+    return this.props.currencyCode;
+  }
+  get publicName() {
+    return this.props.publicName;
+  }
+  get isActive() {
+    return this.props.isActive;
+  }
+  get createdAt() {
+    return this.props.createdAt;
+  }
+  get updatedAt() {
+    return this.props.updatedAt;
+  }
 }

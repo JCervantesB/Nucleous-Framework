@@ -1,4 +1,6 @@
-import { Business } from "../entities/business.entity.js";
+import { Business } from '../entities/business.entity.js';
+
+export const BUSINESS_REPOSITORY = Symbol('BusinessRepository');
 
 export interface BusinessRepository {
   create(business: Business): Promise<Business>;

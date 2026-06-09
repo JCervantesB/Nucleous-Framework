@@ -1,4 +1,6 @@
-import { Activity } from "./activity.entity.js";
+import { Activity } from './activity.entity.js';
+
+export const ACTIVITY_REPOSITORY = Symbol('ActivityRepository');
 
 export interface ActivityRepository {
   create(activity: Activity): Promise<Activity>;
@@ -9,12 +11,12 @@ export interface ActivityRepository {
     businessId: string;
     relatedTable: string;
     relatedId: string;
-    status?: "PENDING" | "DONE" | "CANCELLED";
+    status?: 'PENDING' | 'DONE' | 'CANCELLED';
   }): Promise<Activity[]>;
 
   listForUser(params: {
     businessId: string;
     userId: string;
-    status?: "PENDING" | "DONE" | "CANCELLED";
+    status?: 'PENDING' | 'DONE' | 'CANCELLED';
   }): Promise<Activity[]>;
 }

@@ -1,4 +1,6 @@
-import { Contact } from "./contact.entity.js";
+import { Contact } from './contact.entity.js';
+
+export const CONTACT_REPOSITORY = Symbol('ContactRepository');
 
 export interface ListContactsOptions {
   search?: string;
@@ -12,5 +14,8 @@ export interface ListContactsOptions {
 export interface ContactRepository {
   create(contact: Contact): Promise<Contact>;
   findById(id: string, businessId: string): Promise<Contact | null>;
-  listByBusiness(businessId: string, options?: ListContactsOptions): Promise<{ data: Contact[]; total: number }>;
+  listByBusiness(
+    businessId: string,
+    options?: ListContactsOptions,
+  ): Promise<{ data: Contact[]; total: number }>;
 }

@@ -1,12 +1,20 @@
-import { and, eq, desc, asc } from "drizzle-orm";
-import { db } from "../../../db/client.js";
-import { activity } from "@app/database/schema/core.js";
-import { Activity, type ActivityProps, type ActivityStatus } from "../../domain/activity/activity.entity.js";
-import { type ActivityRepository } from "../../domain/activity/activity.repository.js";
+import { Injectable, Inject } from '@nestjs/common';
+import { and, eq, desc, asc } from 'drizzle-orm';
+import { db } from '../../../db/client.js';
+import { activity } from '@app/database/schema/core.js';
+import {
+  Activity,
+  type ActivityProps,
+  type ActivityStatus,
+} from '../../domain/activity/activity.entity.js';
+import type { ActivityRepository } from '../../domain/activity/activity.repository.js';
 
+@Injectable()
 export class DrizzleActivityRepository implements ActivityRepository {
+  constructor(@Inject('DB') private readonly _db: typeof db) {}
+
   async create(entity: Activity): Promise<Activity> {
-    await db.insert(activity).values({
+    await this._db.insert(activity).values({
       id: entity.id,
       businessId: entity.businessId,
       userId: entity.userId,
@@ -25,7 +33,9 @@ export class DrizzleActivityRepository implements ActivityRepository {
   }
 
   async findById(id: string, businessId: string): Promise<Activity | null> {
-    const rows = await db.select().from(activity)
+    const rows = await this._db
+      .select()
+      .from(activity)
       .where(and(eq(activity.id, id), eq(activity.businessId, businessId)))
       .limit(1);
     const row = rows[0];
@@ -34,22 +44,25 @@ export class DrizzleActivityRepository implements ActivityRepository {
   }
 
   async save(entity: Activity): Promise<void> {
-    await db.update(activity).set({
-      status: entity.status as ActivityStatus,
-      title: entity.title,
-      note: entity.note,
-      dueDate: entity.dueDate,
-      isPinned: entity.isPinned,
-      updatedAt: entity.updatedAt ?? new Date(),
-      updatedBy: entity.updatedBy,
-    }).where(eq(activity.id, entity.id));
+    await this._db
+      .update(activity)
+      .set({
+        status: entity.status,
+        title: entity.title,
+        note: entity.note,
+        dueDate: entity.dueDate,
+        isPinned: entity.isPinned,
+        updatedAt: entity.updatedAt ?? new Date(),
+        updatedBy: entity.updatedBy,
+      })
+      .where(eq(activity.id, entity.id));
   }
 
   async listForRecord(params: {
     businessId: string;
     relatedTable: string;
     relatedId: string;
-    status?: "PENDING" | "DONE" | "CANCELLED";
+    status?: 'PENDING' | 'DONE' | 'CANCELLED';
   }): Promise<Activity[]> {
     const conditions = [
       eq(activity.businessId, params.businessId),
@@ -61,7 +74,9 @@ export class DrizzleActivityRepository implements ActivityRepository {
       conditions.push(eq(activity.status, params.status));
     }
 
-    const rows = await db.select().from(activity)
+    const rows = await this._db
+      .select()
+      .from(activity)
       .where(and(...conditions))
       .orderBy(desc(activity.dueDate), desc(activity.createdAt));
 
@@ -71,7 +86,7 @@ export class DrizzleActivityRepository implements ActivityRepository {
   async listForUser(params: {
     businessId: string;
     userId: string;
-    status?: "PENDING" | "DONE" | "CANCELLED";
+    status?: 'PENDING' | 'DONE' | 'CANCELLED';
   }): Promise<Activity[]> {
     const conditions = [
       eq(activity.businessId, params.businessId),
@@ -82,7 +97,9 @@ export class DrizzleActivityRepository implements ActivityRepository {
       conditions.push(eq(activity.status, params.status));
     }
 
-    const rows = await db.select().from(activity)
+    const rows = await this._db
+      .select()
+      .from(activity)
       .where(and(...conditions))
       .orderBy(asc(activity.dueDate), asc(activity.createdAt));
 

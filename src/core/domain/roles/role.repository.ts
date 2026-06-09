@@ -1,4 +1,4 @@
-import { Role } from "./role.entity.js";
+import { Role } from './role.entity.js';
 
 export interface RoleRepository {
   create(role: Role): Promise<Role>;

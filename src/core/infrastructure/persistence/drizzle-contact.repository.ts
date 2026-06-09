@@ -1,12 +1,23 @@
-import { and, eq, ilike, sql } from "drizzle-orm";
-import { db } from "../../../db/client.js";
-import { contact } from "@app/database/schema/core.js";
-import { Contact, type ContactProps, type ContactType } from "../../domain/contacts/contact.entity.js";
-import { type ContactRepository, type ListContactsOptions } from "../../domain/contacts/contact.repository.js";
+import { Injectable, Inject } from '@nestjs/common';
+import { and, eq, ilike, sql } from 'drizzle-orm';
+import { db } from '../../../db/client.js';
+import { contact } from '@app/database/schema/core.js';
+import {
+  Contact,
+  type ContactProps,
+  type ContactType,
+} from '../../domain/contacts/contact.entity.js';
+import {
+  type ContactRepository,
+  type ListContactsOptions,
+} from '../../domain/contacts/contact.repository.js';
 
+@Injectable()
 export class DrizzleContactRepository implements ContactRepository {
+  constructor(@Inject('DB') private readonly _db: typeof db) {}
+
   async create(entity: Contact): Promise<Contact> {
-    await db.insert(contact).values({
+    await this._db.insert(contact).values({
       id: entity.id,
       businessId: entity.businessId,
       type: entity.type,
@@ -24,7 +35,9 @@ export class DrizzleContactRepository implements ContactRepository {
   }
 
   async findById(id: string, businessId: string): Promise<Contact | null> {
-    const rows = await db.select().from(contact)
+    const rows = await this._db
+      .select()
+      .from(contact)
       .where(and(eq(contact.id, id), eq(contact.businessId, businessId)))
       .limit(1);
     const row = rows[0];
@@ -55,13 +68,16 @@ export class DrizzleContactRepository implements ContactRepository {
       conditions.push(ilike(contact.name, `%${options.search}%`));
     }
 
-    const rows = await db.select().from(contact)
+    const rows = await this._db
+      .select()
+      .from(contact)
       .where(and(...conditions))
       .orderBy(contact.name)
       .limit(pageSize)
       .offset(offset);
 
-    const countResult = await db.select({ count: sql<number>`count(*)` })
+    const countResult = await this._db
+      .select({ count: sql<number>`count(*)` })
       .from(contact)
       .where(and(...conditions));
 

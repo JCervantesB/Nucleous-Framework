@@ -35,10 +35,22 @@ export class Role {
     return new Role(props);
   }
 
-  get id() { return this.props.id; }
-  get businessId() { return this.props.businessId; }
-  get name() { return this.props.name; }
-  get slug() { return this.props.slug; }
-  get description() { return this.props.description; }
-  get createdAt() { return this.props.createdAt; }
+  get id() {
+    return this.props.id;
+  }
+  get businessId() {
+    return this.props.businessId;
+  }
+  get name() {
+    return this.props.name;
+  }
+  get slug() {
+    return this.props.slug;
+  }
+  get description() {
+    return this.props.description;
+  }
+  get createdAt() {
+    return this.props.createdAt;
+  }
 }

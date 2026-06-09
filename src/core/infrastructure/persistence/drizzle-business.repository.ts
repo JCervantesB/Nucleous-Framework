@@ -1,12 +1,19 @@
-import { eq } from "drizzle-orm";
-import { db } from "../../../db/client.js";
-import { business } from "@app/database/schema/core.js";
-import { Business, type BusinessProps } from "../../domain/entities/business.entity.js";
-import { type BusinessRepository } from "../../domain/repositories/business.repository.js";
+import { Injectable, Inject } from '@nestjs/common';
+import { eq } from 'drizzle-orm';
+import { db } from '../../../db/client.js';
+import { business } from '@app/database/schema/core.js';
+import {
+  Business,
+  type BusinessProps,
+} from '../../domain/entities/business.entity.js';
+import type { BusinessRepository } from '../../domain/repositories/business.repository.js';
 
+@Injectable()
 export class DrizzleBusinessRepository implements BusinessRepository {
+  constructor(@Inject('DB') private readonly _db: typeof db) {}
+
   async create(entity: Business): Promise<Business> {
-    await db.insert(business).values({
+    await this._db.insert(business).values({
       id: entity.id,
       name: entity.name,
       legalName: entity.legalName,
@@ -22,17 +29,25 @@ export class DrizzleBusinessRepository implements BusinessRepository {
   }
 
   async findById(id: string): Promise<Business | null> {
-    const rows = await db.select().from(business).where(eq(business.id, id)).limit(1);
+    const rows = await this._db
+      .select()
+      .from(business)
+      .where(eq(business.id, id))
+      .limit(1);
     const row = rows[0];
     if (!row) return null;
     return this.mapToEntity(row);
   }
 
   async findBySlug(slug: string): Promise<Business | null> {
-    const rows = await db.select().from(business).where(eq(business.slug, slug)).limit(1);
+    const rows = await this._db
+      .select()
+      .from(business)
+      .where(eq(business.slug, slug))
+      .limit(1);
     const row = rows[0];
     if (!row) return null;
-    return this.findById(row.id);
+    return this.mapToEntity(row);
   }
 
   private mapToEntity(row: typeof business.$inferSelect): Business {

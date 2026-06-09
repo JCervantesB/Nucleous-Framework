@@ -1,5 +1,7 @@
-import { Activity } from "../activity.entity.js";
-import { ActivityRepository } from "../activity.repository.js";
+import { Inject, Injectable } from '@nestjs/common';
+import { Activity } from '../activity.entity.js';
+import type { ActivityRepository } from '../activity.repository.js';
+import { ACTIVITY_REPOSITORY } from '../activity.repository.js';
 
 interface CreateActivityInput {
   businessId: string;
@@ -14,8 +16,10 @@ interface CreateActivityInput {
   isPinned?: boolean;
 }
 
+@Injectable()
 export class CreateActivityUseCase {
   constructor(
+    @Inject(ACTIVITY_REPOSITORY)
     private readonly repo: ActivityRepository,
   ) {}
 

@@ -43,10 +43,22 @@ export class ConfigParameter {
     }
   }
 
-  get id() { return this.props.id; }
-  get key() { return this.props.key; }
-  get value() { return this.props.value; }
-  get businessId() { return this.props.businessId; }
-  get createdAt() { return this.props.createdAt; }
-  get createdBy() { return this.props.createdBy; }
+  get id() {
+    return this.props.id;
+  }
+  get key() {
+    return this.props.key;
+  }
+  get value() {
+    return this.props.value;
+  }
+  get businessId() {
+    return this.props.businessId;
+  }
+  get createdAt() {
+    return this.props.createdAt;
+  }
+  get createdBy() {
+    return this.props.createdBy;
+  }
 }

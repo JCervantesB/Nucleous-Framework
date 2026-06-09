@@ -1,5 +1,7 @@
-import { Contact, ContactType } from "../contact.entity.js";
-import { ContactRepository } from "../contact.repository.js";
+import { Inject, Injectable } from '@nestjs/common';
+import { Contact, type ContactType } from '../contact.entity.js';
+import type { ContactRepository } from '../contact.repository.js';
+import { CONTACT_REPOSITORY } from '../contact.repository.js';
 
 interface CreateContactInput {
   businessId: string;
@@ -18,8 +20,10 @@ interface CreateContactOutput {
   contact: Contact;
 }
 
+@Injectable()
 export class CreateContactUseCase {
   constructor(
+    @Inject(CONTACT_REPOSITORY)
     private readonly contactRepo: ContactRepository,
   ) {}
 
