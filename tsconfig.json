@@ -13,7 +13,6 @@
     "target": "ES2023",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": true,
@@ -23,11 +22,11 @@
     "noFallthroughCasesInSwitch": true,
     "types": ["node"],
     "paths": {
-      "@app/database/*": ["packages/database/src/*"],
-      "@app/core/*": ["src/core/*"],
-      "@app/auth/*": ["src/auth/*"],
-      "@app/customers/*": ["src/customers/*"],
-      "@app/common/*": ["src/common/*"]
+      "#app/database/*": ["./packages/database/src/*"],
+      "#app/core/*": ["./src/core/*"],
+      "#app/auth/*": ["./src/auth/*"],
+      "#app/customers/*": ["./src/customers/*"],
+      "#app/common/*": ["./src/common/*"]
     }
   },
   "include": ["src/**/*", "packages/**/*"],

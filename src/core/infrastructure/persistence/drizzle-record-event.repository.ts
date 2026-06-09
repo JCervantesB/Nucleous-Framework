@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { and, eq, asc } from 'drizzle-orm';
 import { db } from '../../../db/client.js';
-import { recordEvent } from '@app/database/schema/core.js';
+import { recordEvent } from '#app/database/schema/core.js';
 import {
   RecordEvent,
   type RecordEventProps,

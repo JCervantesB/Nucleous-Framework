@@ -18,6 +18,7 @@ async function bootstrap() {
   const port = process.env.PORT ?? 3000;
   await app.listen(port);
   console.log(`La aplicación está corriendo en: http://localhost:${port}`);
+  console.log('✓ Health endpoint disponible en GET /health');
 }
 
 bootstrap().catch((err) => {

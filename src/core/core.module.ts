@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { HealthController } from './infrastructure/http/health.controller.js';
 import { BusinessController } from './infrastructure/http/business.controller.js';
 import { ContactController } from './infrastructure/http/contact.controller.js';
 import { ActivityController } from './infrastructure/http/activity.controller.js';
@@ -31,6 +32,7 @@ import { CONFIG_PARAMETER_REPOSITORY } from './domain/config-parameter/config-pa
 
 @Module({
   controllers: [
+    HealthController,
     BusinessController,
     ContactController,
     ActivityController,

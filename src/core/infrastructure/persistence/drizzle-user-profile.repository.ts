@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm';
 import { db } from '../../../db/client.js';
-import { userProfile } from '@app/database/schema/core.js';
+import { userProfile } from '#app/database/schema/core.js';
 import {
   UserProfile,
   type UserProfileProps,

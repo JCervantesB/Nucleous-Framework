@@ -1,6 +1,6 @@
 import { eq, and, isNull } from 'drizzle-orm';
 import { db } from '../../../db/client.js';
-import { role } from '@app/database/schema/core.js';
+import { role } from '#app/database/schema/core.js';
 import { Role, type RoleProps } from '../../domain/roles/role.entity.js';
 import { type RoleRepository } from '../../domain/roles/role.repository.js';
 

@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { and, eq, desc, asc } from 'drizzle-orm';
 import { db } from '../../../db/client.js';
-import { activity } from '@app/database/schema/core.js';
+import { activity } from '#app/database/schema/core.js';
 import {
   Activity,
   type ActivityProps,

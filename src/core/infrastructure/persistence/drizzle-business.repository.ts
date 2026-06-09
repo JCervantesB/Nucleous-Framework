@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
 import { db } from '../../../db/client.js';
-import { business } from '@app/database/schema/core.js';
+import { business } from '#app/database/schema/core.js';
 import {
   Business,
   type BusinessProps,
