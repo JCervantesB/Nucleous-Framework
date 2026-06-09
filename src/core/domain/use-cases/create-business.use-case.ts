@@ -23,7 +23,7 @@ export class CreateBusinessUseCase {
   async execute(input: CreateBusinessInput): Promise<CreateBusinessOutput> {
     const existing = await this.businessRepo.findBySlug(input.slug);
     if (existing) {
-      throw new Error("Slug already in use");
+      throw new Error('El slug ya está en uso');
     }
 
     const business = Business.create({

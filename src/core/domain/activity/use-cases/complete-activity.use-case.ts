@@ -14,7 +14,7 @@ export class CompleteActivityUseCase {
   async execute(input: CompleteActivityInput): Promise<void> {
     const activity = await this.repo.findById(input.activityId, input.businessId);
     if (!activity) {
-      throw new Error("Activity not found");
+      throw new Error('Actividad no encontrada');
     }
 
     activity.markDone(input.userId);

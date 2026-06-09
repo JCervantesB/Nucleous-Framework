@@ -10,7 +10,7 @@ export class CurrentBusinessService {
 
   getBusinessId(): string {
     if (!this.businessId) {
-      throw new Error("Business ID not set in context");
+      throw new Error('ID de negocio no establecido en el contexto');
     }
     return this.businessId;
   }
