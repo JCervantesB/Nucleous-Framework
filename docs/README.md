@@ -73,11 +73,11 @@ nucleous-framework/
 ### Para Extender el Framework
 1. `01-core-overview.md` - Entender la arquitectura
 2. `07-extending-core.md` - Cómo crear nuevos módulos
-3. `docs/dev/plan-modular.md` - Modelo de integración de módulos
+3. `plan-modular.md` - Modelo de integración de módulos
 
 ### Para Usar un Módulo Opccional
-1. `docs/AiModule/01-ai-module-overview.md` - Visión general del módulo
-2. `docs/AiModule/integration.md` - Cómo integrarlo en tu app
+1. `AiModule/01-ai-module-overview.md` - Visión general del módulo
+2. `AiModule/integration.md` - Cómo integrarlo en tu app
 
 ## Habilitación de Módulos
 
@@ -88,10 +88,10 @@ Los módulos opcionales se activan mediante la variable de entorno `ENABLED_MODU
 ENABLED_MODULES=AI,MAIL,STORAGE
 ```
 
-Para más detalles, ver `docs/dev/plan-modular.md`.
+Para más detalles, ver `plan-modular.md`.
 
 ## Referencias Adicionales
 
-Documentación de diseño en `docs/dev/`:
+Documentación de diseño:
 - `plan-modular.md` - Arquitectura modular completa
 - `Como se integrarian nuevas caracteristicas.md` - Patrón de módulos
