@@ -1,6 +1,6 @@
 import { EmailLog } from '../entities/email-log.entity';
 
-export const EMAIL_LOG_REPOSITORY = Symbol('EmailLogRepository');
+export const EMAIL_LOG_REPOSITORY = Symbol('EMAIL_LOG_REPOSITORY');
 
 export interface ListEmailLogsOptions {
   businessId?: string;
