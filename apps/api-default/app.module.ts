@@ -1,9 +1,9 @@
 import { Module, type Type } from '@nestjs/common';
-import { CoreModule } from '../../src/core/core.module.js';
-import { AuthModule } from '../../src/auth/auth.module.js';
-import { DatabaseModule } from '../../src/core/infrastructure/database/database.module.js';
-import { AiModule } from '../../src/ai/ai.module.js';
-import { validateEnabledModules, getEnabledModules } from './module-validator.js';
+import { CoreModule } from '../../src/core/core.module';
+import { AuthModule } from '../../src/auth/auth.module';
+import { DatabaseModule } from '../../src/core/infrastructure/database/database.module';
+import { AiModule } from '../../src/ai/ai.module';
+import { validateEnabledModules, getEnabledModules } from './module-validator';
 
 validateEnabledModules();
 

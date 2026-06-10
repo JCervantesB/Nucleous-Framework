@@ -2,12 +2,6 @@
 
 export const VALID_MODULES = [
   'AI',
-  'MAIL',
-  'STORAGE',
-  'NOTIFICATIONS',
-  'INVENTORY',
-  'CUSTOMERS',
-  'ORDERS',
 ] as const;
 
 export type ValidModuleName = (typeof VALID_MODULES)[number];
