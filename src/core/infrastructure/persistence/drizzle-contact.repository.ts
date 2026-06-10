@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { and, eq, ilike, sql } from 'drizzle-orm';
-import { db } from '../../../db/client.js';
+import { db } from '#app/database/client.js';
 import { contact } from '#app/database/schema/core.js';
 import {
   Contact,

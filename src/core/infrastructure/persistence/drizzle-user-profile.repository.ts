@@ -1,5 +1,5 @@
 import { eq } from 'drizzle-orm';
-import { db } from '../../../db/client.js';
+import { db } from '#app/database/client.js';
 import { userProfile } from '#app/database/schema/core.js';
 import {
   UserProfile,

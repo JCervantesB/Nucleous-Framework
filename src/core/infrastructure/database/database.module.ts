@@ -1,5 +1,5 @@
 import { Global, Module } from '@nestjs/common';
-import { db } from '../../../db/client.js';
+import { db } from '#app/database/client.js';
 
 @Global()
 @Module({

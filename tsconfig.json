@@ -29,6 +29,6 @@
       "#app/common/*": ["./src/common/*"]
     }
   },
-  "include": ["src/**/*", "packages/**/*"],
+  "include": ["src/**/*", "packages/**/*", "apps/**/*"],
   "exclude": ["node_modules", "dist", "drizzle.config.ts"]
 }
