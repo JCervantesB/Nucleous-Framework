@@ -42,9 +42,56 @@ src/email/
 
 ## Habilitación
 
-1. Agregar `EMAIL` a `VALID_MODULES` en `apps/api-default/module-validator.ts`
-2. Importar condicionalmente `EmailModule` en `apps/api-default/app.module.ts`
-3. Configurar variables de entorno
+### 1. Agregar EMAIL a VALID_MODULES
+
+```typescript
+// apps/api-default/module-validator.ts
+
+export const VALID_MODULES = [
+  'AI',
+  'EMAIL',  // ← Agregar EMAIL
+] as const;
+
+export type ValidModuleName = (typeof VALID_MODULES)[number];
+```
+
+### 2. Importar condicionalmente en AppModule
+
+```typescript
+// apps/api-default/app.module.ts
+
+import { Module, type Type } from '@nestjs/common';
+import { CoreModule } from '../../src/core/core.module';
+import { AuthModule } from '../../src/auth/auth.module';
+import { DatabaseModule } from '../../src/core/infrastructure/database/database.module';
+import { AiModule } from '../../src/ai/ai.module';
+import { EmailModule } from '../../src/email/email.module';  // ← Importar
+import { validateEnabledModules, getEnabledModules } from './module-validator';
+
+validateEnabledModules();
+const enabledModules = getEnabledModules();
+
+const imports: Type<any>[] = [
+  DatabaseModule,
+  AuthModule,
+  CoreModule,
+];
+
+if (enabledModules.includes('AI')) {
+  imports.push(AiModule);
+}
+
+if (enabledModules.includes('EMAIL')) {  // ← Condicional
+  imports.push(EmailModule);
+}
+
+@Module({ imports })
+export class AppModule {}
+```
+
+### 3. Configurar variables de entorno
+
+Ver sección de Variables de Entorno abajo.
 
 ## Variables de Entorno
 
