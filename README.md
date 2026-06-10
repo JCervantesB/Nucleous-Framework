@@ -1,98 +1,101 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Nucleous Framework
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Framework backend modular basado en [NestJS](https://nestjs.com/) para aplicaciones empresariales con soporte multi-tenant.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Características
 
-## Description
+- **Arquitectura Modular**: Solo incluye los módulos que necesitas. Módulos opcionales como AI se activan mediante `ENABLED_MODULES`.
+- **Multi-Tenant**: Soporte nativo de `businessId` para aislamiento de datos por empresa.
+- **Patrón Domain/Infrastructure**: Lógica de negocio pura separada de la infraestructura (Drizzle, NestJS).
+- **Autenticación**: Integrado con [Better Auth](https://better-auth.com/) para auth fluido.
+- **Schema Drizzle**: Un cliente Drizzle compartido para todas las tablas del sistema.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Estructura del Proyecto
 
-## Project setup
-
-```bash
-$ npm install
+```
+nucleous-framework/
+├── apps/
+│   └── api-default/           # Aplicación compositora
+├── src/                       # Módulos del framework
+│   ├── core/                  # Módulo base (obligatorio)
+│   ├── auth/                  # Módulo de auth (obligatorio)
+│   └── ai/                    # Módulo AI (opcional)
+└── packages/
+    └── database/              # Schema Drizzle compartido
 ```
 
-## Compile and run the project
+## Inicio Rápido
 
 ```bash
-# development
-$ npm run start
+# Instalar dependencias
+npm install
 
-# watch mode
-$ npm run start:dev
+# Desarrollo con hot-reload
+npm run start:dev
 
-# production mode
-$ npm run start:prod
+# Ejecutar tests
+npm run test
+
+# Build para producción
+npm run build
 ```
 
-## Run tests
+## Configuración
 
-```bash
-# unit tests
-$ npm run test
+Crear archivo `.env` en la raíz del proyecto:
 
-# e2e tests
-$ npm run test:e2e
+```env
+# Base de datos
+DATABASE_URL=postgres://user:password@localhost:5432/nucleous
 
-# test coverage
-$ npm run test:cov
+# Auth
+BETTER_AUTH_SECRET=tu-secret-aqui
+
+# Módulos opcionales (separados por coma)
+ENABLED_MODULES=AI
+
+# Configuración de IA (opcional)
+OPENROUTER_API_KEY=sk-...
 ```
 
-## Deployment
+## Documentación
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+La documentación completa está en la carpeta `/docs`:
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+| Guía | Descripción |
+|------|-------------|
+| [docs/README.md](docs/README.md) | Índice de toda la documentación |
+| [docs/01-core-overview.md](docs/01-core-overview.md) | Arquitectura general del framework |
+| [docs/plan-modular.md](docs/plan-modular.md) | Modelo de módulos opcionales |
+| [docs/07-extending-core.md](docs/07-extending-core.md) | Cómo crear nuevos módulos |
+| [docs/AiModule/01-ai-module-overview.md](docs/AiModule/01-ai-module-overview.md) | Módulo de IA |
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+## Módulos
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### Obligatorios
 
-## Resources
+| Módulo | Descripción |
+|--------|-------------|
+| `core` | Entidades base, businessId, auditoría |
+| `auth` | Autenticación y autorización |
 
-Check out a few resources that may come in handy when working with NestJS:
+### Opcionales
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+| Módulo | Descripción | Habilitar |
+|--------|-------------|-----------|
+| `ai` | Integración con LLMs (OpenRouter, OpenAI, etc.) | `ENABLED_MODULES=AI` |
+| `mail` | Envío de emails | `ENABLED_MODULES=MAIL` |
+| `storage` | Almacenamiento de archivos | `ENABLED_MODULES=STORAGE` |
 
-## Support
+## Tech Stack
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+- **Runtime**: Node.js 20+
+- **Framework**: NestJS 10
+- **ORM**: Drizzle ORM
+- **Auth**: Better Auth
+- **Lenguaje**: TypeScript
+- **Testing**: Vitest
 
-## Stay in touch
+## Licencia
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+MIT
