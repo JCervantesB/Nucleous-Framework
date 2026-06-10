@@ -1,244 +1,295 @@
-Pensemos ahora en algo un poco más grande, pero igual de manejable para alumnos:
+# Cómo se Integrarían Nuevas Características
 
-- **Core**: usuarios (Better Auth), perfiles, roles, auditoría básica.
-- **Inventory**: productos + ubicaciones + stock + movimientos.
-- **Customers**: gestión de clientes/contactos.
-- **Ecommerce**: módulo aparte que en el futuro se apoyará en `inventory` y `customers` (y quizá luego un módulo `sales`), pero que por ahora podemos dejar solo “enganchado” a estos dos.
+## Visión General
 
-La clave: mantener el patrón **domain / infrastructure** y una estructura que se vea modular pero no abrume.
+Nucleous Framework está diseñado para que nuevos módulos se integren de forma **independiente pero integrable**. El modelo permite activar o desactivar módulos sin tocar el código base.
 
-***
-
-## 1. Vista general del repo con módulos extra
-
-```txt
-backend/
-  package.json
-  tsconfig.json
-  .env
-
-  src/
-    main.ts
-    app.module.ts
-
-    db/
-      client.ts
-      index.ts
-
-    auth/
-      better-auth.config.ts
-      auth.module.ts
-      auth.guard.ts
-      session.decorator.ts
-
-    core/
-      domain/
-        entities/
-          user-profile.entity.ts
-          role.entity.ts
-        repositories/
-          user-profile.repository.ts
-          role.repository.ts
-        use-cases/
-          assign-role.use-case.ts
-          get-current-user-profile.use-case.ts
-      infrastructure/
-        persistence/
-          drizzle-user-profile.repository.ts
-          drizzle-role.repository.ts
-        http/
-          user.controller.ts
-          role.controller.ts
-      application/
-        current-business.service.ts
-      core.module.ts
-
-    customers/
-      domain/
-        entities/
-          customer.entity.ts
-          customer-address.entity.ts
-        repositories/
-          customer.repository.ts
-          customer-address.repository.ts
-        use-cases/
-          create-customer.use-case.ts
-          update-customer.use-case.ts
-          list-customers.use-case.ts
-      infrastructure/
-        persistence/
-          drizzle-customer.repository.ts
-          drizzle-customer-address.repository.ts
-        http/
-          customer.controller.ts
-      customers.module.ts
-
-    inventory/
-      domain/
-        entities/
-          inventory-product.entity.ts     # producto es parte de inventario
-          inventory-location.entity.ts
-          inventory-stock.entity.ts
-          inventory-move.entity.ts
-        repositories/
-          inventory-product.repository.ts
-          inventory-location.repository.ts
-          inventory-stock.repository.ts
-          inventory-move.repository.ts
-        use-cases/
-          create-product.use-case.ts
-          list-products.use-case.ts
-          create-move.use-case.ts
-          confirm-move.use-case.ts
-          get-product-stock.use-case.ts
-      infrastructure/
-        persistence/
-          drizzle-inventory-product.repository.ts
-          drizzle-inventory-location.repository.ts
-          drizzle-inventory-stock.repository.ts
-          drizzle-inventory-move.repository.ts
-        http/
-          inventory-product.controller.ts
-          inventory-location.controller.ts
-          inventory-move.controller.ts
-          inventory-stock.controller.ts
-      inventory.module.ts
-
-    ecommerce/
-      domain/
-        # por ahora puede estar casi vacío, solo contratos:
-        entities/
-          cart.entity.ts             # opcional / futuro
-        repositories/
-          # por ejemplo interfaces para integrarse con inventory y customers en el futuro
-        use-cases/
-          # ej. iniciar-carrito, etc. (para más adelante)
-      infrastructure/
-        http/
-          ecommerce.controller.ts    # endpoints públicos: catálogo, listado de productos, etc.
-      ecommerce.module.ts
-
-  packages/
-    database/
-      src/
-        schema/
-          auth.ts        # opcional: schema de Better Auth para tipos
-          core.ts        # user_profile, role, user_role, auditoría básica
-          customers.ts   # customer, customer_address (basado en contact/contact_address)
-          inventory.ts   # inventory_product, inventory_location, inventory_stock, inventory_move
-      drizzle.config.ts
-      migrations/
-        ...
+```
+nucleous-framework/
+├── apps/
+│   └── api-default/           # Aplicación compositora
+│       ├── main.ts            # Bootstrap (carga .env, valida módulos)
+│       ├── app.module.ts      # Importa módulos condicionalmente
+│       └── module-validator.ts # Lista de módulos válidos
+│
+├── src/
+│   ├── core/                  # Base (SIEMPRE presente)
+│   ├── auth/                  # Auth (SIEMPRE presente)
+│   ├── ai/                    # Módulo AI (opcional, controlado por ENABLED_MODULES)
+│   ├── customers/             # Futuro: módulo de clientes
+│   ├── inventory/             # Futuro: módulo de inventario
+│   └── ecommerce/             # Futuro: módulo de comercio
+│
+└── packages/
+    └── database/
+        └── src/
+            ├── client.ts     # Cliente Drizzle
+            └── schema/        # Tablas compartidas
 ```
 
+## El Modelo de Aplicación
 
-***
+En lugar de que `src/app.module.ts` importe todos los módulos, existe `apps/api-default/` como compositor:
 
-## 2. Cómo se conectan los módulos entre sí
+```typescript
+// apps/api-default/app.module.ts
 
-- **Core**:
-    - Es la base: usuarios, roles, auditoría, `businessId`.
-    - `CurrentBusinessService` se usa en todos los módulos para determinar el `businessId` actual.
-- **Customers**:
-    - Equivalente a un `res.partner` recortado de Odoo pero centrado solo en clientes.
-    - Tiene sus propias tablas (`customer`, `customer_address`), pero el diseño puede copiar casi 1 a 1 el de `contact`/`contact_address` del core.
-    - Uso típico:
-        - Inventario no depende de `customers`.
-        - Ecommerce sí dependerá de `customers` para quién compra.
-- **Inventory**:
-    - Tiene productos dentro de inventario (`inventory_product`) como tú sugieres.
-    - Es independiente de `customers` (stock no depende de cliente).
-    - Ecommerce luego usará `inventory_product` para catálogo y `inventory_stock` para disponibilidad.
-- **Ecommerce**:
-    - Por ahora puede ser una capa HTTP que simplemente:
-        - Liste productos disponibles desde `Inventory` (catálogo público).
-        - En el futuro, conecte `customers` (cliente actual), `inventory` (stock) y un módulo `sales` (órdenes).
+const imports: Type<any>[] = [
+  DatabaseModule,
+  AuthModule,
+  CoreModule,
+];
 
-Esto mantiene módulos con responsabilidades claras:
-
-- `customers` = quién compra.
-- `inventory` = qué se puede vender y qué stock hay.
-- `ecommerce` = cómo se presenta/ofrece al cliente (API pública).
-
-***
-
-## 3. Patrón domain/infrastructure en cada módulo (rápido)
-
-### Core
-
-- `core/domain`: `UserProfile`, `Role`, use cases de roles/perfil.
-- `core/infrastructure`: repos Drizzle + controllers para endpoints tipo `/core/users/me`, `/core/roles`.
-
-
-### Customers
-
-- `customers/domain`:
-    - `Customer` (similar a `contact`): `id`, `businessId`, `name`, `email`, `phone`, flags tipo `isActive`.
-    - `CustomerAddress`: domicilios del cliente (envío, facturación).
-    - Use cases:
-        - `CreateCustomerUseCase`
-        - `UpdateCustomerUseCase`
-        - `ListCustomersUseCase`
-- `customers/infrastructure/persistence`:
-    - `DrizzleCustomerRepository` (usa `customers.ts` del schema).
-    - `DrizzleCustomerAddressRepository`.
-- `customers/infrastructure/http`:
-    - `CustomerController` con endpoints `/customers`.
-
-
-### Inventory
-
-Ya lo tienes bien definido:
-
-- `inventory/domain`: productos, ubicaciones, stock, moves.
-- `inventory/infrastructure`: repos Drizzle + endpoints `/inventory/products`, `/inventory/moves`, etc.
-
-
-### Ecommerce
-
-Para no mezclar demasiada lógica en el MVP:
-
-- `ecommerce/domain` puede empezar casi vacío o con solo una entidad ligera (`Cart`/`PublicProductView`), y se llenará cuando entres a ventas.
-- `ecommerce/infrastructure/http/ecommerce.controller.ts` puede exponer por ahora:
-    - `GET /ecommerce/products` → usa `GetProductListUseCase` del módulo `inventory` o un servicio/facade que lo envuelva.
-    - `GET /ecommerce/products/:id` → detalle de producto.
-
-Es decir, ecommerce se comporta como “API pública de catálogo” montada sobre `inventory`.
-
-***
-
-## 4. Uso del ORM (Drizzle) en este setup
-
-- **Un solo Drizzle client** (`src/db/client.ts`) usando todo el schema (`core.ts`, `customers.ts`, `inventory.ts`).
-- Cada módulo tiene sus **repositorios Drizzle** que importan:
-
-```ts
-import { db } from "@/db/client";
-import { customer, customerAddress } from "@app/database/schema/customers";
+if (enabledModules.includes('AI')) {
+  imports.push(AiModule);
+}
 ```
 
-- El dominio sigue sin importar Drizzle nunca.
+Y `ENABLED_MODULES` en `.env` controla qué módulos se cargan:
 
-Así, para alumnos:
+```env
+# .env - Módulos activos
+ENABLED_MODULES=AI
 
-- Se ve claro que Drizzle = infraestructura de persistencia.
-- Se respeta SOLID, y cada módulo sigue el mismo patrón (muy pedagógico).
+# .env - Múltiples módulos
+ENABLED_MODULES=AI,CUSTOMERS,INVENTORY
+```
 
-***
+**El beneficio**: Un alumno puede empezar con solo `core + auth` y agregar módulos según sus necesidades.
 
-## 5. Módulos “independientes pero integrables”
+---
 
-Con este árbol, puedes bahkan mostrar la idea de modularidad “tipo Odoo”:
+## Cómo Conectar Módulos entre Sí
 
-- Puedes **correr solo core + customers** (sin inventario ni ecommerce) si en `app.module.ts` no importas esos módulos.
-- Puedes **añadir inventario** simplemente importándolo en `app.module.ts`.
-- Puedes **añadir ecommerce** después, sin tocar inventario ni customers, solo usando sus endpoints/use cases.
+### Core (Base Obligatoria)
 
-Eso se alinea con tu objetivo: que cada nueva necesidad pueda usar los módulos que requiera para funcionar, sin acoplar todo en un monstruo.
+- **Propósito**: Usuarios, roles, auditoría, `businessId` para multi-tenant.
+- `CurrentBusinessService` resuelve el `businessId` actual para cualquier módulo.
+- **Nunca depende de otros módulos**.
 
-***
+### Módulos Transversales (Opcionales)
 
-Con esto ya tienes dos vistas:
+| Módulo | Descripción | Depende de |
+|--------|-------------|------------|
+| `ai` | Integración con LLMs | Core, Auth |
+| `mail` | Envío de emails | Core, Auth |
+| `storage` | Almacenamiento archivos | Core, Auth |
 
-- Un repo pequeño con solo core + inventory.
-- Un repo más completo con core + customers + inventory + ecommerce.
+### Módulos de Negocio (Opcionales)
+
+| Módulo | Descripción | Depende de |
+|--------|-------------|------------|
+| `customers` | Gestión de clientes | Core, Auth |
+| `inventory` | Gestión de inventario | Core, Auth |
+| `ecommerce` | Catálogo y ventas | Core, Auth, Inventory |
+
+**Regla**: Los módulos de negocio pueden conocer a otros módulos de negocio (ej: ecommerce → inventory), pero nunca al revés.
+
+---
+
+## Patrón Domain/Infrastructure
+
+Cada módulo sigue la misma estructura:
+
+```
+src/{module-name}/
+├── domain/                      # Lógica pura (sin NestJS, sin Drizzle)
+│   ├── entities/               # Entidades del negocio
+│   ├── repositories/           # Interfaces (contratos)
+│   └── use-cases/             # Casos de uso
+├── infrastructure/
+│   ├── persistence/            # Implementaciones Drizzle
+│   └── http/                  # Controllers NestJS
+└── {module-name}.module.ts    # Wiring del módulo
+```
+
+### Ejemplo: Módulo Customers
+
+**Dominio** (puro, sin dependencias externas):
+```typescript
+// src/customers/domain/entities/customer.entity.ts
+
+export class Customer {
+  private constructor(private props: CustomerProps) {}
+
+  static create(params: { businessId: string; name: string; email?: string }): Customer {
+    return new Customer({
+      id: crypto.randomUUID(),
+      businessId: params.businessId,
+      name: params.name,
+      email: params.email ?? null,
+      isActive: true,
+      createdAt: new Date(),
+    });
+  }
+}
+```
+
+**Repositorio** (interfaz):
+```typescript
+// src/customers/domain/repositories/customer.repository.ts
+
+export const CUSTOMER_REPOSITORY = Symbol('CustomerRepository');
+
+export interface CustomerRepository {
+  create(customer: Customer): Promise<Customer>;
+  findById(id: string, businessId: string): Promise<Customer | null>;
+  listByBusiness(businessId: string): Promise<Customer[]>;
+}
+```
+
+**Infraestructura** (implementación Drizzle):
+```typescript
+// src/customers/infrastructure/persistence/drizzle-customer.repository.ts
+
+import { db } from '#app/database/client';
+import { customer } from '#app/database/schema/customers';
+
+@Injectable()
+export class DrizzleCustomerRepository implements CustomerRepository {
+  async create(entity: Customer): Promise<Customer> {
+    await db.insert(customer).values({ /* ... */ });
+    return entity;
+  }
+}
+```
+
+---
+
+## Schema Drizzle Compartido
+
+Todas las tablas viven en `packages/database/src/schema/`:
+
+```typescript
+// packages/database/src/schema/customers.ts
+
+import { pgTable, uuid, text } from 'drizzle-orm/pg-core';
+import { business } from './core';
+
+export const customer = pgTable('customer', {
+  id: uuid('id').primaryKey(),
+  businessId: uuid('business_id').references(() => business.id).notNull(),
+  name: text('name').notNull(),
+  email: text('email'),
+  isActive: boolean('is_active').notNull().default(true),
+  createdAt: timestamp('created_at').notNull(),
+  createdBy: uuid('created_by'),
+});
+```
+
+**Un solo cliente Drizzle** (`#app/database/client`) conecta a todas las tablas.
+
+---
+
+## Módulos Independientes pero Integrables
+
+La clave del modelo:
+
+### 1. Puedo correr solo core + customers
+Sin inventario, sin ecommerce. Solo agrego `CustomersModule` si lo necesito.
+
+### 2. Puedo añadir inventario después
+Sin tocar customers ni ecommerce. Solo agrego el módulo y lo habilito en `ENABLED_MODULES`.
+
+### 3. Puedo替换 módulos sin romper otros
+Cada módulo conoce solo las interfaces de los otros, no sus implementaciones.
+
+```typescript
+// Si ecommerce necesita inventory, solo importa la interfaz:
+import { INVENTORY_PRODUCT_REPOSITORY } from '../../inventory/domain/repositories/inventory-product.repository';
+```
+
+---
+
+## Flujo de Desarrollo de un Nuevo Módulo
+
+### Paso 1: Crear estructura
+
+```
+src/customers/
+├── domain/
+│   ├── entities/
+│   ├── repositories/
+│   └── use-cases/
+├── infrastructure/
+│   ├── persistence/
+│   └── http/
+└── customers.module.ts
+```
+
+### Paso 2: Implementar dominio
+
+- Entidades puras en `domain/entities/`
+- Interfaces de repositorio en `domain/repositories/`
+- Casos de uso en `domain/use-cases/`
+
+### Paso 3: Implementar infraestructura
+
+- Repositorios Drizzle en `infrastructure/persistence/`
+- Controllers en `infrastructure/http/`
+
+### Paso 4: Crear el módulo
+
+```typescript
+// src/customers/customers.module.ts
+
+@Module({
+  controllers: [CustomerController],
+  providers: [
+    { provide: CUSTOMER_REPOSITORY, useClass: DrizzleCustomerRepository },
+    CreateCustomerUseCase,
+    ListCustomersUseCase,
+  ],
+})
+export class CustomersModule {}
+```
+
+### Paso 5: Integrar en la app
+
+1. **Agregar a VALID_MODULES**:
+```typescript
+// apps/api-default/module-validator.ts
+export const VALID_MODULES = ['AI', 'CUSTOMERS'] as const;
+```
+
+2. **Importar condicionalmente**:
+```typescript
+// apps/api-default/app.module.ts
+if (enabledModules.includes('CUSTOMERS')) {
+  imports.push(CustomersModule);
+}
+```
+
+3. **Habilitar en .env**:
+```env
+ENABLED_MODULES=AI,CUSTOMERS
+```
+
+---
+
+## Resumen Visual
+
+```
+Módulos que puedes activar/desactivar:
+
+┌─────────────────────────────────────────────┐
+│         apps/api-default/                   │
+│  ┌─────────────────┐  ┌──────────────────┐  │
+│  │ module-validator│  │   app.module    │  │
+│  └────────┬────────┘  └────────┬────────┘  │
+│           │                       │          │
+│           ▼                       ▼          │
+│  ┌─────────────────────────────────────────┐│
+│  │         ENABLED_MODULES=AI,CUSTOMERS   ││
+│  └─────────────────────────────────────────┘│
+└─────────────────────────────────────────────┘
+                     │
+     ┌───────────────┼───────────────┐
+     ▼               ▼               ▼
+┌─────────┐   ┌───────────┐   ┌───────────┐
+│   AI    │   │ CUSTOMERS  │   │INVENTORY  │
+│(optativo│   │ (optativo)  │   │ (futuro)   │
+└─────────┘   └───────────┘   └───────────┘
+```
+
+Cada módulo es **opcional**, **independiente** y **reutilizable**.
