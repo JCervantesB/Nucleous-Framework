@@ -2,6 +2,7 @@
 
 export const VALID_MODULES = [
   'AI',
+  'EMAIL',
 ] as const;
 
 export type ValidModuleName = (typeof VALID_MODULES)[number];
