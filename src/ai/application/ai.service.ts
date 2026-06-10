@@ -94,14 +94,14 @@ export class AiService implements OnModuleInit {
     }).withUsage(usage);
   }
 
-  async generateObject<T>(
-    input: GenerateObjectInput<T>,
-  ): Promise<GenerateObjectOutput<T>> {
+  async generateObject<TResult>(
+    input: GenerateObjectInput<TResult>,
+  ): Promise<GenerateObjectOutput<TResult>> {
     const { provider, model, modelAlias } = this.resolveConfig(input);
 
     this.rateLimiter.checkLimit(provider, modelAlias);
 
-    const result = await this.sdkClient.generateObject<T>({
+    const result = await this.sdkClient.generateObject<TResult>({
       ...input,
       provider,
       model,
@@ -127,7 +127,7 @@ export class AiService implements OnModuleInit {
     this.rateLimiter.recordRequest(provider, modelAlias);
   }
 
-  async streamObject<T>(input: StreamObjectInput<T>): Promise<void> {
+  async streamObject<TResult>(input: StreamObjectInput<TResult>): Promise<void> {
     const { provider, model, modelAlias } = this.resolveConfig(input);
 
     this.rateLimiter.checkLimit(provider, modelAlias);

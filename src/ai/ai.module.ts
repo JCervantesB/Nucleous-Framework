@@ -1,5 +1,5 @@
 import { Module, Global } from '@nestjs/common';
-import { AI_SERVICE, AI_CONFIG } from './application/ai.tokens';
+import { AI_SERVICE, AI_SDK_CLIENT, AI_MODEL_REGISTRY, AI_RATE_LIMITER, AI_CONFIG } from './application/ai.tokens';
 import { AiService } from './application/ai.service';
 import { AiConfig } from './infrastructure/config/ai.config';
 import { AiSdkClient } from './infrastructure/clients/ai-sdk.client';
@@ -13,12 +13,24 @@ import { AiRateLimiterService } from './infrastructure/rate-limit/ai-rate-limite
       provide: AI_CONFIG,
       useFactory: () => AiConfig.fromEnv(),
     },
-    ModelRegistryService,
-    AiRateLimiterService,
-    AiSdkClient,
-    AiService,
+    {
+      provide: AI_SERVICE,
+      useClass: AiService,
+    },
+    {
+      provide: AI_SDK_CLIENT,
+      useClass: AiSdkClient,
+    },
+    {
+      provide: AI_MODEL_REGISTRY,
+      useClass: ModelRegistryService,
+    },
+    {
+      provide: AI_RATE_LIMITER,
+      useClass: AiRateLimiterService,
+    },
   ],
-  exports: [AI_SERVICE, AI_CONFIG],
+  exports: [AI_SERVICE, AI_CONFIG, AI_SDK_CLIENT, AI_MODEL_REGISTRY, AI_RATE_LIMITER],
 })
 export class AiModule {
   static forRoot(config: Partial<AiConfig>) {
@@ -29,12 +41,24 @@ export class AiModule {
           provide: AI_CONFIG,
           useFactory: () => AiConfig.fromEnv(config),
         },
-        ModelRegistryService,
-        AiRateLimiterService,
-        AiSdkClient,
-        AiService,
+        {
+          provide: AI_SERVICE,
+          useClass: AiService,
+        },
+        {
+          provide: AI_SDK_CLIENT,
+          useClass: AiSdkClient,
+        },
+        {
+          provide: AI_MODEL_REGISTRY,
+          useClass: ModelRegistryService,
+        },
+        {
+          provide: AI_RATE_LIMITER,
+          useClass: AiRateLimiterService,
+        },
       ],
-      exports: [AI_SERVICE, AI_CONFIG],
+      exports: [AI_SERVICE, AI_CONFIG, AI_SDK_CLIENT, AI_MODEL_REGISTRY, AI_RATE_LIMITER],
     };
   }
 }
