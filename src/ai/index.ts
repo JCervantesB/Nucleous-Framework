@@ -1,4 +1,9 @@
 export * from './ai.types';
+export { AiRole } from './domain/ai-role.value';
+export { AiMessage, type AiMessageProps } from './domain/ai-message.value';
+export { AiUsage, type AiUsageProps } from './domain/ai-usage.value';
+export { AiPrompt, type AiPromptProps } from './domain/ai-prompt.value';
+export { AiResponse, type AiResponseProps } from './domain/ai-response.value';
 export * from './application/ai.tokens';
 export * from './application/ai.service';
 export * from './ai.module';

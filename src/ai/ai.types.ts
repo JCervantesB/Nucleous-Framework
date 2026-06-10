@@ -4,12 +4,6 @@ export const KNOWN_PROVIDERS = ['openrouter', 'openai', 'anthropic', 'groq', 'mi
 export type KnownAiProvider = (typeof KNOWN_PROVIDERS)[number];
 export type AiProvider = KnownAiProvider | (string & {});
 
-export enum AiRole {
-  USER = 'user',
-  ASSISTANT = 'assistant',
-  SYSTEM = 'system',
-}
-
 export const DEFAULT_MODELS = {
   reasoning: 'google/gemma-4-31b-it:free',
   fast: 'openai/gpt-4o-mini',
@@ -24,7 +18,7 @@ export interface AiUsage {
 }
 
 export interface AiMessage {
-  role: AiRole;
+  role: 'user' | 'assistant' | 'system';
   content: string;
 }
 
