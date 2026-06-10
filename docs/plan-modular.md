@@ -64,9 +64,7 @@ nucleous-framework/
 │   └── main.ts                  # Bootstrap
 │
 ├── docs/                        # Documentación
-│   └── AiModule/                # Documentación del módulo AI
-│
-└── docs/dev/                    # Documentación local/privada (no versionada)
+│   └── AiModule/                # Documentación del módulo AI                
     └── plan-modular.md          # Este documento
 ```
 
