@@ -30,11 +30,17 @@ nucleous-framework/
 # Instalar dependencias
 npm install
 
-# Desarrollo con hot-reload
+# Desarrollo con hot-reload (tsx watch)
 npm run start:dev
+
+# Build de la aplicación
+npm run build:app
 
 # Ejecutar tests
 npm run test
+
+# Tests con coverage
+npm run test:cov
 
 # Build para producción
 npm run build
