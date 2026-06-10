@@ -27,8 +27,8 @@ export class EmailConfig {
   static fromEnv(): EmailConfig {
     const enabled = process.env.EMAIL_ENABLED === 'true';
     const mode = (process.env.EMAIL_MODE as EmailMode) ?? 'smtp';
-    const user = process.env.EMAIL_USER ?? '';
-    const password = process.env.EMAIL_PASSWORD ?? '';
+    const user = process.env.EMAIL_USER ?? process.env.EMAIL_AUTH_USER ?? '';
+    const password = process.env.EMAIL_PASSWORD ?? process.env.EMAIL_AUTH_PASSWORD ?? '';
 
     if (enabled && !user) {
       throw new Error('EmailModule requiere EMAIL_USER cuando EMAIL_ENABLED=true');

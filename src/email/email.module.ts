@@ -34,7 +34,10 @@ import { GetEmailLogsUseCase } from './application/use-cases/get-email-logs.use-
       provide: EMAIL_LOG_REPOSITORY,
       useClass: DrizzleEmailLogRepository,
     },
-    EmailService,
+    {
+      provide: EMAIL_SERVICE,
+      useClass: EmailService,
+    },
     SendEmailUseCase,
     SendTemplateEmailUseCase,
     GetEmailLogsUseCase,
@@ -45,6 +48,9 @@ import { GetEmailLogsUseCase } from './application/use-cases/get-email-logs.use-
     EMAIL_SMTP_CLIENT,
     EMAIL_LOG_REPOSITORY,
     EMAIL_RATE_LIMITER,
+    SendEmailUseCase,
+    SendTemplateEmailUseCase,
+    GetEmailLogsUseCase,
   ],
 })
 export class EmailModule {}

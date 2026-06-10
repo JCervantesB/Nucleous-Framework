@@ -1,5 +1,6 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
-import { EmailService } from '../email.service';
+import { EMAIL_SERVICE } from '../email.tokens';
+import type { EmailService } from '../email.service';
 import { EMAIL_LOG_REPOSITORY, type EmailLogRepository } from '../../domain/repositories/email-log.repository';
 import { EmailLog } from '../../domain/entities/email-log.entity';
 import { EmailAddress } from '../../domain/value-objects/email-address.value';
@@ -30,7 +31,7 @@ export class SendEmailUseCase {
   private readonly logger = new Logger(SendEmailUseCase.name);
 
   constructor(
-    private readonly emailService: EmailService,
+    @Inject(EMAIL_SERVICE) private readonly emailService: EmailService,
     @Inject(EMAIL_LOG_REPOSITORY) private readonly emailLogRepo: EmailLogRepository,
   ) {}
 
