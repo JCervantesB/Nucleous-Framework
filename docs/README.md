@@ -29,6 +29,7 @@ Esta documentación está organizada en secciones. Empieza por los fundamentos y
 | Módulo | Documentación | Descripción |
 |--------|---------------|-------------|
 | AI | `AiModule/01-ai-module-overview.md` | Integración con LLMs |
+| Email | `EmailModule/01-email-module-overview.md` | Envío de emails via SMTP |
 
 ## Modelo Modular
 
@@ -57,7 +58,7 @@ nucleous-framework/
 
 ### Módulos Opcionales
 - **ai**: Integración con LLMs (OpenRouter, OpenAI, etc.)
-- **mail**: Envío de emails (futuro)
+- **email**: Envío de emails via SMTP (Mailtrap, Gmail, SendGrid, etc.)
 - **storage**: Almacenamiento de archivos (futuro)
 - **notifications**: Sistema de notificaciones (futuro)
 - **inventory**: Gestión de inventario (futuro)
@@ -76,8 +77,10 @@ nucleous-framework/
 3. `plan-modular.md` - Modelo de integración de módulos
 
 ### Para Usar un Módulo Opccional
-1. `AiModule/01-ai-module-overview.md` - Visión general del módulo
+1. `AiModule/01-ai-module-overview.md` - Visión general del módulo AI
 2. `AiModule/integration.md` - Cómo integrarlo en tu app
+3. `EmailModule/01-email-module-overview.md` - Visión general del módulo Email
+4. `EmailModule/02-email-usage.md` - Uso del módulo Email
 
 ## Habilitación de Módulos
 

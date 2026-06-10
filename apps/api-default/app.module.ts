@@ -3,6 +3,7 @@ import { CoreModule } from '../../src/core/core.module';
 import { AuthModule } from '../../src/auth/auth.module';
 import { DatabaseModule } from '../../src/core/infrastructure/database/database.module';
 import { AiModule } from '../../src/ai/ai.module';
+import { EmailModule } from '../../src/email/email.module';
 import { validateEnabledModules, getEnabledModules } from './module-validator';
 
 validateEnabledModules();
@@ -17,6 +18,10 @@ const imports: Type<any>[] = [
 
 if (enabledModules.includes('AI')) {
   imports.push(AiModule);
+}
+
+if (enabledModules.includes('EMAIL')) {
+  imports.push(EmailModule);
 }
 
 @Module({
