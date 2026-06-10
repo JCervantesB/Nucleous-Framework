@@ -92,6 +92,4 @@ Para más detalles, ver `plan-modular.md`.
 
 ## Referencias Adicionales
 
-Documentación de diseño:
-- `plan-modular.md` - Arquitectura modular completa
-- `Como se integrarian nuevas caracteristicas.md` - Patrón de módulos
+- `plan-modular.md` - Arquitectura modular completa y modelo de integración de módulos
