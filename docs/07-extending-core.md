@@ -13,9 +13,10 @@ Core (base)
 └── RecordEvent
 
 Módulos adicionales (se integran sobre el core)
-├── Customers
-├── Inventory
-└── Ecommerce
+├── AI (transversal, opcional)
+├── Customers (negocio, opcional)
+├── Inventory (negocio, opcional)
+└── Ecommerce (negocio, opcional)
 ```
 
 ## ¿Qué Significa "Usar el Core como Base"?
@@ -59,7 +60,7 @@ src/<module>/
 1. **El dominio nunca importa Drizzle ni NestJS**
 2. **La infraestructura solo conoce Drizzle (persistence) y Nest (HTTP)**
 3. **Los módulos se conectan a través de interfaces, no implementaciones**
-4. **Un módulo puede ser opcional (importar o no en AppModule)**
+4. **Un módulo puede ser opcional (controlado por ENABLED_MODULES)**
 
 ## Ejemplo: Añadir Módulo Customers
 
@@ -163,17 +164,15 @@ export class CreateCustomerUseCase {
 
 import { Injectable, Inject } from '@nestjs/common';
 import { eq, and } from 'drizzle-orm';
-import { db } from '../../../db/client.js';
-import { customer } from '#app/database/schema/customers.js';
-import { Customer, type CustomerProps } from '../../domain/entities/customer.entity.js';
-import type { CustomerRepository } from '../../domain/repositories/customer.repository.js';
+import { db } from '#app/database/client';
+import { customer } from '#app/database/schema/customers';
+import { Customer, type CustomerProps } from '../../domain/entities/customer.entity';
+import type { CustomerRepository } from '../../domain/repositories/customer.repository';
 
 @Injectable()
 export class DrizzleCustomerRepository implements CustomerRepository {
-  constructor(@Inject('DB') private readonly _db: typeof db) {}
-
   async create(entity: Customer): Promise<Customer> {
-    await this._db.insert(customer).values({
+    await db.insert(customer).values({
       id: entity.id,
       businessId: entity.businessId,
       name: entity.name,
@@ -188,7 +187,7 @@ export class DrizzleCustomerRepository implements CustomerRepository {
   }
 
   async findById(id: string, businessId: string): Promise<Customer | null> {
-    const rows = await this._db
+    const rows = await db
       .select()
       .from(customer)
       .where(and(eq(customer.id, id), eq(customer.businessId, businessId)))
@@ -261,11 +260,11 @@ export class CustomerController {
 // src/customers/customers.module.ts
 
 import { Module } from '@nestjs/common';
-import { CustomerController } from './infrastructure/http/customer.controller.js';
-import { DrizzleCustomerRepository } from './infrastructure/persistence/drizzle-customer.repository.js';
-import { CreateCustomerUseCase } from './domain/use-cases/create-customer.use-case.js';
-import { ListCustomersUseCase } from './domain/use-cases/list-customers.use-case.js';
-import { CUSTOMER_REPOSITORY } from './domain/repositories/customer.repository.js';
+import { CustomerController } from './infrastructure/http/customer.controller';
+import { DrizzleCustomerRepository } from './infrastructure/persistence/drizzle-customer.repository';
+import { CreateCustomerUseCase } from './domain/use-cases/create-customer.use-case';
+import { ListCustomersUseCase } from './domain/use-cases/list-customers.use-case';
+import { CUSTOMER_REPOSITORY } from './domain/repositories/customer.repository';
 
 @Module({
   controllers: [CustomerController],
@@ -281,65 +280,50 @@ import { CUSTOMER_REPOSITORY } from './domain/repositories/customer.repository.j
 export class CustomersModule {}
 ```
 
-### 7. Importar en AppModule
+### 7. Integrar en AppModule (apps/api-default/)
 
 ```typescript
-// src/app.module.ts
+// apps/api-default/app.module.ts
 
-import { Module } from '@nestjs/common';
-import { CoreModule } from './core/core.module.js';
-import { AuthModule } from './auth/auth.module.js';
-import { DatabaseModule } from './core/infrastructure/database/database.module.js';
-import { CustomersModule } from './customers/customers.module.js';
+import { Module, type Type } from '@nestjs/common';
+import { CoreModule } from '../../src/core/core.module';
+import { AuthModule } from '../../src/auth/auth.module';
+import { DatabaseModule } from '../../src/core/infrastructure/database/database.module';
+import { CustomersModule } from '../../src/customers/customers.module';
+import { validateEnabledModules, getEnabledModules } from './module-validator';
 
-@Module({
-  imports: [
-    DatabaseModule,
-    AuthModule,
-    CoreModule,
-    CustomersModule,  // ← Módulo opcional
-  ],
-})
+validateEnabledModules();
+const enabledModules = getEnabledModules();
+
+const imports: Type<any>[] = [
+  DatabaseModule,
+  AuthModule,
+  CoreModule,
+];
+
+if (enabledModules.includes('CUSTOMERS')) {
+  imports.push(CustomersModule);
+}
+
+@Module({ imports })
 export class AppModule {}
 ```
 
-## Ejemplo: Añadir Módulo Inventory
-
-El módulo de inventario es independiente de customers; solo usa `businessId` y `userId` del core.
-
-### Entidades
-
-- `InventoryProduct`: Producto en inventario
-- `InventoryLocation`: Ubicación/almacén
-- `InventoryStock`: Stock por ubicación
-- `InventoryMove`: Movimiento de inventario
-
-### Uso de businessId y userId
+### 8. Agregar a VALID_MODULES
 
 ```typescript
-// En InventoryMove
-interface InventoryMoveProps {
-  id: string;
-  businessId: string;      // Del core (aislamiento)
-  productId: string;       // FK a InventoryProduct
-  fromLocationId: string | null;
-  toLocationId: string | null;
-  quantity: number;
-  type: 'IN' | 'OUT' | 'TRANSFER';
-  userId: string;          // Del core (auditoría)
-  createdAt: Date;
-}
+// apps/api-default/module-validator.ts
+
+export const VALID_MODULES = [
+  'AI',
+  'CUSTOMERS',  // ← Agregar cuando se implemente
+] as const;
 ```
 
-### Flujo de ConfirmMove
+### 9. Habilitar en .env
 
-```
-1. HTTP POST /inventory/moves/:id/confirm
-2. @Session('userId') → userId (de Better Auth)
-3. CurrentBusinessService.getBusinessId() → businessId
-4. ConfirmMoveUseCase.execute({ moveId, businessId, userId })
-5. Validar stock y actualizar InventoryStock
-6. Drizzle actualiza con created_by = userId
+```env
+ENABLED_MODULES=AI,CUSTOMERS
 ```
 
 ## Schema Drizzle para Módulos
@@ -367,25 +351,6 @@ export const customer = pgTable('customer', {
 });
 ```
 
-## Módulos Opcionales
-
-Puedes hacer que un módulo sea condicional:
-
-```typescript
-// src/app.module.ts
-
-@Module({
-  imports: [
-    DatabaseModule,
-    AuthModule,
-    CoreModule,
-    ...(process.env.ENABLE_CUSTOMERS === 'true' ? [CustomersModule] : []),
-    ...(process.env.ENABLE_INVENTORY === 'true' ? [InventoryModule] : []),
-  ],
-})
-export class AppModule {}
-```
-
 ## Resumen: Pasos para Crear un Módulo
 
 1. **Dominio**:
@@ -402,10 +367,17 @@ export class AppModule {}
    - Registrar providers y controllers
 
 4. **Integración**:
-   - Importar en `AppModule`
+   - Agregar a `VALID_MODULES` en `apps/api-default/module-validator.ts`
+   - Importar condicionalmente en `apps/api-default/app.module.ts`
    - Añadir schema Drizzle en `packages/database/src/schema/`
+   - Habilitar con `ENABLED_MODULES=MODULO` en `.env`
 
 5. **Convenciones**:
    - Usar `businessId` para aislamiento
    - Usar `userId` para auditoría
    - Implementar pagination y filtros estándar
+
+## Módulos Existentes como Referencia
+
+- **AI Module** (`src/ai/`): Módulo transversal con domain ligero, ver `docs/AiModule/`
+- **Core** (`src/core/`): Módulo base con domain rico, ver `01-core-overview.md`
