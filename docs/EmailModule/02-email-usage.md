@@ -227,3 +227,45 @@ Por favor, revisa el inventario.
   }
 }
 ```
+
+## Ejemplo: Notificación Robusta con EmailService
+
+Para uso directo con `EmailService` (sin logging en BD), incluyendo manejo de errores y validación:
+
+```typescript
+import { Injectable, Logger } from '@nestjs/common';
+import { EmailService, EmailAddress } from './email/email.service';
+
+@Injectable()
+export class InventoryService {
+  private readonly logger = new Logger(InventoryService.name);
+
+  constructor(private readonly emailService: EmailService) {}
+
+  async notifyLowStock(product: Product): Promise<void> {
+    try {
+      const to = EmailAddress.create(product.managerEmail, product.managerName);
+
+      await this.emailService.send({
+        to: [to],
+        subject: `Stock bajo: ${product.name}`,
+        text: `El producto tiene stock de ${product.stock} unidades.`,
+        html: `<p>El producto <strong>${product.name}</strong> tiene solo ${product.stock} unidades.</p>`,
+        businessId: product.businessId,
+      });
+
+      this.logger.log(`Notificación de stock bajo enviada a ${product.managerEmail}`);
+    } catch (error) {
+      this.logger.error(`Error enviando notificación de stock: ${error.message}`);
+      // No propagar - no bloqueamos el proceso principal por fallo de email
+    }
+  }
+}
+```
+
+**Puntos clave del ejemplo robusto:**
+
+- **Try-catch**: Maneja errores sin propagarlos al proceso llamador
+- **EmailAddress.create()**: Valida el email antes de enviar
+- **businessId**: Necesario para multi-tenant
+- **Logger**: Registra éxito o fracaso para debugging
