@@ -19,4 +19,5 @@ export const auth = betterAuth({
     expiresIn: 60 * 60 * 24 * 7,
     updateAge: 60 * 60 * 24,
   },
+  baseURL: process.env.BETTER_AUTH_URL ?? 'http://localhost:3000',
 });
