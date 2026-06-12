@@ -8,9 +8,11 @@ import { LocalStorageService } from './infrastructure/providers/local-storage.se
 import { UploadFileUseCase } from './application/use-cases/upload-file.use-case';
 import { DeleteFileUseCase } from './application/use-cases/delete-file.use-case';
 import { GetFileUrlUseCase } from './application/use-cases/get-file-url.use-case';
+import { StorageController } from './interfaces/http/storage.controller';
 
 @Global()
 @Module({
+  controllers: [StorageController],
   providers: [
     {
       provide: STORAGE_CONFIG,
