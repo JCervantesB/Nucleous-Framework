@@ -5,9 +5,11 @@ import { AiConfig } from './infrastructure/config/ai.config';
 import { AiSdkClient } from './infrastructure/clients/ai-sdk.client';
 import { ModelRegistryService } from './infrastructure/clients/model-registry.service';
 import { AiRateLimiterService } from './infrastructure/rate-limit/ai-rate-limiter.service';
+import { AiController } from './interfaces/http/ai.controller';
 
 @Global()
 @Module({
+  controllers: [AiController],
   providers: [
     {
       provide: AI_CONFIG,

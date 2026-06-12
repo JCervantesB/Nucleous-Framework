@@ -14,9 +14,11 @@ import { DrizzleEmailLogRepository } from './infrastructure/persistence/drizzle-
 import { SendEmailUseCase } from './application/use-cases/send-email.use-case';
 import { SendTemplateEmailUseCase } from './application/use-cases/send-template-email.use-case';
 import { GetEmailLogsUseCase } from './application/use-cases/get-email-logs.use-case';
+import { EmailController } from './interfaces/http/email.controller';
 
 @Global()
 @Module({
+  controllers: [EmailController],
   providers: [
     {
       provide: EMAIL_CONFIG,
