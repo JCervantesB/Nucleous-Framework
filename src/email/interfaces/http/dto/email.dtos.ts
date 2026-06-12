@@ -58,42 +58,42 @@ export class SendTemplateEmailDto extends SendEmailDto {
 }
 
 export class EmailLogResponseDto {
-  @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000' })
+  @ApiProperty({ type: 'string', description: 'ID del log' })
   id!: string;
 
-  @ApiProperty({ example: 'destinatario@example.com' })
+  @ApiProperty({ type: 'string', description: 'Destinatario' })
   to!: string;
 
-  @ApiPropertyOptional({ example: 'copia@example.com', nullable: true })
+  @ApiPropertyOptional({ type: 'string', nullable: true, description: 'Copia' })
   cc?: string;
 
-  @ApiPropertyOptional({ example: 'oculto@example.com', nullable: true })
+  @ApiPropertyOptional({ type: 'string', nullable: true, description: 'Copia oculta' })
   bcc?: string;
 
-  @ApiProperty({ example: 'Notificación importante' })
+  @ApiProperty({ type: 'string', description: 'Asunto' })
   subject!: string;
 
-  @ApiProperty({ example: 'PENDING' })
+  @ApiProperty({ type: 'string', description: 'Estado' })
   status!: string;
 
-  @ApiPropertyOptional({ example: 'Error al enviar', nullable: true })
+  @ApiPropertyOptional({ type: 'string', nullable: true, description: 'Mensaje de error' })
   errorMessage?: string;
 
-  @ApiProperty({ example: '2024-01-15T10:30:00.000Z' })
+  @ApiProperty({ type: 'Date', description: 'Fecha de creación' })
   createdAt!: Date;
 
-  @ApiPropertyOptional({ example: '2024-01-15T10:30:05.000Z', nullable: true })
+  @ApiPropertyOptional({ type: 'Date', nullable: true, description: 'Fecha de envío' })
   sentAt?: Date;
 }
 
 export class SendEmailResponseDto {
-  @ApiProperty({ example: true })
+  @ApiProperty({ type: 'boolean', description: 'Si fue exitoso' })
   success!: boolean;
 
-  @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000' })
+  @ApiProperty({ type: 'string', description: 'ID del log de email' })
   emailLogId!: string;
 
-  @ApiPropertyOptional({ example: 'abc123def456' })
+  @ApiPropertyOptional({ type: 'string', description: 'ID del mensaje del proveedor' })
   providerMessageId?: string;
 }
 

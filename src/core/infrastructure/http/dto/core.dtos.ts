@@ -86,31 +86,31 @@ export class UpdateBusinessDto {
 }
 
 export class BusinessResponseDto {
-  @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000' })
+  @ApiProperty({ type: 'string', description: 'ID del negocio' })
   id!: string;
 
-  @ApiProperty({ example: 'Mi Empresa' })
+  @ApiProperty({ type: 'string', description: 'Nombre del negocio' })
   name!: string;
 
-  @ApiProperty({ example: 'mi-empresa' })
+  @ApiProperty({ type: 'string', description: 'Slug del negocio' })
   slug!: string;
 
-  @ApiPropertyOptional({ example: 'Mi Empresa S.A.S' })
+  @ApiPropertyOptional({ type: 'string', description: 'Nombre legal' })
   legalName?: string;
 
-  @ApiPropertyOptional({ example: 'CO' })
+  @ApiPropertyOptional({ type: 'string', description: 'Código de país' })
   countryCode?: string;
 
-  @ApiPropertyOptional({ example: 'America/Bogota' })
+  @ApiPropertyOptional({ type: 'string', description: 'Zona horaria' })
   timezone?: string;
 
-  @ApiPropertyOptional({ example: 'COP' })
+  @ApiPropertyOptional({ type: 'string', description: 'Código de moneda' })
   currencyCode?: string;
 
-  @ApiPropertyOptional({ example: 'Mi Empresa' })
+  @ApiPropertyOptional({ type: 'string', description: 'Nombre público' })
   publicName?: string;
 
-  @ApiProperty({ example: true })
+  @ApiProperty({ type: 'boolean', description: 'Si está activo' })
   isActive!: boolean;
 }
 
@@ -180,25 +180,25 @@ export class UpdateContactDto {
 }
 
 export class ContactResponseDto {
-  @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000' })
+  @ApiProperty({ type: 'string', description: 'ID del contacto' })
   id!: string;
 
-  @ApiProperty({ example: 'Juan' })
+  @ApiProperty({ type: 'string', description: 'Nombre' })
   firstName!: string;
 
-  @ApiProperty({ example: 'Pérez' })
+  @ApiProperty({ type: 'string', description: 'Apellido' })
   lastName!: string;
 
-  @ApiProperty({ example: 'juan@example.com' })
+  @ApiProperty({ type: 'string', description: 'Email' })
   email!: string;
 
-  @ApiPropertyOptional({ example: '+5712345678900' })
+  @ApiPropertyOptional({ type: 'string', description: 'Teléfono' })
   phone?: string;
 
-  @ApiPropertyOptional({ example: 'Notas del contacto' })
+  @ApiPropertyOptional({ type: 'string', description: 'Notas' })
   notes?: string;
 
-  @ApiProperty({ example: '2024-01-15T10:30:00.000Z' })
+  @ApiProperty({ type: 'Date', description: 'Fecha de creación' })
   createdAt!: Date;
 }
 
@@ -256,28 +256,28 @@ export class UpdateActivityDto {
 }
 
 export class ActivityResponseDto {
-  @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000' })
+  @ApiProperty({ type: 'string', description: 'ID de la actividad' })
   id!: string;
 
-  @ApiProperty({ example: 'Llamar al cliente' })
+  @ApiProperty({ type: 'string', description: 'Título' })
   title!: string;
 
-  @ApiPropertyOptional({ example: 'Descripción de la actividad' })
+  @ApiPropertyOptional({ type: 'string', description: 'Descripción' })
   description?: string;
 
-  @ApiProperty({ example: 'call' })
+  @ApiProperty({ type: 'string', description: 'Tipo de actividad' })
   activityType!: string;
 
-  @ApiPropertyOptional({ example: '123e4567-e89b-12d3-a456-426614174000' })
+  @ApiPropertyOptional({ type: 'string', description: 'ID del registro' })
   recordId?: string;
 
-  @ApiPropertyOptional({ example: '123e4567-e89b-12d3-a456-426614174000' })
+  @ApiPropertyOptional({ type: 'string', description: 'ID del usuario asignado' })
   assignedToId?: string;
 
-  @ApiProperty({ example: false })
+  @ApiProperty({ type: 'boolean', description: 'Si está completada' })
   completed!: boolean;
 
-  @ApiProperty({ example: '2024-01-15T10:30:00.000Z' })
+  @ApiProperty({ type: 'Date', description: 'Fecha de creación' })
   createdAt!: Date;
 }
 
@@ -294,7 +294,7 @@ export class RecordEventDto {
   @MaxLength(50)
   entity!: string;
 
-  @ApiProperty({ description: 'ID de la entidad', example: '123e4567-e89b-12d3-a456-426614174000' })
+  @ApiProperty({ description: 'ID de la entidad', type: 'string' })
   @IsString()
   entityId!: string;
 
@@ -304,22 +304,22 @@ export class RecordEventDto {
 }
 
 export class RecordEventResponseDto {
-  @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000' })
+  @ApiProperty({ type: 'string', description: 'ID del evento' })
   id!: string;
 
-  @ApiProperty({ example: 'created' })
+  @ApiProperty({ type: 'string', description: 'Tipo de evento' })
   eventType!: string;
 
-  @ApiProperty({ example: 'Contact' })
+  @ApiProperty({ type: 'string', description: 'Entidad' })
   entity!: string;
 
-  @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000' })
+  @ApiProperty({ type: 'string', description: 'ID de la entidad' })
   entityId!: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: 'object', description: 'Metadatos' })
   metadata?: Record<string, unknown>;
 
-  @ApiProperty({ example: '2024-01-15T10:30:00.000Z' })
+  @ApiProperty({ type: 'Date', description: 'Fecha de creación' })
   createdAt!: Date;
 }
 
@@ -337,15 +337,15 @@ export class ConfigParameterDto {
 }
 
 export class ConfigParameterResponseDto {
-  @ApiProperty({ example: 'app.name' })
+  @ApiProperty({ type: 'string', description: 'Clave' })
   key!: string;
 
-  @ApiProperty({ example: 'Mi Aplicación' })
+  @ApiProperty({ type: 'string', description: 'Valor' })
   value!: string;
 
-  @ApiPropertyOptional({ example: 'Nombre de la aplicación' })
+  @ApiPropertyOptional({ type: 'string', description: 'Descripción' })
   description?: string;
 
-  @ApiProperty({ example: '2024-01-15T10:30:00.000Z' })
+  @ApiProperty({ type: 'Date', description: 'Fecha de actualización' })
   updatedAt!: Date;
 }
