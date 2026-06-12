@@ -1,113 +1,95 @@
-import { Body, Controller, Get, Post, Query, Req } from '@nestjs/common';
-import type { Request } from 'express';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Query,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { CreateContactUseCase } from '../../domain/contacts/use-cases/create-contact.use-case.js';
 import { ListContactsUseCase } from '../../domain/contacts/use-cases/list-contacts.use-case.js';
-import { CurrentBusinessService } from '../../application/current-business.service.js';
+import { CurrentBusinessId } from '../../../common/decorators/business-id.decorator';
+import { CurrentUserId } from '../../../common/decorators/user-id.decorator';
+import { CreateContactDto, ContactResponseDto } from './dto/core.dtos';
 
-class CreateContactDto {
-  type!: 'PERSON' | 'COMPANY';
-  name!: string;
-  email?: string;
-  phone?: string;
-  taxId?: string;
-  isCustomer?: boolean;
-  isSupplier?: boolean;
-  isEmployee?: boolean;
-}
-
+@ApiTags('Core - Contacts')
+@ApiBearerAuth()
 @Controller('core/contacts')
 export class ContactController {
   constructor(
     private readonly createContactUseCase: CreateContactUseCase,
     private readonly listContactsUseCase: ListContactsUseCase,
-    private readonly currentBusiness: CurrentBusinessService,
   ) {}
 
   @Post()
-  async create(@Body() body: CreateContactDto, @Req() req: Request) {
-    const userId = req.user?.id ?? 'system';
-    const businessId = this.currentBusiness.getBusinessId();
+  @ApiOperation({ summary: 'Crear contacto' })
+  @ApiResponse({ status: 201, type: ContactResponseDto })
+  @ApiResponse({ status: 400, description: 'Datos inválidos' })
+  async create(
+    @CurrentBusinessId() businessId: string,
+    @CurrentUserId() userId: string,
+    @Body() dto: CreateContactDto,
+  ) {
+    const name = dto.firstName && dto.lastName 
+      ? `${dto.firstName} ${dto.lastName}` 
+      : (dto.firstName ?? 'Unknown');
 
     const result = await this.createContactUseCase.execute({
       businessId,
       userId,
-      type: body.type,
-      name: body.name,
-      email: body.email,
-      phone: body.phone,
-      taxId: body.taxId,
-      isCustomer: body.isCustomer,
-      isSupplier: body.isSupplier,
-      isEmployee: body.isEmployee,
+      type: 'PERSON',
+      name,
+      email: dto.email,
+      phone: dto.phone,
     });
 
     return {
       id: result.contact.id,
-      name: result.contact.name,
-      type: result.contact.type,
+      firstName: dto.firstName,
+      lastName: dto.lastName ?? '',
       email: result.contact.email,
       phone: result.contact.phone,
-    };
+      createdAt: result.contact.createdAt,
+    } as ContactResponseDto;
   }
 
   @Get()
+  @ApiOperation({ summary: 'Listar contactos' })
+  @ApiResponse({ status: 200, description: 'Lista de contactos' })
   async list(
-    @Query('search') search: string | undefined,
-    @Query('isCustomer') isCustomerRaw: string | undefined,
-    @Query('isSupplier') isSupplierRaw: string | undefined,
-    @Query('isEmployee') isEmployeeRaw: string | undefined,
-    @Query('page') pageRaw: string | undefined,
-    @Query('pageSize') pageSizeRaw: string | undefined,
+    @CurrentBusinessId() businessId: string,
+    @Query('search') search?: string,
+    @Query('page') page?: string,
+    @Query('pageSize') pageSize?: string,
   ) {
-    const businessId = this.currentBusiness.getBusinessId();
-    const page = Number(pageRaw) || 1;
-    const pageSize = Number(pageSizeRaw) || 20;
-
-    const isCustomer =
-      isCustomerRaw === 'true'
-        ? true
-        : isCustomerRaw === 'false'
-          ? false
-          : undefined;
-    const isSupplier =
-      isSupplierRaw === 'true'
-        ? true
-        : isSupplierRaw === 'false'
-          ? false
-          : undefined;
-    const isEmployee =
-      isEmployeeRaw === 'true'
-        ? true
-        : isEmployeeRaw === 'false'
-          ? false
-          : undefined;
+    const pageNum = page ? parseInt(page, 10) : 1;
+    const pageSizeNum = pageSize ? parseInt(pageSize, 10) : 20;
 
     const result = await this.listContactsUseCase.execute({
       businessId,
       search,
-      isCustomer,
-      isSupplier,
-      isEmployee,
-      page,
-      pageSize,
+      page: pageNum,
+      pageSize: pageSizeNum,
     });
 
     return {
       data: result.data.map((contact) => ({
         id: contact.id,
-        name: contact.name,
-        type: contact.type,
+        firstName: contact.name.split(' ')[0] ?? contact.name,
+        lastName: contact.name.split(' ').slice(1).join(' ') || '',
         email: contact.email,
         phone: contact.phone,
-        isCustomer: contact.isCustomer,
-        isSupplier: contact.isSupplier,
-        isEmployee: contact.isEmployee,
-      })),
-      pagination: {
-        page,
-        pageSize,
-        total: result.total,
-      },
+        createdAt: contact.createdAt,
+      })) as ContactResponseDto[],
+      total: result.total,
+      page: pageNum,
+      pageSize: pageSizeNum,
+      totalPages: Math.ceil(result.total / pageSizeNum),
     };
   }
 }
