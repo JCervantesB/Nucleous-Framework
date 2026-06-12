@@ -4,6 +4,7 @@ import { AuthModule } from '../../src/auth/auth.module';
 import { DatabaseModule } from '../../src/core/infrastructure/database/database.module';
 import { AiModule } from '../../src/ai/ai.module';
 import { EmailModule } from '../../src/email/email.module';
+import { StorageModule } from '../../src/storage/storage.module';
 import { validateEnabledModules, getEnabledModules } from './module-validator';
 
 validateEnabledModules();
@@ -22,6 +23,10 @@ if (enabledModules.includes('AI')) {
 
 if (enabledModules.includes('EMAIL')) {
   imports.push(EmailModule);
+}
+
+if (enabledModules.includes('STORAGE')) {
+  imports.push(StorageModule);
 }
 
 @Module({
