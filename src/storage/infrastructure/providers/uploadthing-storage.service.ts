@@ -2,7 +2,7 @@ import { Injectable, Inject, Logger } from '@nestjs/common';
 import { UTApi } from 'uploadthing/server';
 import { UTFile } from 'uploadthing/server';
 import { STORAGE_CONFIG } from '../../application/storage.tokens';
-import type { StorageProvider, UploadOptions, UploadResult, DeleteResult, GetUrlOptions } from '../../application/storage.service';
+import type { StorageProvider, UploadOptions, UploadResult, DeleteResult, GetUrlOptions } from '../../application/storage.types';
 import { StoredFile } from '../../domain/value-objects/stored-file.vo';
 import { StorageConfig } from '../config/storage.config';
 
@@ -13,7 +13,12 @@ export class UploadThingStorageService implements StorageProvider {
   private utApi: UTApi;
 
   constructor(@Inject(STORAGE_CONFIG) private readonly config: StorageConfig) {
-    this.utApi = new UTApi();
+    const uploadthingConfig = this.config.getUploadthingConfig();
+    if (uploadthingConfig?.token) {
+      this.utApi = new UTApi({ token: uploadthingConfig.token });
+    } else {
+      this.utApi = new UTApi();
+    }
   }
 
   async upload(buffer: Buffer, options: UploadOptions): Promise<UploadResult> {
@@ -21,18 +26,20 @@ export class UploadThingStorageService implements StorageProvider {
       const filename = options.filename ?? `${crypto.randomUUID()}-${Date.now()}`;
 
       const uint8Array = new Uint8Array(buffer);
-      const file = new File([uint8Array], filename, {
+      const utFile = new UTFile([uint8Array], filename, {
         type: options.contentType ?? 'application/octet-stream',
       });
 
-      const result = await this.utApi.uploadFiles(file);
+      const results = await this.utApi.uploadFiles([utFile]);
+      const firstResult = results[0];
 
-      if ('error' in result && result.error) {
-        this.logger.error(`Error de UploadThing: ${result.error.message}`);
-        return { success: false, error: result.error.message };
+      if (!firstResult || ('error' in firstResult && firstResult.error)) {
+        const errorMsg = 'error' in firstResult ? firstResult.error?.message : 'Upload failed';
+        this.logger.error(`Error de UploadThing: ${errorMsg}`);
+        return { success: false, error: errorMsg };
       }
 
-      const data = 'data' in result ? result.data : result;
+      const data = firstResult.data;
       const storedFile = StoredFile.create({
         bucket: options.bucket,
         key: data.key,

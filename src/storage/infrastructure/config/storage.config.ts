@@ -2,7 +2,7 @@ export type StorageProviderType = 'uploadthing' | 'cloudinary' | 'local';
 
 export interface UploadthingConfig {
   appId: string;
-  apiKey: string;
+  token: string;
 }
 
 export interface CloudinaryConfig {
@@ -38,16 +38,16 @@ export class StorageConfig {
 
     if (provider === 'uploadthing') {
       const appId = process.env.UPLOADTHING_APP_ID ?? '';
-      const apiKey = process.env.UPLOADTHING_API_KEY ?? '';
+      const token = process.env.UPLOADTHING_TOKEN ?? process.env.UPLOADTHING_SECRET ?? '';
 
       if (enabled && !appId) {
         throw new Error('STORAGE_PROVIDER=uploadthing requiere UPLOADTHING_APP_ID');
       }
-      if (enabled && !apiKey) {
-        throw new Error('STORAGE_PROVIDER=uploadthing requiere UPLOADTHING_API_KEY');
+      if (enabled && !token) {
+        throw new Error('STORAGE_PROVIDER=uploadthing requiere UPLOADTHING_TOKEN o UPLOADTHING_SECRET');
       }
 
-      config.uploadthing = { appId, apiKey };
+      config.uploadthing = { appId, token };
     }
 
     if (provider === 'cloudinary') {

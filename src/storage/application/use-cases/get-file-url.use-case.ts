@@ -1,6 +1,7 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
 import { STORAGE_SERVICE } from '../storage.tokens';
-import type { StorageService, GetUrlOptions } from '../storage.service';
+import type { StorageService } from '../storage.service';
+import type { GetUrlOptions } from '../storage.types';
 
 export interface GetFileUrlInput {
   key: string;

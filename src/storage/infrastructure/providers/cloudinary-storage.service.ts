@@ -1,7 +1,7 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
 import { v2 as cloudinary } from 'cloudinary';
 import { STORAGE_CONFIG } from '../../application/storage.tokens';
-import type { StorageProvider, UploadOptions, UploadResult, DeleteResult, GetUrlOptions } from '../../application/storage.service';
+import type { StorageProvider, UploadOptions, UploadResult, DeleteResult, GetUrlOptions } from '../../application/storage.types';
 import { StoredFile } from '../../domain/value-objects/stored-file.vo';
 import { StorageConfig } from '../config/storage.config';
 

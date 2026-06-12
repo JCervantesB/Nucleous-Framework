@@ -27,7 +27,7 @@ describe('StorageConfig', () => {
       process.env.STORAGE_ENABLED = 'true';
       process.env.STORAGE_PROVIDER = 'uploadthing';
       process.env.UPLOADTHING_APP_ID = 'test-app-id';
-      process.env.UPLOADTHING_API_KEY = 'test-api-key';
+      process.env.UPLOADTHING_TOKEN = 'test-token';
 
       const config = StorageConfig.fromEnv();
 
@@ -35,7 +35,7 @@ describe('StorageConfig', () => {
       expect(config.getProvider()).toBe('uploadthing');
       expect(config.getUploadthingConfig()).toEqual({
         appId: 'test-app-id',
-        apiKey: 'test-api-key',
+        token: 'test-token',
       });
     });
 
@@ -90,7 +90,7 @@ describe('StorageConfig', () => {
     it('debe lanzar error si provider es uploadthing pero falta UPLOADTHING_APP_ID', () => {
       process.env.STORAGE_ENABLED = 'true';
       process.env.STORAGE_PROVIDER = 'uploadthing';
-      process.env.UPLOADTHING_API_KEY = 'test-key';
+      process.env.UPLOADTHING_TOKEN = 'test-token';
       delete process.env.UPLOADTHING_APP_ID;
 
       expect(() => StorageConfig.fromEnv()).toThrow(
@@ -98,14 +98,14 @@ describe('StorageConfig', () => {
       );
     });
 
-    it('debe lanzar error si provider es uploadthing pero falta UPLOADTHING_API_KEY', () => {
+    it('debe lanzar error si provider es uploadthing pero falta UPLOADTHING_TOKEN', () => {
       process.env.STORAGE_ENABLED = 'true';
       process.env.STORAGE_PROVIDER = 'uploadthing';
       process.env.UPLOADTHING_APP_ID = 'test-app-id';
-      delete process.env.UPLOADTHING_API_KEY;
+      delete process.env.UPLOADTHING_TOKEN;
 
       expect(() => StorageConfig.fromEnv()).toThrow(
-        'STORAGE_PROVIDER=uploadthing requiere UPLOADTHING_API_KEY',
+        'STORAGE_PROVIDER=uploadthing requiere UPLOADTHING_TOKEN o UPLOADTHING_SECRET',
       );
     });
   });

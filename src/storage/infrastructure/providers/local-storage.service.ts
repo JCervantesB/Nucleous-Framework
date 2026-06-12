@@ -2,7 +2,7 @@ import { Injectable, Inject, Logger } from '@nestjs/common';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { STORAGE_CONFIG } from '../../application/storage.tokens';
-import type { StorageProvider, UploadOptions, UploadResult, DeleteResult, GetUrlOptions } from '../../application/storage.service';
+import type { StorageProvider, UploadOptions, UploadResult, DeleteResult, GetUrlOptions } from '../../application/storage.types';
 import { StoredFile } from '../../domain/value-objects/stored-file.vo';
 import { StorageConfig } from '../config/storage.config';
 
