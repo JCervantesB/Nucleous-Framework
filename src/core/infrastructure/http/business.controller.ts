@@ -20,7 +20,7 @@ export class BusinessController {
 
   @Post()
   @ApiOperation({ summary: 'Crear un nuevo negocio' })
-  @ApiResponse({ status: 201, type: BusinessResponseDto, description: 'Negocio creado' })
+  @ApiResponse({ status: 201, type: () => BusinessResponseDto, description: 'Negocio creado' })
   @ApiResponse({ status: 400, description: 'Datos inválidos' })
   async create(@Body() dto: CreateBusinessDto) {
     const result = await this.createBusinessUseCase.execute({
@@ -48,7 +48,7 @@ export class BusinessController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Obtener negocio por ID' })
-  @ApiResponse({ status: 200, type: BusinessResponseDto })
+  @ApiResponse({ status: 200, type: () => BusinessResponseDto })
   @ApiResponse({ status: 404, description: 'Negocio no encontrado' })
   async getById(@Param('id', ParseUUIDPipe) id: string) {
     const result = await this.getBusinessUseCase.execute({ id });

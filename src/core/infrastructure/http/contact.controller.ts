@@ -28,7 +28,7 @@ export class ContactController {
 
   @Post()
   @ApiOperation({ summary: 'Crear contacto' })
-  @ApiResponse({ status: 201, type: ContactResponseDto })
+  @ApiResponse({ status: 201, type: () => ContactResponseDto })
   @ApiResponse({ status: 400, description: 'Datos inválidos' })
   async create(
     @CurrentBusinessId() businessId: string,

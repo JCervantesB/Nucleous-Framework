@@ -28,7 +28,7 @@ export class RecordEventController {
 
   @Post(':table/:id')
   @ApiOperation({ summary: 'Registrar evento para un registro' })
-  @ApiResponse({ status: 201, type: RecordEventResponseDto })
+  @ApiResponse({ status: 201, type: () => RecordEventResponseDto })
   @ApiResponse({ status: 400, description: 'Datos inválidos' })
   async addEvent(
     @CurrentBusinessId() businessId: string,

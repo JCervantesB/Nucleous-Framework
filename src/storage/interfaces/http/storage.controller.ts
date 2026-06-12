@@ -64,7 +64,7 @@ export class StorageController {
       },
     },
   })
-  @ApiResponse({ status: 201, type: UploadFileResponseDto })
+  @ApiResponse({ status: 201, type: () => UploadFileResponseDto })
   @ApiResponse({ status: 400, description: 'Archivo inválido' })
   @UseInterceptors(FileInterceptor('file'))
   async upload(

@@ -44,7 +44,7 @@ export class ConfigController {
 
   @Get(':key')
   @ApiOperation({ summary: 'Obtener valor de un parámetro' })
-  @ApiResponse({ status: 200, type: ConfigParameterResponseDto })
+  @ApiResponse({ status: 200, type: () => ConfigParameterResponseDto })
   @ApiResponse({ status: 404, description: 'Parámetro no encontrado' })
   async get(
     @CurrentBusinessId() businessId: string,
@@ -67,7 +67,7 @@ export class ConfigController {
 
   @Post()
   @ApiOperation({ summary: 'Establecer valor de un parámetro' })
-  @ApiResponse({ status: 200, type: ConfigParameterResponseDto })
+  @ApiResponse({ status: 200, type: () => ConfigParameterResponseDto })
   @ApiResponse({ status: 400, description: 'Datos inválidos' })
   async set(
     @CurrentBusinessId() businessId: string,

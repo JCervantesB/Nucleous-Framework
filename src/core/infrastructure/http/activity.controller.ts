@@ -36,7 +36,7 @@ export class ActivityController {
 
   @Post()
   @ApiOperation({ summary: 'Crear actividad' })
-  @ApiResponse({ status: 201, type: ActivityResponseDto })
+  @ApiResponse({ status: 201, type: () => ActivityResponseDto })
   @ApiResponse({ status: 400, description: 'Datos inválidos' })
   async create(
     @CurrentBusinessId() businessId: string,

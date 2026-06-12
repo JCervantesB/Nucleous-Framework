@@ -28,7 +28,7 @@ export class AiController {
   @Post('completions')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Generar completación de texto' })
-  @ApiResponse({ status: 200, type: GenerateTextResponseDto })
+  @ApiResponse({ status: 200, type: () => GenerateTextResponseDto })
   @ApiResponse({ status: 400, description: 'Datos inválidos' })
   async generateText(@Body() dto: GenerateTextDto) {
     const result = await this.aiService.generateText({
@@ -56,7 +56,7 @@ export class AiController {
   @Post('chat')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Chat con IA' })
-  @ApiResponse({ status: 200, type: ChatResponseDto })
+  @ApiResponse({ status: 200, type: () => ChatResponseDto })
   @ApiResponse({ status: 400, description: 'Datos inválidos' })
   async chat(@Body() dto: ChatDto) {
     const result = await this.aiService.chat({

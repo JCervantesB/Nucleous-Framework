@@ -40,7 +40,7 @@ export class EmailController {
   @Post('send')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Enviar email' })
-  @ApiResponse({ status: 200, type: SendEmailResponseDto })
+  @ApiResponse({ status: 200, type: () => SendEmailResponseDto })
   @ApiResponse({ status: 400, description: 'Datos inválidos' })
   async send(
     @CurrentBusinessId() businessId: string,
@@ -69,7 +69,7 @@ export class EmailController {
   @Post('send-template')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Enviar email con plantilla' })
-  @ApiResponse({ status: 200, type: SendEmailResponseDto })
+  @ApiResponse({ status: 200, type: () => SendEmailResponseDto })
   @ApiResponse({ status: 400, description: 'Datos inválidos' })
   async sendTemplate(
     @CurrentBusinessId() businessId: string,
@@ -99,7 +99,7 @@ export class EmailController {
 
   @Get('logs')
   @ApiOperation({ summary: 'Listar logs de emails' })
-  @ApiResponse({ status: 200, type: EmailLogListResponseDto })
+  @ApiResponse({ status: 200, type: () => EmailLogListResponseDto })
   async getLogs(
     @CurrentBusinessId() businessId: string,
     @Query('page') page?: string,
@@ -136,7 +136,7 @@ export class EmailController {
   @Post('logs/:id/retry')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Reintentar email fallido' })
-  @ApiResponse({ status: 200, type: SendEmailResponseDto })
+  @ApiResponse({ status: 200, type: () => SendEmailResponseDto })
   @ApiResponse({ status: 404, description: 'Log no encontrado' })
   async retryEmail(
     @CurrentBusinessId() businessId: string,
