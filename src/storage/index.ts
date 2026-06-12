@@ -1,0 +1,10 @@
+export { StorageModule } from './storage.module';
+export { StorageService } from './application/storage.service';
+export { UploadFileUseCase, type UploadFileInput, type UploadFileOutput } from './application/use-cases/upload-file.use-case';
+export { DeleteFileUseCase, type DeleteFileInput, type DeleteFileOutput } from './application/use-cases/delete-file.use-case';
+export { GetFileUrlUseCase, type GetFileUrlInput, type GetFileUrlOutput } from './application/use-cases/get-file-url.use-case';
+export { StoredFile, type StoredFileMetadata, type StoredFileUrl } from './domain/value-objects/stored-file.vo';
+export { StorageBucket, WellKnownBucket } from './domain/value-objects/storage-bucket.vo';
+export { StoragePath } from './domain/value-objects/storage-path.vo';
+export { StorageConfig, type StorageProviderType } from './infrastructure/config/storage.config';
+export type { StorageProvider, UploadOptions, UploadResult, DeleteResult, GetUrlOptions } from './application/storage.service';
