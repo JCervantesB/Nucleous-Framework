@@ -76,6 +76,6 @@ export class SessionResponseDto {
   @ApiProperty({ description: 'ID del usuario' })
   userId!: string;
 
-  @ApiProperty({ description: 'Datos del usuario' })
+  @ApiProperty({ type: () => UserResponseDto, description: 'Datos del usuario' })
   user!: UserResponseDto;
 }

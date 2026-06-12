@@ -1,10 +1,11 @@
-import { Controller, Post, Get, Body, Res, Req, HttpStatus, HttpCode } from '@nestjs/common';
-import type { Response, Request } from 'express';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Controller, Post, Get, Body, Res, HttpStatus, HttpCode } from '@nestjs/common';
+import type { Response } from 'express';
+import { ApiTags, ApiOperation, ApiResponse, ApiExtraModels } from '@nestjs/swagger';
 import { Session, AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { LoginDto, RegisterDto, RefreshTokenDto, AuthResponseDto, UserResponseDto, SessionResponseDto } from './dto/auth.dtos.js';
 
 @ApiTags('Auth')
+@ApiExtraModels(AuthResponseDto, UserResponseDto, SessionResponseDto)
 @Controller('auth')
 export class AuthController {
   @Post('login')
