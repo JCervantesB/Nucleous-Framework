@@ -79,10 +79,10 @@ export class EmailLogResponseDto {
   @ApiPropertyOptional({ type: 'string', nullable: true, description: 'Mensaje de error' })
   errorMessage?: string;
 
-  @ApiProperty({ type: 'Date', description: 'Fecha de creación' })
+  @ApiProperty({ description: 'Fecha de creación' })
   createdAt!: Date;
 
-  @ApiPropertyOptional({ type: 'Date', nullable: true, description: 'Fecha de envío' })
+  @ApiPropertyOptional({ nullable: true, description: 'Fecha de envío' })
   sentAt?: Date;
 }
 

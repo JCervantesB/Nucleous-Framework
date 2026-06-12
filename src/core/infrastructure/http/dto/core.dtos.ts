@@ -198,7 +198,7 @@ export class ContactResponseDto {
   @ApiPropertyOptional({ type: 'string', description: 'Notas' })
   notes?: string;
 
-  @ApiProperty({ type: 'Date', description: 'Fecha de creación' })
+  @ApiProperty({ description: 'Fecha de creación' })
   createdAt!: Date;
 }
 
@@ -277,7 +277,7 @@ export class ActivityResponseDto {
   @ApiProperty({ type: 'boolean', description: 'Si está completada' })
   completed!: boolean;
 
-  @ApiProperty({ type: 'Date', description: 'Fecha de creación' })
+  @ApiProperty({ description: 'Fecha de creación' })
   createdAt!: Date;
 }
 
@@ -316,10 +316,10 @@ export class RecordEventResponseDto {
   @ApiProperty({ type: 'string', description: 'ID de la entidad' })
   entityId!: string;
 
-  @ApiPropertyOptional({ type: 'object', description: 'Metadatos' })
+  @ApiPropertyOptional({ description: 'Metadatos', additionalProperties: true })
   metadata?: Record<string, unknown>;
 
-  @ApiProperty({ type: 'Date', description: 'Fecha de creación' })
+  @ApiProperty({ description: 'Fecha de creación' })
   createdAt!: Date;
 }
 
@@ -346,6 +346,6 @@ export class ConfigParameterResponseDto {
   @ApiPropertyOptional({ type: 'string', description: 'Descripción' })
   description?: string;
 
-  @ApiProperty({ type: 'Date', description: 'Fecha de actualización' })
+  @ApiProperty({ description: 'Fecha de actualización' })
   updatedAt!: Date;
 }
