@@ -1,4 +1,4 @@
-import type { ProductVariant } from '../entities/product-variant.entity.js';
+import type { ProductVariant } from '../entities/product-variant.entity';
 
 export interface ProductVariantRepository {
   create(variant: ProductVariant): Promise<ProductVariant>;

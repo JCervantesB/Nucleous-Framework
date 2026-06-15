@@ -1,4 +1,4 @@
-import type { ProductCategory } from '../entities/product-category.entity.js';
+import type { ProductCategory } from '../entities/product-category.entity';
 
 export interface ProductCategoryListOptions {
   page?: number;

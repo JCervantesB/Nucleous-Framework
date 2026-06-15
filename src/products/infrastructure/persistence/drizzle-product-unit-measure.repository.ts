@@ -1,9 +1,9 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { eq, and } from 'drizzle-orm';
-import { db } from '#app/database/client.js';
-import { productUnitMeasure } from '#app/database/schema/product.js';
-import { ProductUnitMeasure, type ProductUnitMeasureProps, type UnitType } from '../../domain/entities/product-unit-measure.entity.js';
-import type { ProductUnitMeasureRepository } from '../../domain/repositories/product-unit-measure.repository.js';
+import { db } from '#app/database/client';
+import { productUnitMeasure } from '#app/database/schema/product';
+import { ProductUnitMeasure, type ProductUnitMeasureProps, type UnitType } from '../../domain/entities/product-unit-measure.entity';
+import type { ProductUnitMeasureRepository } from '../../domain/repositories/product-unit-measure.repository';
 
 @Injectable()
 export class DrizzleProductUnitMeasureRepository implements ProductUnitMeasureRepository {

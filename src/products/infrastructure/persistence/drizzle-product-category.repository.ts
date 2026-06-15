@@ -1,9 +1,9 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { eq, and } from 'drizzle-orm';
-import { db } from '#app/database/client.js';
-import { productCategory, product } from '#app/database/schema/product.js';
-import { ProductCategory, type ProductCategoryProps } from '../../domain/entities/product-category.entity.js';
-import type { ProductCategoryRepository, ProductCategoryListOptions } from '../../domain/repositories/product-category.repository.js';
+import { db } from '#app/database/client';
+import { productCategory, product } from '#app/database/schema/product';
+import { ProductCategory, type ProductCategoryProps } from '../../domain/entities/product-category.entity';
+import type { ProductCategoryRepository, ProductCategoryListOptions } from '../../domain/repositories/product-category.repository';
 
 @Injectable()
 export class DrizzleProductCategoryRepository implements ProductCategoryRepository {

@@ -1,4 +1,4 @@
-import type { Product } from '../entities/product.entity.js';
+import type { Product } from '../entities/product.entity';
 
 export interface ProductListOptions {
   page?: number;

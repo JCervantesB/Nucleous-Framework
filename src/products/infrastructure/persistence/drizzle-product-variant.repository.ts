@@ -1,9 +1,9 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { eq, and } from 'drizzle-orm';
-import { db } from '#app/database/client.js';
-import { productVariant } from '#app/database/schema/product.js';
-import { ProductVariant, type ProductVariantProps } from '../../domain/entities/product-variant.entity.js';
-import type { ProductVariantRepository } from '../../domain/repositories/product-variant.repository.js';
+import { db } from '#app/database/client';
+import { productVariant } from '#app/database/schema/product';
+import { ProductVariant, type ProductVariantProps } from '../../domain/entities/product-variant.entity';
+import type { ProductVariantRepository } from '../../domain/repositories/product-variant.repository';
 
 @Injectable()
 export class DrizzleProductVariantRepository implements ProductVariantRepository {

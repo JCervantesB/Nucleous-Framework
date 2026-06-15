@@ -1,4 +1,4 @@
-import type { ProductUnitMeasure } from '../entities/product-unit-measure.entity.js';
+import type { ProductUnitMeasure } from '../entities/product-unit-measure.entity';
 
 export interface ProductUnitMeasureRepository {
   create(unit: ProductUnitMeasure): Promise<ProductUnitMeasure>;
