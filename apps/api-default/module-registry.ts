@@ -3,6 +3,7 @@ import { AiModule } from '../../src/ai/ai.module';
 import { EmailModule } from '../../src/email/email.module';
 import { StorageModule } from '../../src/storage/storage.module';
 import { ProductsModule } from '../../src/products/products.module';
+import { InventoryModule } from '../../src/inventory/inventory.module';
 
 export interface ModuleRegistryEntry {
   name: string;
@@ -15,6 +16,7 @@ const MODULE_REGISTRY: ModuleRegistryEntry[] = [
   { name: 'EMAIL', module: EmailModule },
   { name: 'STORAGE', module: StorageModule },
   { name: 'PRODUCTS', module: ProductsModule },
+  { name: 'INVENTORY', module: InventoryModule },
 ];
 
 export const VALID_MODULES = MODULE_REGISTRY.map((m) => m.name);

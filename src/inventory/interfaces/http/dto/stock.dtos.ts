@@ -2,16 +2,20 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsString, IsOptional } from 'class-validator';
 
 export class GetStockQueryDto {
-  @ApiProperty({ description: 'ID del producto' })
+  @ApiProperty({ type: 'string', description: 'ID del producto' })
   @IsString()
   productId!: string;
 
-  @ApiPropertyOptional({ description: 'ID de la variante del producto' })
+  @ApiPropertyOptional({
+    type: 'string',
+    description: 'ID de la variante del producto',
+  })
   @IsOptional()
   @IsString()
   variantId?: string;
 
   @ApiPropertyOptional({
+    type: 'string',
     description:
       'ID de la ubicación (opcional, si no se especifica retorna todas)',
   })
@@ -21,19 +25,19 @@ export class GetStockQueryDto {
 }
 
 export class StockInfoDto {
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   productId!: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: 'string', nullable: true })
   variantId!: string | null;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: 'string', nullable: true })
   locationId!: string | null;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: 'string', nullable: true })
   locationName!: string | null;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   quantity!: string;
 }
 
@@ -41,6 +45,6 @@ export class StockResponseDto {
   @ApiProperty({ type: [StockInfoDto] })
   stocks!: StockInfoDto[];
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   total!: string;
 }

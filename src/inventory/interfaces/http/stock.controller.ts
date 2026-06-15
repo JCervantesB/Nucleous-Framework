@@ -8,11 +8,15 @@ import {
 } from '@nestjs/swagger';
 import { GetStockUseCase } from '../../application/use-cases/get-stock.use-case';
 import { CurrentBusinessId } from '../../../common/decorators/business-id.decorator';
-import { GetStockQueryDto, StockResponseDto } from './dto/stock.dtos';
+import {
+  GetStockQueryDto,
+  StockInfoDto,
+  StockResponseDto,
+} from './dto/stock.dtos';
 
 @ApiTags('Inventory Stock')
 @ApiBearerAuth()
-@ApiExtraModels(StockResponseDto)
+@ApiExtraModels(StockInfoDto, StockResponseDto)
 @Controller('inventory/stock')
 export class StockController {
   constructor(private readonly getStockUseCase: GetStockUseCase) {}

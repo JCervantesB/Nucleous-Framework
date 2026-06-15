@@ -78,61 +78,63 @@ export class CreateMoveDto {
 }
 
 export class MoveResponseDto {
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   id!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   productId!: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: 'string', nullable: true })
   variantId!: string | null;
 
-  @ApiProperty({ enum: MoveTypeDto })
+  @ApiProperty({
+    enum: ['INBOUND', 'OUTBOUND', 'TRANSFER', 'ADJUSTMENT', 'INTERNAL'],
+  })
   moveType!: string;
 
-  @ApiProperty({ enum: MoveStateDto })
+  @ApiProperty({ enum: ['DRAFT', 'CONFIRMED', 'DONE', 'CANCELLED'] })
   state!: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: 'string', nullable: true })
   fromLocationId!: string | null;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: 'string', nullable: true })
   toLocationId!: string | null;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   quantity!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   unitOfMeasureId!: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: 'string', nullable: true })
   reference!: string | null;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: 'string', nullable: true })
   notes!: string | null;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: 'string', nullable: true })
   externalId!: string | null;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: 'string', nullable: true })
   originTable!: string | null;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: 'string', nullable: true })
   originId!: string | null;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: Date, nullable: true })
   confirmedAt!: Date | null;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: Date, nullable: true })
   doneAt!: Date | null;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: Date, nullable: true })
   cancelledAt!: Date | null;
 
-  @ApiProperty()
+  @ApiProperty({ type: Date })
   createdAt!: Date;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: Date, nullable: true })
   updatedAt!: Date | null;
 }
 
@@ -140,13 +142,13 @@ export class MoveListResponseDto {
   @ApiProperty({ type: [MoveResponseDto] })
   data!: MoveResponseDto[];
 
-  @ApiProperty()
+  @ApiProperty({ type: 'number' })
   total!: number;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'number' })
   page!: number;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'number' })
   pageSize!: number;
 }
 
@@ -173,15 +175,19 @@ export class ListMovesQueryDto {
   @IsString()
   variantId?: string;
 
-  @ApiPropertyOptional({ enum: MoveTypeDto })
+  @ApiPropertyOptional({
+    enum: ['INBOUND', 'OUTBOUND', 'TRANSFER', 'ADJUSTMENT', 'INTERNAL'],
+  })
   @IsOptional()
-  @IsEnum(MoveTypeDto)
-  moveType?: MoveTypeDto;
+  @IsString()
+  moveType?: string;
 
-  @ApiPropertyOptional({ enum: MoveStateDto })
+  @ApiPropertyOptional({
+    enum: ['DRAFT', 'CONFIRMED', 'DONE', 'CANCELLED'],
+  })
   @IsOptional()
-  @IsEnum(MoveStateDto)
-  state?: MoveStateDto;
+  @IsString()
+  state?: string;
 
   @ApiPropertyOptional()
   @IsOptional()

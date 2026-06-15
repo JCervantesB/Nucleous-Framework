@@ -62,16 +62,46 @@ export class LocationController {
     @CurrentBusinessId() businessId: string,
     @Body() dto: CreateLocationDto,
   ) {
-    const result = await this.createLocationUseCase.execute({
+    const address =
+      dto.addressStreet ||
+      dto.addressCity ||
+      dto.addressState ||
+      dto.addressPostalCode ||
+      dto.addressCountryCode
+        ? {
+            street: dto.addressStreet,
+            city: dto.addressCity,
+            state: dto.addressState,
+            postalCode: dto.addressPostalCode,
+            countryCode: dto.addressCountryCode,
+          }
+        : undefined;
+
+    const location = await this.createLocationUseCase.execute({
       businessId,
       code: dto.code,
       name: dto.name,
-      type: dto.type,
+      type: dto.type as LocationType,
       contactId: dto.contactId,
-      address: dto.address,
+      address,
     });
 
-    return result;
+    return {
+      id: location.id,
+      code: location.code,
+      name: location.name,
+      type: location.type,
+      contactId: location.contactId,
+      addressStreet: location.address?.street ?? null,
+      addressCity: location.address?.city ?? null,
+      addressState: location.address?.state ?? null,
+      addressPostalCode: location.address?.postalCode ?? null,
+      addressCountryCode: location.address?.countryCode ?? null,
+      isActive: location.isActive,
+      isTransit: location.isTransit,
+      createdAt: location.createdAt,
+      updatedAt: location.updatedAt,
+    };
   }
 
   @Get()
@@ -94,14 +124,29 @@ export class LocationController {
       options: {
         page: query.page,
         pageSize: query.pageSize,
-        type: query.type as LocationType,
+        type: query.type as LocationType, // string to LocationType cast
         isActive: query.isActive,
         search: query.search,
       },
     });
 
     return {
-      data: result.data,
+      data: result.data.map((location) => ({
+        id: location.id,
+        code: location.code,
+        name: location.name,
+        type: location.type,
+        contactId: location.contactId,
+        addressStreet: location.address?.street ?? null,
+        addressCity: location.address?.city ?? null,
+        addressState: location.address?.state ?? null,
+        addressPostalCode: location.address?.postalCode ?? null,
+        addressCountryCode: location.address?.countryCode ?? null,
+        isActive: location.isActive,
+        isTransit: location.isTransit,
+        createdAt: location.createdAt,
+        updatedAt: location.updatedAt,
+      })),
       total: result.total,
       page: result.page,
       pageSize: result.pageSize,
@@ -124,14 +169,29 @@ export class LocationController {
     @CurrentBusinessId() businessId: string,
     @Body() dto: UpdateLocationDto,
   ) {
+    const address =
+      dto.addressStreet !== undefined ||
+      dto.addressCity !== undefined ||
+      dto.addressState !== undefined ||
+      dto.addressPostalCode !== undefined ||
+      dto.addressCountryCode !== undefined
+        ? {
+            street: dto.addressStreet,
+            city: dto.addressCity,
+            state: dto.addressState,
+            postalCode: dto.addressPostalCode,
+            countryCode: dto.addressCountryCode,
+          }
+        : undefined;
+
     await this.updateLocationUseCase.execute({
       id,
       businessId,
       code: dto.code,
       name: dto.name,
-      type: dto.type,
+      type: dto.type as LocationType,
       contactId: dto.contactId,
-      address: dto.address,
+      address,
       isActive: dto.isActive,
     });
 

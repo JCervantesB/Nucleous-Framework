@@ -1,54 +1,18 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import {
-  IsString,
-  IsOptional,
-  IsBoolean,
-  IsEnum,
-  IsNumber,
-} from 'class-validator';
-
-export enum LocationTypeDto {
-  INTERNAL = 'INTERNAL',
-  SUPPLIER = 'SUPPLIER',
-  CUSTOMER = 'CUSTOMER',
-  TRANSIT = 'TRANSIT',
-  ADJUSTMENT = 'ADJUSTMENT',
-}
-
-export class LocationAddressDto {
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  street?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  city?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  state?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  postalCode?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  countryCode?: string;
-}
+import { IsString, IsOptional, IsBoolean, IsNumber } from 'class-validator';
 
 export class CreateLocationDto {
-  @ApiProperty({ example: 'WH-001', description: 'Código único de ubicación' })
+  @ApiProperty({
+    type: 'string',
+    example: 'WH-001',
+    description: 'Código único de ubicación',
+  })
   @IsString()
   code!: string;
 
   @ApiProperty({
+    type: 'string',
     example: 'Almacén Central',
     description: 'Nombre de la ubicación',
   })
@@ -56,86 +20,147 @@ export class CreateLocationDto {
   name!: string;
 
   @ApiProperty({
-    enum: LocationTypeDto,
-    example: LocationTypeDto.INTERNAL,
+    type: 'string',
+    enum: ['INTERNAL', 'SUPPLIER', 'CUSTOMER', 'TRANSIT', 'ADJUSTMENT'],
+    example: 'INTERNAL',
     description: 'Tipo de ubicación',
   })
-  @IsEnum(LocationTypeDto)
-  type!: LocationTypeDto;
+  @IsString()
+  type!: string;
 
-  @ApiPropertyOptional({ description: 'ID del contacto asociado' })
+  @ApiPropertyOptional({
+    type: 'string',
+    description: 'ID del contacto asociado',
+  })
   @IsOptional()
   @IsString()
   contactId?: string;
 
-  @ApiPropertyOptional({
-    type: LocationAddressDto,
-    description: 'Dirección de la ubicación',
-  })
+  @ApiPropertyOptional({ type: 'string', description: 'Calle y número' })
   @IsOptional()
-  address?: LocationAddressDto;
+  @IsString()
+  addressStreet?: string;
+
+  @ApiPropertyOptional({ type: 'string', description: 'Ciudad' })
+  @IsOptional()
+  @IsString()
+  addressCity?: string;
+
+  @ApiPropertyOptional({ type: 'string', description: 'Estado' })
+  @IsOptional()
+  @IsString()
+  addressState?: string;
+
+  @ApiPropertyOptional({ type: 'string', description: 'Código postal' })
+  @IsOptional()
+  @IsString()
+  addressPostalCode?: string;
+
+  @ApiPropertyOptional({ type: 'string', description: 'Código de país' })
+  @IsOptional()
+  @IsString()
+  addressCountryCode?: string;
 }
 
 export class UpdateLocationDto {
-  @ApiPropertyOptional({ example: 'WH-002' })
+  @ApiPropertyOptional({ type: 'string', example: 'WH-002' })
   @IsOptional()
   @IsString()
   code?: string;
 
-  @ApiPropertyOptional({ example: 'Almacén Secundario' })
+  @ApiPropertyOptional({ type: 'string', example: 'Almacén Secundario' })
   @IsOptional()
   @IsString()
   name?: string;
 
-  @ApiPropertyOptional({ enum: LocationTypeDto })
+  @ApiPropertyOptional({
+    type: 'string',
+    enum: ['INTERNAL', 'SUPPLIER', 'CUSTOMER', 'TRANSIT', 'ADJUSTMENT'],
+  })
   @IsOptional()
-  @IsEnum(LocationTypeDto)
-  type?: LocationTypeDto;
+  @IsString()
+  type?: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: 'string' })
   @IsOptional()
   @IsString()
   contactId?: string;
 
-  @ApiPropertyOptional({ type: LocationAddressDto })
+  @ApiPropertyOptional({ type: 'string' })
   @IsOptional()
-  address?: LocationAddressDto;
+  @IsString()
+  addressStreet?: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: 'string' })
+  @IsOptional()
+  @IsString()
+  addressCity?: string;
+
+  @ApiPropertyOptional({ type: 'string' })
+  @IsOptional()
+  @IsString()
+  addressState?: string;
+
+  @ApiPropertyOptional({ type: 'string' })
+  @IsOptional()
+  @IsString()
+  addressPostalCode?: string;
+
+  @ApiPropertyOptional({ type: 'string' })
+  @IsOptional()
+  @IsString()
+  addressCountryCode?: string;
+
+  @ApiPropertyOptional({ type: 'boolean' })
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;
 }
 
 export class LocationResponseDto {
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   id!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   code!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   name!: string;
 
-  @ApiProperty({ enum: LocationTypeDto })
+  @ApiProperty({
+    type: 'string',
+    enum: ['INTERNAL', 'SUPPLIER', 'CUSTOMER', 'TRANSIT', 'ADJUSTMENT'],
+  })
   type!: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: 'string', nullable: true })
   contactId!: string | null;
 
-  @ApiPropertyOptional({ type: LocationAddressDto })
-  address!: LocationAddressDto | null;
+  @ApiPropertyOptional({ type: 'string', nullable: true })
+  addressStreet?: string | null;
 
-  @ApiProperty()
+  @ApiPropertyOptional({ type: 'string', nullable: true })
+  addressCity?: string | null;
+
+  @ApiPropertyOptional({ type: 'string', nullable: true })
+  addressState?: string | null;
+
+  @ApiPropertyOptional({ type: 'string', nullable: true })
+  addressPostalCode?: string | null;
+
+  @ApiPropertyOptional({ type: 'string', nullable: true })
+  addressCountryCode?: string | null;
+
+  @ApiProperty({ type: 'boolean' })
   isActive!: boolean;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'boolean' })
   isTransit!: boolean;
 
-  @ApiProperty()
+  @ApiProperty({ type: Date })
   createdAt!: Date;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: Date, nullable: true })
   updatedAt!: Date | null;
 }
 
@@ -143,13 +168,13 @@ export class LocationListResponseDto {
   @ApiProperty({ type: [LocationResponseDto] })
   data!: LocationResponseDto[];
 
-  @ApiProperty()
+  @ApiProperty({ type: 'number' })
   total!: number;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'number' })
   page!: number;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'number' })
   pageSize!: number;
 }
 
@@ -166,17 +191,20 @@ export class ListLocationsQueryDto {
   @IsNumber()
   pageSize?: number;
 
-  @ApiPropertyOptional({ enum: LocationTypeDto })
+  @ApiPropertyOptional({
+    type: 'string',
+    enum: ['INTERNAL', 'SUPPLIER', 'CUSTOMER', 'TRANSIT', 'ADJUSTMENT'],
+  })
   @IsOptional()
-  @IsEnum(LocationTypeDto)
-  type?: LocationTypeDto;
+  @IsString()
+  type?: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: 'boolean' })
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: 'string' })
   @IsOptional()
   @IsString()
   search?: string;
