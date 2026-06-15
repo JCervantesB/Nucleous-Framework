@@ -17,7 +17,6 @@ export interface LocalStorageConfig {
 }
 
 export interface StorageModuleConfig {
-  enabled: boolean;
   provider: StorageProviderType;
   uploadthing?: UploadthingConfig;
   cloudinary?: CloudinaryConfig;
@@ -28,11 +27,9 @@ export class StorageConfig {
   private constructor(private readonly config: StorageModuleConfig) {}
 
   static fromEnv(): StorageConfig {
-    const enabled = process.env.STORAGE_ENABLED === 'true';
     const provider = (process.env.STORAGE_PROVIDER as StorageProviderType) ?? 'local';
 
     const config: StorageModuleConfig = {
-      enabled,
       provider,
     };
 
@@ -40,10 +37,10 @@ export class StorageConfig {
       const appId = process.env.UPLOADTHING_APP_ID ?? '';
       const token = process.env.UPLOADTHING_TOKEN ?? process.env.UPLOADTHING_SECRET ?? '';
 
-      if (enabled && !appId) {
+      if (!appId) {
         throw new Error('STORAGE_PROVIDER=uploadthing requiere UPLOADTHING_APP_ID');
       }
-      if (enabled && !token) {
+      if (!token) {
         throw new Error('STORAGE_PROVIDER=uploadthing requiere UPLOADTHING_TOKEN o UPLOADTHING_SECRET');
       }
 
@@ -66,10 +63,6 @@ export class StorageConfig {
     }
 
     return new StorageConfig(config);
-  }
-
-  isEnabled(): boolean {
-    return this.config.enabled;
   }
 
   getProvider(): StorageProviderType {

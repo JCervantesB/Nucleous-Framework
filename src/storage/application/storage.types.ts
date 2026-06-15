@@ -23,12 +23,24 @@ export interface GetUrlOptions {
   expiresIn?: number;
 }
 
+export interface ListFilesOptions {
+  bucket?: string;
+  prefix?: string;
+}
+
+export interface ListFilesResult {
+  success: boolean;
+  files?: StoredFile[];
+  error?: string;
+}
+
 export interface StorageProvider {
   name: string;
   upload(buffer: Buffer, options: UploadOptions): Promise<UploadResult>;
   delete(key: string, bucket: string): Promise<DeleteResult>;
   getUrl(key: string, bucket: string, options?: GetUrlOptions): Promise<string>;
   exists(key: string, bucket: string): Promise<boolean>;
+  listFiles(options?: ListFilesOptions): Promise<ListFilesResult>;
 }
 
 export interface StorageService {
@@ -36,5 +48,6 @@ export interface StorageService {
   delete(key: string, bucket: string): Promise<DeleteResult>;
   getUrl(key: string, bucket: string, options?: GetUrlOptions): Promise<string>;
   exists(key: string, bucket: string): Promise<boolean>;
+  listFiles(options?: ListFilesOptions): Promise<ListFilesResult>;
   getProviderName(): string;
 }

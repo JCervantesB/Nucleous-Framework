@@ -29,8 +29,16 @@ export class ConfigController {
   ) {}
 
   @Get()
-  @ApiOperation({ summary: 'Listar parámetros de configuración' })
-  @ApiResponse({ status: 200, type: [ConfigParameterResponseDto] })
+  @ApiOperation({
+    summary: 'Listar parámetros de configuración',
+    description: 'Retorna todos los parámetros de configuración del negocio actual. Cada negocio puede tener sus propias configuraciones personalizadas (nombre de empresa, límites, preferencias, etc.).',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Parámetros obtenidos exitosamente. Retorna array de configuraciones.',
+    type: [ConfigParameterResponseDto],
+  })
+  @ApiResponse({ status: 401, description: 'No autorizado - Token JWT inválido o ausente.' })
   async list(@CurrentBusinessId() businessId: string) {
     const result = await this.listConfigParametersUseCase.execute(businessId);
 
@@ -43,9 +51,17 @@ export class ConfigController {
   }
 
   @Get(':key')
-  @ApiOperation({ summary: 'Obtener valor de un parámetro' })
-  @ApiResponse({ status: 200, type: () => ConfigParameterResponseDto })
-  @ApiResponse({ status: 404, description: 'Parámetro no encontrado' })
+  @ApiOperation({
+    summary: 'Obtener valor de un parámetro',
+    description: 'Retorna el valor de un parámetro de configuración específico del negocio actual. Útil para obtener configuraciones individuales sin cargar toda la lista.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Parámetro obtenido exitosamente.',
+    type: () => ConfigParameterResponseDto,
+  })
+  @ApiResponse({ status: 404, description: 'Parámetro no encontrado en la configuración del negocio.' })
+  @ApiResponse({ status: 401, description: 'No autorizado - Token JWT inválido o ausente.' })
   async get(
     @CurrentBusinessId() businessId: string,
     @Param('key') key: string,
@@ -66,9 +82,17 @@ export class ConfigController {
   }
 
   @Post()
-  @ApiOperation({ summary: 'Establecer valor de un parámetro' })
-  @ApiResponse({ status: 200, type: () => ConfigParameterResponseDto })
-  @ApiResponse({ status: 400, description: 'Datos inválidos' })
+  @ApiOperation({
+    summary: 'Establecer valor de un parámetro',
+    description: 'Crea o actualiza un parámetro de configuración del negocio. Si la clave ya existe, actualiza el valor. Si no existe, la crea. Útil para guardar preferencias, feature flags, configuraciones dinámicas del negocio.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Parámetro creado o actualizado exitosamente.',
+    type: () => ConfigParameterResponseDto,
+  })
+  @ApiResponse({ status: 400, description: 'Datos inválidos - Clave y valor son requeridos.' })
+  @ApiResponse({ status: 401, description: 'No autorizado - Token JWT inválido o ausente.' })
   async set(
     @CurrentBusinessId() businessId: string,
     @CurrentUserId() userId: string,

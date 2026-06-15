@@ -90,40 +90,40 @@ export class ChatDto {
 }
 
 export class AiUsageResponseDto {
-  @ApiProperty({ example: 100 })
+  @ApiProperty({ type: 'number', description: 'Tokens usados en el prompt' })
   promptTokens!: number;
 
-  @ApiProperty({ example: 50 })
+  @ApiProperty({ type: 'number', description: 'Tokens generados en la respuesta' })
   completionTokens!: number;
 
-  @ApiProperty({ example: 150 })
+  @ApiProperty({ type: 'number', description: 'Total de tokens' })
   totalTokens!: number;
 }
 
 export class GenerateTextResponseDto {
-  @ApiProperty({ example: 'NestJS es un framework de Node.js...' })
+  @ApiProperty({ type: 'string', description: 'Texto generado por la IA' })
   text!: string;
 
-  @ApiProperty({ type: AiUsageResponseDto })
+  @ApiProperty({ type: () => AiUsageResponseDto, description: 'Uso de tokens' })
   usage!: AiUsageResponseDto;
 
-  @ApiProperty({ example: 'gpt-4o-mini' })
+  @ApiProperty({ type: 'string', description: 'Modelo usado' })
   model!: string;
 
-  @ApiProperty({ example: 'openai' })
+  @ApiProperty({ type: 'string', description: 'Proveedor de IA' })
   provider!: string;
 }
 
 export class ChatResponseDto {
-  @ApiProperty({ example: 'TypeScript es un superset de JavaScript...' })
+  @ApiProperty({ type: 'string', description: 'Respuesta del chat' })
   text!: string;
 
-  @ApiProperty({ type: AiUsageResponseDto })
+  @ApiProperty({ type: () => AiUsageResponseDto, description: 'Uso de tokens' })
   usage!: AiUsageResponseDto;
 
-  @ApiProperty({ example: 'gpt-4o-mini' })
+  @ApiProperty({ type: 'string', description: 'Modelo usado' })
   model!: string;
 
-  @ApiProperty({ example: 'openai' })
+  @ApiProperty({ type: 'string', description: 'Proveedor de IA' })
   provider!: string;
 }

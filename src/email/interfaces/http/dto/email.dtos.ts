@@ -52,7 +52,7 @@ export class SendTemplateEmailDto extends SendEmailDto {
   @IsString()
   templateId!: string;
 
-  @ApiPropertyOptional({ description: 'Datos para la plantilla', example: { name: 'Juan', company: 'Mi Empresa' } })
+  @ApiPropertyOptional({ type: Object, description: 'Datos para la plantilla', example: { name: 'Juan', company: 'Mi Empresa' } })
   @IsOptional()
   templateData?: Record<string, string>;
 }
@@ -79,10 +79,10 @@ export class EmailLogResponseDto {
   @ApiPropertyOptional({ type: 'string', nullable: true, description: 'Mensaje de error' })
   errorMessage?: string;
 
-  @ApiProperty({ description: 'Fecha de creación' })
+  @ApiProperty({ type: String, format: 'date-time', description: 'Fecha de creación' })
   createdAt!: Date;
 
-  @ApiPropertyOptional({ nullable: true, description: 'Fecha de envío' })
+  @ApiPropertyOptional({ type: String, format: 'date-time', nullable: true, description: 'Fecha de envío' })
   sentAt?: Date;
 }
 
@@ -101,15 +101,15 @@ export class EmailLogListResponseDto {
   @ApiProperty({ type: [EmailLogResponseDto] })
   data!: EmailLogResponseDto[];
 
-  @ApiProperty({ example: 50 })
+  @ApiProperty({ type: 'number', description: 'Total de registros' })
   total!: number;
 
-  @ApiProperty({ example: 1 })
+  @ApiProperty({ type: 'number', description: 'Página actual' })
   page!: number;
 
-  @ApiProperty({ example: 20 })
+  @ApiProperty({ type: 'number', description: 'Elementos por página' })
   pageSize!: number;
 
-  @ApiProperty({ example: 3 })
+  @ApiProperty({ type: 'number', description: 'Total de páginas' })
   totalPages!: number;
 }

@@ -35,9 +35,17 @@ export class ActivityController {
   ) {}
 
   @Post()
-  @ApiOperation({ summary: 'Crear actividad' })
-  @ApiResponse({ status: 201, type: () => ActivityResponseDto })
-  @ApiResponse({ status: 400, description: 'Datos inválidos' })
+  @ApiOperation({
+    summary: 'Crear actividad',
+    description: 'Crea una nueva actividad (tarea, llamada, reunión, etc.) asociada al negocio actual. Por defecto se asigna al usuario que la crea. Puede asociarse a un registro específico (contact, lead, etc.) mediante relatedTable y relatedId.',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Actividad creada exitosamente. Retorna los datos de la actividad creada.',
+    type: () => ActivityResponseDto,
+  })
+  @ApiResponse({ status: 400, description: 'Datos inválidos - El título y tipo son requeridos.' })
+  @ApiResponse({ status: 401, description: 'No autorizado - Token JWT inválido o ausente.' })
   async create(
     @CurrentBusinessId() businessId: string,
     @CurrentUserId() userId: string,
@@ -68,8 +76,13 @@ export class ActivityController {
 
   @Post(':id/complete')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Completar actividad' })
-  @ApiResponse({ status: 200, description: 'Actividad completada' })
+  @ApiOperation({
+    summary: 'Completar actividad',
+    description: 'Marca una actividad como completada. Solo el usuario asignado o el creador pueden marcar como completada una actividad.',
+  })
+  @ApiResponse({ status: 200, description: 'Actividad marcada como completada exitosamente.' })
+  @ApiResponse({ status: 404, description: 'Actividad no encontrada.' })
+  @ApiResponse({ status: 401, description: 'No autorizado - Token JWT inválido o ausente.' })
   async complete(
     @CurrentBusinessId() businessId: string,
     @CurrentUserId() userId: string,
@@ -85,8 +98,16 @@ export class ActivityController {
   }
 
   @Get('record/:table/:recordId')
-  @ApiOperation({ summary: 'Listar actividades por registro' })
-  @ApiResponse({ status: 200, type: [ActivityResponseDto] })
+  @ApiOperation({
+    summary: 'Listar actividades por registro',
+    description: 'Retorna todas las actividades asociadas a un registro específico. Por ejemplo: todas las actividades de un contacto, lead, etc. El registro se identifica por table (nombre de la tabla) y recordId (UUID del registro).',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de actividades del registro. Retorna un array con los datos de cada actividad.',
+    type: [ActivityResponseDto],
+  })
+  @ApiResponse({ status: 401, description: 'No autorizado - Token JWT inválido o ausente.' })
   async listForRecord(
     @CurrentBusinessId() businessId: string,
     @Param('table') table: string,
@@ -111,8 +132,16 @@ export class ActivityController {
   }
 
   @Get('me')
-  @ApiOperation({ summary: 'Listar actividades del usuario actual' })
-  @ApiResponse({ status: 200, type: [ActivityResponseDto] })
+  @ApiOperation({
+    summary: 'Listar actividades del usuario actual',
+    description: 'Retorna las actividades asignadas al usuario autenticado. Opcionalmente filtra por estado: PENDING (pendientes), DONE (completadas), CANCELLED (canceladas). Útil para dashboards y listas de tareas.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de actividades del usuario. Retorna un array con los datos de cada actividad.',
+    type: [ActivityResponseDto],
+  })
+  @ApiResponse({ status: 401, description: 'No autorizado - Token JWT inválido o ausente.' })
   async listForCurrentUser(
     @CurrentBusinessId() businessId: string,
     @CurrentUserId() userId: string,

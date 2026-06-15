@@ -30,11 +30,6 @@ export class SmtpClientService {
   }
 
   private initializeTransporter(): void {
-    if (!this.config.isEnabled()) {
-      this.logger.log('SMTP transporter no inicializado (módulo deshabilitado)');
-      return;
-    }
-
     const smtpConfig = this.config.getSmtpConfig();
 
     this.transporter = nodemailer.createTransport({

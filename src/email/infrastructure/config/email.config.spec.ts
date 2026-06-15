@@ -13,26 +13,22 @@ describe('EmailConfig', () => {
   });
 
   describe('fromEnv', () => {
-    it('debe crear configuración con valores por defecto cuando no hay env vars', () => {
-      delete process.env.EMAIL_ENABLED;
+    it('debe lanzar error si no hay EMAIL_USER', () => {
       delete process.env.EMAIL_HOST;
       delete process.env.EMAIL_PORT;
       delete process.env.EMAIL_USER;
       delete process.env.EMAIL_PASSWORD;
 
-      const config = EmailConfig.fromEnv();
+      expect(() => EmailConfig.fromEnv()).toThrow('EmailModule requiere EMAIL_USER');
+    });
 
-      expect(config.isEnabled()).toBe(false);
-      expect(config.getMode()).toBe('smtp');
-      expect(config.getSmtpConfig().host).toBe('smtp.mailtrap.io');
-      expect(config.getSmtpConfig().port).toBe(587);
-      expect(config.getDefaultFrom()).toBe('noreply@nucleous.io');
-      expect(config.getDefaultFromName()).toBe('Nucleous Framework');
-      expect(config.getRateLimit()).toBe(60);
+    it('debe lanzar error si no hay EMAIL_PASSWORD', () => {
+      process.env.EMAIL_USER = 'testuser';
+
+      expect(() => EmailConfig.fromEnv()).toThrow('EmailModule requiere EMAIL_PASSWORD');
     });
 
     it('debe usar valores del entorno cuando están disponibles', () => {
-      process.env.EMAIL_ENABLED = 'true';
       process.env.EMAIL_HOST = 'smtp.gmail.com';
       process.env.EMAIL_PORT = '465';
       process.env.EMAIL_SECURE = 'true';
@@ -45,7 +41,6 @@ describe('EmailConfig', () => {
 
       const config = EmailConfig.fromEnv();
 
-      expect(config.isEnabled()).toBe(true);
       expect(config.getMode()).toBe('smtp');
       expect(config.getSmtpConfig().host).toBe('smtp.gmail.com');
       expect(config.getSmtpConfig().port).toBe(465);
@@ -57,26 +52,7 @@ describe('EmailConfig', () => {
       expect(config.getRateLimit()).toBe(30);
     });
 
-    it('debe lanzar error si EMAIL_ENABLED=true pero falta EMAIL_USER', () => {
-      process.env.EMAIL_ENABLED = 'true';
-      process.env.EMAIL_PASSWORD = 'testpassword';
-
-      expect(() => EmailConfig.fromEnv()).toThrow(
-        'EmailModule requiere EMAIL_USER cuando EMAIL_ENABLED=true',
-      );
-    });
-
-    it('debe lanzar error si EMAIL_ENABLED=true pero falta EMAIL_PASSWORD', () => {
-      process.env.EMAIL_ENABLED = 'true';
-      process.env.EMAIL_USER = 'testuser';
-
-      expect(() => EmailConfig.fromEnv()).toThrow(
-        'EmailModule requiere EMAIL_PASSWORD cuando EMAIL_ENABLED=true',
-      );
-    });
-
     it('debe usar modo smtp por defecto si EMAIL_MODE no está definido', () => {
-      process.env.EMAIL_ENABLED = 'true';
       process.env.EMAIL_USER = 'testuser';
       process.env.EMAIL_PASSWORD = 'testpassword';
       delete process.env.EMAIL_MODE;

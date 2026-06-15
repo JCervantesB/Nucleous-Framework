@@ -37,12 +37,12 @@ export class RefreshTokenDto {
 
 export class AuthResponseDto {
   @ApiProperty({ description: 'Token de acceso' })
-  token!: string;
+  access_token!: string;
 
   @ApiProperty({ description: 'Token de actualización' })
-  refreshToken!: string;
+  refresh_token!: string;
 
-  @ApiProperty({ description: 'Fecha de expiración' })
+  @ApiProperty({ type: String, format: 'date-time', description: 'Fecha de expiración' })
   expiresAt!: Date;
 
   @ApiProperty({ description: 'ID del usuario' })
@@ -62,7 +62,7 @@ export class UserResponseDto {
   @ApiPropertyOptional({ description: 'Rol del usuario' })
   role?: string;
 
-  @ApiProperty({ description: 'Fecha de creación' })
+  @ApiProperty({ type: String, format: 'date-time', description: 'Fecha de creación' })
   createdAt!: Date;
 }
 
@@ -70,12 +70,12 @@ export class SessionResponseDto {
   @ApiProperty({ description: 'ID de la sesión' })
   sessionId!: string;
 
-  @ApiProperty({ description: 'Fecha de expiración' })
+  @ApiProperty({ type: String, format: 'date-time', description: 'Fecha de expiración' })
   expiresAt!: Date;
 
   @ApiProperty({ description: 'ID del usuario' })
   userId!: string;
 
-  @ApiProperty({ type: () => UserResponseDto, description: 'Datos del usuario' })
+  @ApiProperty({ description: 'Datos del usuario' })
   user!: UserResponseDto;
 }

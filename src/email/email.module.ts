@@ -5,6 +5,7 @@ import {
   EMAIL_SMTP_CLIENT,
   EMAIL_LOG_REPOSITORY,
   EMAIL_RATE_LIMITER,
+  SEND_EMAIL_USE_CASE,
 } from './application/email.tokens';
 import { EmailService } from './application/email.service';
 import { EmailConfig } from './infrastructure/config/email.config';
@@ -14,6 +15,7 @@ import { DrizzleEmailLogRepository } from './infrastructure/persistence/drizzle-
 import { SendEmailUseCase } from './application/use-cases/send-email.use-case';
 import { SendTemplateEmailUseCase } from './application/use-cases/send-template-email.use-case';
 import { GetEmailLogsUseCase } from './application/use-cases/get-email-logs.use-case';
+import { RetryEmailUseCase } from './application/use-cases/retry-email.use-case';
 import { EmailController } from './interfaces/http/email.controller';
 
 @Global()
@@ -40,9 +42,14 @@ import { EmailController } from './interfaces/http/email.controller';
       provide: EMAIL_SERVICE,
       useClass: EmailService,
     },
+    {
+      provide: SEND_EMAIL_USE_CASE,
+      useClass: SendEmailUseCase,
+    },
     SendEmailUseCase,
     SendTemplateEmailUseCase,
     GetEmailLogsUseCase,
+    RetryEmailUseCase,
   ],
   exports: [
     EMAIL_SERVICE,
@@ -50,9 +57,11 @@ import { EmailController } from './interfaces/http/email.controller';
     EMAIL_SMTP_CLIENT,
     EMAIL_LOG_REPOSITORY,
     EMAIL_RATE_LIMITER,
+    SEND_EMAIL_USE_CASE,
     SendEmailUseCase,
     SendTemplateEmailUseCase,
     GetEmailLogsUseCase,
+    RetryEmailUseCase,
   ],
 })
 export class EmailModule {}

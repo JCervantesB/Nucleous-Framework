@@ -42,39 +42,39 @@ export class GetFileUrlDto {
 }
 
 export class StoredFileResponseDto {
-  @ApiProperty({ example: 'abc123-def456' })
+  @ApiProperty({ type: 'string', description: 'Clave única del archivo' })
   key!: string;
 
-  @ApiProperty({ example: 'images' })
+  @ApiProperty({ type: 'string', description: 'Bucket o carpeta' })
   bucket!: string;
 
-  @ApiProperty({ example: 'https://utfs.io/f/abc123' })
+  @ApiProperty({ type: 'string', description: 'URL del archivo' })
   url!: string;
 
-  @ApiProperty({ example: false })
+  @ApiProperty({ type: 'boolean', description: 'Si es una URL firmada' })
   isSigned!: boolean;
 
-  @ApiProperty({ example: 1024 })
+  @ApiProperty({ type: 'number', description: 'Tamaño en bytes' })
   size!: number;
 
-  @ApiProperty({ example: 'image/jpeg' })
+  @ApiProperty({ type: 'string', description: 'Tipo MIME' })
   mimeType!: string;
 
-  @ApiProperty({ example: 'photo.jpg' })
+  @ApiProperty({ type: 'string', description: 'Nombre original' })
   originalName!: string;
 }
 
 export class UploadFileResponseDto {
-  @ApiProperty({ type: StoredFileResponseDto })
+  @ApiProperty({ type: () => StoredFileResponseDto, description: 'Datos del archivo subido' })
   file!: StoredFileResponseDto;
 }
 
 export class DeleteFileResponseDto {
-  @ApiProperty({ example: true })
+  @ApiProperty({ type: 'boolean', description: 'Si la eliminación fue exitosa' })
   success!: boolean;
 }
 
 export class GetFileUrlResponseDto {
-  @ApiProperty({ example: 'https://utfs.io/f/abc123?signature=xxx' })
+  @ApiProperty({ type: 'string', description: 'URL firmada del archivo' })
   url!: string;
 }

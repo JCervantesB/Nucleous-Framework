@@ -2,7 +2,7 @@ import { Injectable, Inject, Logger } from '@nestjs/common';
 import { UTApi } from 'uploadthing/server';
 import { UTFile } from 'uploadthing/server';
 import { STORAGE_CONFIG } from '../../application/storage.tokens';
-import type { StorageProvider, UploadOptions, UploadResult, DeleteResult, GetUrlOptions } from '../../application/storage.types';
+import type { StorageProvider, UploadOptions, UploadResult, DeleteResult, GetUrlOptions, ListFilesOptions, ListFilesResult } from '../../application/storage.types';
 import { StoredFile } from '../../domain/value-objects/stored-file.vo';
 import { StorageConfig } from '../config/storage.config';
 
@@ -97,6 +97,40 @@ export class UploadThingStorageService implements StorageProvider {
       return !!result;
     } catch {
       return false;
+    }
+  }
+
+  async listFiles(options?: ListFilesOptions): Promise<ListFilesResult> {
+    try {
+      const result = await this.utApi.listFiles({});
+      const files: StoredFile[] = [];
+
+      for (const file of result.files) {
+        const signedUrl = await this.utApi.getSignedURL(file.key);
+        const url = typeof signedUrl === 'string' ? signedUrl : signedUrl.url;
+
+        files.push(StoredFile.create({
+          bucket: options?.bucket ?? 'default',
+          key: file.key,
+          metadata: {
+            size: file.size,
+            mimeType: 'application/octet-stream',
+            originalName: file.name,
+            uploadedAt: new Date(file.uploadedAt),
+          },
+          url: {
+            url: url,
+            isSigned: true,
+          },
+        }));
+      }
+
+      this.logger.log(`Listados ${files.length} archivos de UploadThing`);
+      return { success: true, files };
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Error listando archivos en UploadThing: ${message}`);
+      return { success: false, error: message };
     }
   }
 }

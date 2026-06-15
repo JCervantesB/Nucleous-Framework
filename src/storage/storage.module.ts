@@ -8,6 +8,7 @@ import { LocalStorageService } from './infrastructure/providers/local-storage.se
 import { UploadFileUseCase } from './application/use-cases/upload-file.use-case';
 import { DeleteFileUseCase } from './application/use-cases/delete-file.use-case';
 import { GetFileUrlUseCase } from './application/use-cases/get-file-url.use-case';
+import { ListFilesUseCase } from './application/use-cases/list-files.use-case';
 import { StorageController } from './interfaces/http/storage.controller';
 
 @Global()
@@ -29,6 +30,7 @@ import { StorageController } from './interfaces/http/storage.controller';
     UploadFileUseCase,
     DeleteFileUseCase,
     GetFileUrlUseCase,
+    ListFilesUseCase,
   ],
   exports: [
     STORAGE_SERVICE,
@@ -37,6 +39,7 @@ import { StorageController } from './interfaces/http/storage.controller';
     UploadFileUseCase,
     DeleteFileUseCase,
     GetFileUrlUseCase,
+    ListFilesUseCase,
   ],
 })
 export class StorageModule {}

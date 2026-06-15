@@ -136,59 +136,96 @@ ENABLED_MODULES=AI,MAIL,INVENTORY,NOTIFICATIONS
 ENABLED_MODULES=
 ```
 
-### 4.2 AppModule como Compositor
+### 4.2 Sistema de Registry Centralizado
+
+En lugar de分散ar las validaciones y imports, se usa un **registry centralizado** en `apps/api-default/module-registry.ts`:
 
 ```typescript
-// app/app.module.ts
-import { Module } from '@nestjs/common';
-import { CoreModule } from '../src/core/core.module';
-import { AuthModule } from '../src/auth/auth.module';
-import { AiModule } from '../src/ai/ai.module';
-import { MailModule } from '../src/mail/mail.module';
-import { StorageModule } from '../src/storage/storage.module';
-import { InventoryModule } from '../src/inventory/inventory.module';
-import { NotificationsModule } from '../src/notifications/notifications.module';
+// apps/api-default/module-registry.ts
+import { AiModule } from '../../src/ai/ai.module';
+import { EmailModule } from '../../src/email/email.module';
+import { StorageModule } from '../../src/storage/storage.module';
 
-const enabledModules = (process.env.ENABLED_MODULES ?? '')
+export interface ModuleRegistryEntry {
+  name: string;
+  module: Type;
+}
+
+const MODULE_REGISTRY: ModuleRegistryEntry[] = [
+  { name: 'AI', module: AiModule },
+  { name: 'EMAIL', module: EmailModule },
+  { name: 'STORAGE', module: StorageModule },
+];
+
+export const VALID_MODULES = MODULE_REGISTRY.map(m => m.name);
+
+export function getModulesToLoad(envModules: string[]): Type[] {
+  return MODULE_REGISTRY
+    .filter(entry => envModules.includes(entry.name))
+    .map(entry => entry.module);
+}
+
+export function validateModules(modules: string[]): string[] {
+  const invalid = modules.filter(m => !VALID_MODULES.includes(m));
+  if (invalid.length > 0) {
+    throw new Error(
+      `Módulos inválidos: ${invalid.join(', ')}. Válidos: ${VALID_MODULES.join(', ')}`,
+    );
+  }
+  return modules;
+}
+```
+
+### 4.3 AppModule Uso del Registry
+
+```typescript
+// apps/api-default/app.module.ts
+import 'dotenv/config';
+import { Module, type Type } from '@nestjs/common';
+import { CoreModule } from '../../src/core/core.module';
+import { AuthModule } from '../../src/auth/auth.module';
+import { DatabaseModule } from '../../src/core/infrastructure/database/database.module';
+import { getModulesToLoad, validateModules } from './module-registry';
+
+const envModules = (process.env.ENABLED_MODULES ?? '')
   .split(',')
   .map(m => m.trim().toUpperCase())
   .filter(Boolean);
 
+validateModules(envModules);
+
 @Module({
   imports: [
-    // Siempre presentes
-    CoreModule,
+    DatabaseModule,
     AuthModule,
-
-    // Condicionalmente habilitados
-    ...(enabledModules.includes('AI') ? [AiModule] : []),
-    ...(enabledModules.includes('MAIL') ? [MailModule] : []),
-    ...(enabledModules.includes('STORAGE') ? [StorageModule] : []),
-    ...(enabledModules.includes('INVENTORY') ? [InventoryModule] : []),
-    ...(enabledModules.includes('NOTIFICATIONS') ? [NotificationsModule] : []),
-  ].filter(Boolean),
+    CoreModule,
+    ...getModulesToLoad(envModules),  // ← Expansión automática
+  ],
 })
 export class AppModule {}
 ```
 
-### 4.3 Validación de Módulos
+### 4.4 Agregar un Nuevo Módulo
 
-Opcionalmente, validar que los módulos habilitados existan:
+Para agregar un nuevo módulo al sistema:
 
+1. **Crear el módulo** en `src/{module-name}/`
+
+2. **Registrar en `module-registry.ts`**:
 ```typescript
-// apps/api-default/module-validator.ts
-export const VALID_MODULES = ['AI'] as const;
+import { NuevoModule } from '../../src/nuevo/nuevo.module';
 
-const enabledModules = (process.env.ENABLED_MODULES ?? '')
-  .split(',')
-  .map(m => m.trim().toUpperCase())
-  .filter(Boolean);
+const MODULE_REGISTRY: ModuleRegistryEntry[] = [
+  // ... módulos existentes
+  { name: 'NUEVO', module: NuevoModule },  // ← Agregar aquí
+];
 
-const invalidModules = enabledModules.filter(m => !(VALID_MODULES as readonly string[]).includes(m));
-if (invalidModules.length > 0) {
-  throw new Error(`Módulos inválidos: ${invalidModules.join(', ')}. Válidos: ${VALID_MODULES.join(', ')}`);
-}
+export const VALID_MODULES = MODULE_REGISTRY.map(m => m.name);
 ```
+
+3. **Listo** - El módulo se cargará automáticamente cuando `ENABLED_MODULES=NUEVO` esté en el `.env`.
+
+**No es necesario modificar `app.module.ts`** para agregar módulos.
 
 ---
 
@@ -520,24 +557,27 @@ mkdir -p src/{module-name}/infrastructure/http
    - Usar `@Global()` si es módulo transversal
    - Exportar servicios públicos
 
-### Paso 3: Agregar a VALID_MODULES
+### Paso 3: Registrar en module-registry.ts
 
 ```typescript
-// apps/api-default/module-validator.ts
-export const VALID_MODULES = [
-  'AI',
-  'MAIL',  // Agregar cuando se implemente
-] as const;
+// apps/api-default/module-registry.ts
+import { NuevoModule } from '../../src/nuevo/nuevo.module';
+
+const MODULE_REGISTRY: ModuleRegistryEntry[] = [
+  // ... módulos existentes
+  { name: 'NUEVO', module: NuevoModule },  // ← Agregar aquí
+];
+
+export const VALID_MODULES = MODULE_REGISTRY.map(m => m.name);
 ```
 
-### Paso 4: Integrar en AppModule
+### Paso 4: Habilitar en .env
 
-```typescript
-// apps/api-default/app.module.ts
-if (enabledModules.includes('MAIL')) {
-  imports.push(MailModule);
-}
+```env
+ENABLED_MODULES=AI,STORAGE,NUEVO
 ```
+
+**No es necesario modificar `app.module.ts`** - el registry se encarga automáticamente.
 
 ### Paso 5: Documentar
 
@@ -632,36 +672,42 @@ import { AppModule } from './app.module';
 
 O usar `@nestjs/config` con `ConfigModule.forRoot()` en el AppModule.
 
-### 14.2 VALID_MODULES Centralizado
+### 14.2 Registry Centralizado
 
-Mantener la lista de módulos válidos en un solo lugar para evitar desincronización:
+La lista de módulos válidos y su lógica de carga está centralizada en `apps/api-default/module-registry.ts`:
 
 ```typescript
-// apps/api-default/module-validator.ts
+// apps/api-default/module-registry.ts
+import { AiModule } from '../../src/ai/ai.module';
+import { EmailModule } from '../../src/email/email.module';
+import { StorageModule } from '../../src/storage/storage.module';
 
-export const VALID_MODULES = [
-  'AI',
-] as const;
+const MODULE_REGISTRY: ModuleRegistryEntry[] = [
+  { name: 'AI', module: AiModule },
+  { name: 'EMAIL', module: EmailModule },
+  { name: 'STORAGE', module: StorageModule },
+];
 
-export type ValidModuleName = typeof VALID_MODULES[number];
+export const VALID_MODULES = MODULE_REGISTRY.map(m => m.name);
 
-export function validateEnabledModules(): void {
-  const enabled = (process.env.ENABLED_MODULES ?? '')
-    .split(',')
-    .map(m => m.trim().toUpperCase())
-    .filter(Boolean);
+export function getModulesToLoad(envModules: string[]): Type[] {
+  return MODULE_REGISTRY
+    .filter(entry => envModules.includes(entry.name))
+    .map(entry => entry.module);
+}
 
-  const invalid = enabled.filter(m => !VALID_MODULES.includes(m as any));
-
+export function validateModules(modules: string[]): string[] {
+  const invalid = modules.filter(m => !VALID_MODULES.includes(m));
   if (invalid.length > 0) {
     throw new Error(
       `Módulos inválidos: ${invalid.join(', ')}. Válidos: ${VALID_MODULES.join(', ')}`,
     );
   }
+  return modules;
 }
 ```
 
-**Nota**: Agregar nuevos módulos a `VALID_MODULES` cuando se implementen (MAIL, STORAGE, INVENTORY, etc.)
+**Para agregar un nuevo módulo**: Solo añadir una entrada en `MODULE_REGISTRY`.
 
 ### 14.3 Módulos Transversales vs de Negocio
 

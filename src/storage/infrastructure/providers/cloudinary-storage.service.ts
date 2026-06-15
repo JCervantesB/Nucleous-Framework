@@ -1,7 +1,7 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
 import { v2 as cloudinary } from 'cloudinary';
 import { STORAGE_CONFIG } from '../../application/storage.tokens';
-import type { StorageProvider, UploadOptions, UploadResult, DeleteResult, GetUrlOptions } from '../../application/storage.types';
+import type { StorageProvider, UploadOptions, UploadResult, DeleteResult, GetUrlOptions, ListFilesOptions, ListFilesResult } from '../../application/storage.types';
 import { StoredFile } from '../../domain/value-objects/stored-file.vo';
 import { StorageConfig } from '../config/storage.config';
 
@@ -108,6 +108,49 @@ export class CloudinaryStorageService implements StorageProvider {
       return !!result;
     } catch {
       return false;
+    }
+  }
+
+  async listFiles(options?: ListFilesOptions): Promise<ListFilesResult> {
+    const cloudinaryConfig = this.config.getCloudinaryConfig();
+    if (!cloudinaryConfig) {
+      return { success: false, error: 'Configuración de Cloudinary no encontrada' };
+    }
+
+    try {
+      const folder = `${options?.bucket ?? 'default'}/${options?.prefix ?? ''}`.replace(/\/+$/, '');
+      const result = await cloudinary.api.resources({
+        type: 'upload',
+        prefix: folder || undefined,
+        max_results: 100,
+      });
+
+      const files = (result.resources as any[]).map((resource: any) => {
+        const url = resource.secure_url;
+        const isSigned = resource.signature;
+
+        return StoredFile.create({
+          bucket: options?.bucket ?? 'default',
+          key: resource.public_id,
+          metadata: {
+            size: resource.bytes,
+            mimeType: resource.format,
+            originalName: resource.original_filename ?? resource.public_id.split('/').pop() ?? '',
+            uploadedAt: new Date(resource.created_at),
+          },
+          url: {
+            url,
+            isSigned: !!isSigned,
+          },
+        });
+      });
+
+      this.logger.log(`Listados ${files.length} archivos de Cloudinary`);
+      return { success: true, files };
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Error listando archivos en Cloudinary: ${message}`);
+      return { success: false, error: message };
     }
   }
 }

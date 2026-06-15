@@ -27,9 +27,17 @@ export class ContactController {
   ) {}
 
   @Post()
-  @ApiOperation({ summary: 'Crear contacto' })
-  @ApiResponse({ status: 201, type: () => ContactResponseDto })
-  @ApiResponse({ status: 400, description: 'Datos inválidos' })
+  @ApiOperation({
+    summary: 'Crear contacto',
+    description: 'Crea un nuevo contacto asociado al negocio actual. El contacto se liga automáticamente al businessId extraído del token JWT del usuario autenticado.',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Contacto creado exitosamente. Retorna los datos del contacto creado.',
+    type: () => ContactResponseDto,
+  })
+  @ApiResponse({ status: 400, description: 'Datos inválidos - El email es requerido o tiene formato incorrecto.' })
+  @ApiResponse({ status: 401, description: 'No autorizado - Token JWT inválido o ausente.' })
   async create(
     @CurrentBusinessId() businessId: string,
     @CurrentUserId() userId: string,
@@ -59,8 +67,15 @@ export class ContactController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Listar contactos' })
-  @ApiResponse({ status: 200, description: 'Lista de contactos' })
+  @ApiOperation({
+    summary: 'Listar contactos',
+    description: 'Retorna una lista paginada de contactos del negocio actual. Soporta búsqueda por texto en nombre o email. El businessId se extrae automáticamente del token JWT.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de contactos obtenida exitosamente. Incluye datos de paginación: total, page, pageSize, totalPages.',
+  })
+  @ApiResponse({ status: 401, description: 'No autorizado - Token JWT inválido o ausente.' })
   async list(
     @CurrentBusinessId() businessId: string,
     @Query('search') search?: string,

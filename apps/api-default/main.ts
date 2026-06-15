@@ -32,11 +32,6 @@ async function bootstrap() {
     .setDescription('API REST para Nucleous Framework - Sistema modular multi-tenant')
     .setVersion('1.0')
     .addBearerAuth()
-    .addTag('Core', 'Operaciones de negocio core (business, contacts, activities)')
-    .addTag('Auth', 'Autenticación y autorización')
-    .addTag('AI', 'Completaciones y chat con IA')
-    .addTag('Email', 'Envío y logs de emails')
-    .addTag('Storage', 'Almacenamiento de archivos')
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
@@ -46,7 +41,7 @@ async function bootstrap() {
   await app.listen(port);
   console.log(`La aplicación está corriendo en: http://localhost:${port}`);
   console.log(`✓ Swagger docs disponible en: http://localhost:${port}/api/docs`);
-  console.log('✓ Health endpoint disponible en GET /api/v1/health');
+  console.log(`✓ Health endpoint disponible en GET http://localhost:${port}/api/v1/health`);
 }
 
 bootstrap().catch((err) => {

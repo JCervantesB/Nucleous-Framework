@@ -1,5 +1,5 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
-import { EMAIL_SERVICE } from '../email.tokens';
+import { EMAIL_SERVICE, SEND_EMAIL_USE_CASE } from '../email.tokens';
 import type { EmailService } from '../email.service';
 import { EMAIL_LOG_REPOSITORY, type EmailLogRepository } from '../../domain/repositories/email-log.repository';
 import { EmailLog } from '../../domain/entities/email-log.entity';

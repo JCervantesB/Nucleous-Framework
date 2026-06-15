@@ -1,10 +1,18 @@
 # Extendiendo el Core
 
-## Visión General
+## Visión general
 
-El **Core** de Nucleous Framework provee la base de usuarios, roles, auditoría y multi-tenant (`businessId`). Los módulos adicionales se "apoyan" en el core, reutilizando sus conceptos sin acoplamiento directo.
+El **Core** de Nucleous Framework provee la base común sobre la que se apoyan todos los módulos:
 
-```
+- **Usuarios**: autenticación via Better Auth (`userId`).
+- **Multi-tenant**: aislamiento por negocio usando `businessId`.
+- **Roles y permisos**: sistema básico de roles por negocio.
+- **Auditoría**: campos estándar `createdAt`, `updatedAt`, `createdBy`, `updatedBy`.
+- **Servicios transversales**: por ejemplo `CurrentBusinessService` para resolver el `businessId` actual.
+
+Estructura conceptual:
+
+```txt
 Core (base)
 ├── Auth (Better Auth)
 ├── Business
@@ -12,61 +20,53 @@ Core (base)
 ├── Activity
 └── RecordEvent
 
-Módulos adicionales (se integran sobre el core)
-├── AI (transversal, opcional)
-├── Customers (negocio, opcional)
-├── Inventory (negocio, opcional)
-└── Ecommerce (negocio, opcional)
+Módulos adicionales (se apoyan en el core)
+├── AI         (transversal, opcional)
+├── Customers  (negocio, opcional)
+├── Inventory  (negocio, opcional)
+└── Ecommerce  (negocio, opcional)
 ```
 
-## ¿Qué Significa "Usar el Core como Base"?
+“Usar el Core como base” significa que cualquier módulo nuevo:
 
-El core provee:
-- **Usuarios**: Autenticación via Better Auth (`userId`)
-- **Roles/Permisos**: Sistema básico de roles
-- **Auditoría**: Campos `createdBy`, `updatedBy` en todas las entidades
-- **Multi-tenant**: `businessId` para aislar datos por negocio
-- **Servicios transversales**: `CurrentBusinessService` para resolver contexto
+- Usa `businessId` para aislar sus datos.
+- Usa `userId` para saber quién creó o modificó algo.
+- Puede relacionarse con entidades del core (por ejemplo `Contact`, `Business`) sin duplicarlas.
 
-Los módulos nuevos reutilizan estos conceptos:
-- FKs a `businessId` para aislamiento
-- `userId` para auditoría de cambios
-- Entidades del core como `Contact` para relaciones
+---
 
-## Patrón Domain/Infrastructure
+## Patrón de módulo (domain / application / infrastructure)
 
-Cada módulo sigue la misma estructura:
+Todos los módulos siguen el mismo patrón que el core, AI, Email y Storage:
 
-```
+```txt
 src/<module>/
-├── domain/
+├── domain/                 # Reglas de negocio (TypeScript puro)
 │   ├── entities/
-│   │   └── module-entity.entity.ts
 │   ├── repositories/
-│   │   └── module-entity.repository.ts
 │   └── use-cases/
-│       ├── create-entity.use-case.ts
-│       └── list-entities.use-case.ts
-├── infrastructure/
+├── infrastructure/         # Adaptadores (Drizzle, HTTP, SDKs, etc.)
 │   ├── persistence/
-│   │   └── drizzle-module-entity.repository.ts
 │   └── http/
-│       └── module-entity.controller.ts
-└── <module>.module.ts
+└── <module>.module.ts      # Wiring NestJS del módulo
 ```
 
-## Reglas de Oro
+**Reglas de oro:**
 
-1. **El dominio nunca importa Drizzle ni NestJS**
-2. **La infraestructura solo conoce Drizzle (persistence) y Nest (HTTP)**
-3. **Los módulos se conectan a través de interfaces, no implementaciones**
-4. **Un módulo puede ser opcional (controlado por ENABLED_MODULES)**
+1. El **dominio nunca importa** Drizzle ni NestJS.
+2. La **infraestructura** es quien conoce Drizzle (persistence) y NestJS (HTTP, DI).
+3. Los módulos se conectan a través de **interfaces**, no de implementaciones concretas.
+4. Un módulo puede ser **opcional**, controlado por `ENABLED_MODULES` y el `module-registry`.
 
-## Ejemplo: Añadir Módulo Customers
+---
 
-### 1. Definir Entidades del Dominio
+## Ejemplo completo: módulo Customers
 
-```typescript
+### 1. Entidad de dominio
+
+La entidad respeta las convenciones del core: `businessId` y campos de auditoría.
+
+```ts
 // src/customers/domain/entities/customer.entity.ts
 
 export interface CustomerProps {
@@ -84,7 +84,7 @@ export interface CustomerProps {
 }
 
 export class Customer {
-  private props: CustomerProps;
+  private constructor(private props: CustomerProps) {}
 
   static create(params: {
     businessId: string;
@@ -116,9 +116,11 @@ export class Customer {
 }
 ```
 
-### 2. Definir Interfaz de Repositorio
+### 2. Repositorio de dominio
 
-```typescript
+Solo define el contrato; no sabe de Drizzle ni de la base de datos.
+
+```ts
 // src/customers/domain/repositories/customer.repository.ts
 
 export const CUSTOMER_REPOSITORY = Symbol('CustomerRepository');
@@ -126,13 +128,18 @@ export const CUSTOMER_REPOSITORY = Symbol('CustomerRepository');
 export interface CustomerRepository {
   create(customer: Customer): Promise<Customer>;
   findById(id: string, businessId: string): Promise<Customer | null>;
-  listByBusiness(businessId: string, options?: ListOptions): Promise<{ data: Customer[]; total: number }>;
+  listByBusiness(
+    businessId: string,
+    options?: ListOptions,
+  ): Promise<{ data: Customer[]; total: number }>;
 }
 ```
 
-### 3. Crear Casos de Uso
+### 3. Caso de uso
 
-```typescript
+El caso de uso recibe `businessId` y datos, crea la entidad y delega en el repositorio.
+
+```ts
 // src/customers/domain/use-cases/create-customer.use-case.ts
 
 @Injectable()
@@ -157,17 +164,12 @@ export class CreateCustomerUseCase {
 }
 ```
 
-### 4. Implementar en Infraestructura (Drizzle)
+### 4. Infraestructura: repositorio Drizzle
 
-```typescript
+Aquí se implementa la interfaz usando el schema compartido de `packages/database`.
+
+```ts
 // src/customers/infrastructure/persistence/drizzle-customer.repository.ts
-
-import { Injectable, Inject } from '@nestjs/common';
-import { eq, and } from 'drizzle-orm';
-import { db } from '#app/database/client';
-import { customer } from '#app/database/schema/customers';
-import { Customer, type CustomerProps } from '../../domain/entities/customer.entity';
-import type { CustomerRepository } from '../../domain/repositories/customer.repository';
 
 @Injectable()
 export class DrizzleCustomerRepository implements CustomerRepository {
@@ -192,7 +194,8 @@ export class DrizzleCustomerRepository implements CustomerRepository {
       .from(customer)
       .where(and(eq(customer.id, id), eq(customer.businessId, businessId)))
       .limit(1);
-    return rows[0] ? this.mapToEntity(rows[0]) : null;
+
+    return rows ? this.mapToEntity(rows) : null;
   }
 
   private mapToEntity(row: typeof customer.$inferSelect): Customer {
@@ -214,9 +217,11 @@ export class DrizzleCustomerRepository implements CustomerRepository {
 }
 ```
 
-### 5. Crear Controlador HTTP
+### 5. Controlador HTTP
 
-```typescript
+El controlador traduce HTTP ↔ casos de uso. No decide `businessId`: lo obtiene del contexto (por ejemplo un servicio o decorator).
+
+```ts
 // src/customers/infrastructure/http/customer.controller.ts
 
 @Controller('customers')
@@ -230,6 +235,7 @@ export class CustomerController {
   @Post()
   async create(@Body() body: CreateCustomerDto) {
     const businessId = this.currentBusinessService.getBusinessId();
+
     const result = await this.createCustomerUseCase.execute({
       businessId,
       name: body.name,
@@ -237,42 +243,35 @@ export class CustomerController {
       phone: body.phone,
       taxId: body.taxId,
     });
+
     return { id: result.customer.id, name: result.customer.name };
   }
 
   @Get()
   async list(@Query() query: ListCustomersQuery) {
     const businessId = this.currentBusinessService.getBusinessId();
-    const result = await this.listCustomersUseCase.execute({
+
+    return this.listCustomersUseCase.execute({
       businessId,
       page: query.page,
       pageSize: query.pageSize,
       search: query.search,
     });
-    return result;
   }
 }
 ```
 
-### 6. Crear el Módulo
+### 6. Módulo Customers
 
-```typescript
+Agrupa controller, use cases y repositorios en un módulo NestJS.
+
+```ts
 // src/customers/customers.module.ts
-
-import { Module } from '@nestjs/common';
-import { CustomerController } from './infrastructure/http/customer.controller';
-import { DrizzleCustomerRepository } from './infrastructure/persistence/drizzle-customer.repository';
-import { CreateCustomerUseCase } from './domain/use-cases/create-customer.use-case';
-import { ListCustomersUseCase } from './domain/use-cases/list-customers.use-case';
-import { CUSTOMER_REPOSITORY } from './domain/repositories/customer.repository';
 
 @Module({
   controllers: [CustomerController],
   providers: [
-    {
-      provide: CUSTOMER_REPOSITORY,
-      useClass: DrizzleCustomerRepository,
-    },
+    { provide: CUSTOMER_REPOSITORY, useClass: DrizzleCustomerRepository },
     CreateCustomerUseCase,
     ListCustomersUseCase,
   ],
@@ -280,55 +279,90 @@ import { CUSTOMER_REPOSITORY } from './domain/repositories/customer.repository';
 export class CustomersModule {}
 ```
 
-### 7. Integrar en AppModule (apps/api-default/)
+---
 
-```typescript
-// apps/api-default/app.module.ts
+## Integración con el sistema de módulos
 
-import { Module, type Type } from '@nestjs/common';
-import { CoreModule } from '../../src/core/core.module';
-import { AuthModule } from '../../src/auth/auth.module';
-import { DatabaseModule } from '../../src/core/infrastructure/database/database.module';
+Con el registro centralizado (`apps/api-default/module-registry.ts`), añadir un módulo nuevo es cuestión de una línea.
+
+```ts
+// apps/api-default/module-registry.ts
+
+import { AiModule } from '../../src/ai/ai.module';
+import { EmailModule } from '../../src/email/email.module';
+import { StorageModule } from '../../src/storage/storage.module';
 import { CustomersModule } from '../../src/customers/customers.module';
-import { validateEnabledModules, getEnabledModules } from './module-validator';
 
-validateEnabledModules();
-const enabledModules = getEnabledModules();
-
-const imports: Type<any>[] = [
-  DatabaseModule,
-  AuthModule,
-  CoreModule,
-];
-
-if (enabledModules.includes('CUSTOMERS')) {
-  imports.push(CustomersModule);
+export interface ModuleRegistryEntry {
+  name: string;
+  module: Type;
 }
 
-@Module({ imports })
+const MODULE_REGISTRY: ModuleRegistryEntry[] = [
+  { name: 'AI', module: AiModule },
+  { name: 'EMAIL', module: EmailModule },
+  { name: 'STORAGE', module: StorageModule },
+  { name: 'CUSTOMERS', module: CustomersModule }, // ← nuevo
+];
+
+export const VALID_MODULES = MODULE_REGISTRY.map(m => m.name);
+
+export function getModulesToLoad(envModules: string[]): Type[] {
+  return MODULE_REGISTRY
+    .filter(entry => envModules.includes(entry.name))
+    .map(entry => entry.module);
+}
+
+export function validateModules(modules: string[]): string[] {
+  const invalid = modules.filter(m => !VALID_MODULES.includes(m));
+  if (invalid.length > 0) {
+    throw new Error(
+      `Módulos inválidos: ${invalid.join(', ')}. Válidos: ${VALID_MODULES.join(', ')}`,
+    );
+  }
+  return modules;
+}
+```
+
+En el `AppModule` de `apps/api-default` solo haces:
+
+```ts
+// apps/api-default/app.module.ts
+
+const envModules = (process.env.ENABLED_MODULES ?? '')
+  .split(',')
+  .map(m => m.trim().toUpperCase())
+  .filter(Boolean);
+
+validateModules(envModules);
+
+const enabledModules = envModules;
+const dynamicModules: Type[] = getModulesToLoad(enabledModules);
+
+@Module({
+  imports: [
+    DatabaseModule,
+    AuthModule,
+    CoreModule,
+    ...dynamicModules,
+  ],
+})
 export class AppModule {}
 ```
 
-### 8. Agregar a VALID_MODULES
-
-```typescript
-// apps/api-default/module-validator.ts
-
-export const VALID_MODULES = [
-  'AI',
-  'CUSTOMERS',  // ← Agregar cuando se implemente
-] as const;
-```
-
-### 9. Habilitar en .env
+En `.env`:
 
 ```env
 ENABLED_MODULES=AI,CUSTOMERS
 ```
 
-## Schema Drizzle para Módulos
+---
 
-```typescript
+## Schema Drizzle para módulos
+
+Los esquemas de cada módulo viven en `packages/database/src/schema/`. Ejemplo para Customers:
+
+```ts
 // packages/database/src/schema/customers.ts
 
 import { pgTable, uuid, text, boolean, timestamp } from 'drizzle-orm/pg-core';
@@ -351,33 +385,30 @@ export const customer = pgTable('customer', {
 });
 ```
 
-## Resumen: Pasos para Crear un Módulo
+---
 
-1. **Dominio**:
-   - Crear `domain/entities/<entity>.entity.ts`
-   - Crear `domain/repositories/<entity>.repository.ts` con interfaz
-   - Crear `domain/use-cases/` con casos de uso
+## Resumen: receta para crear un módulo
 
-2. **Infraestructura**:
-   - Crear `infrastructure/persistence/drizzle-<entity>.repository.ts`
-   - Crear `infrastructure/http/<entity>.controller.ts`
+1. **Dominio**
+   - Crear `domain/entities/<entity>.entity.ts`.
+   - Crear `domain/repositories/<entity>.repository.ts` (interfaces).
+   - Crear `domain/use-cases/` con casos de uso.
 
-3. **Módulo**:
-   - Crear `<module>.module.ts`
-   - Registrar providers y controllers
+2. **Infraestructura**
+   - Crear `infrastructure/persistence/drizzle-<entity>.repository.ts`.
+   - Crear `infrastructure/http/<entity>.controller.ts`.
 
-4. **Integración**:
-   - Agregar a `VALID_MODULES` en `apps/api-default/module-validator.ts`
-   - Importar condicionalmente en `apps/api-default/app.module.ts`
-   - Añadir schema Drizzle en `packages/database/src/schema/`
-   - Habilitar con `ENABLED_MODULES=MODULO` en `.env`
+3. **Módulo**
+   - Crear `<module>.module.ts` y registrar providers y controllers.
 
-5. **Convenciones**:
-   - Usar `businessId` para aislamiento
-   - Usar `userId` para auditoría
-   - Implementar pagination y filtros estándar
+4. **Integración**
+   - Registrar el módulo en `apps/api-default/module-registry.ts`.
+   - Añadir schema Drizzle en `packages/database/src/schema/`.
+   - Habilitarlo con `ENABLED_MODULES=MODULO` en `.env`.
 
-## Módulos Existentes como Referencia
+5. **Convenciones del core**
+   - Usar siempre `businessId` para aislamiento multi-tenant.
+   - Usar `userId` para auditoría (`createdBy`, `updatedBy`).
+   - Implementar paginación, filtros y manejo de errores siguiendo las convenciones de la REST API.
 
-- **AI Module** (`src/ai/`): Módulo transversal con domain ligero, ver `docs/AiModule/`
-- **Core** (`src/core/`): Módulo base con domain rico, ver `01-core-overview.md`
+---

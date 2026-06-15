@@ -24,6 +24,7 @@ import {
 import { UploadFileUseCase } from '../../application/use-cases/upload-file.use-case';
 import { DeleteFileUseCase } from '../../application/use-cases/delete-file.use-case';
 import { GetFileUrlUseCase } from '../../application/use-cases/get-file-url.use-case';
+import { ListFilesUseCase } from '../../application/use-cases/list-files.use-case';
 import { CurrentBusinessId } from '../../../common/decorators/business-id.decorator';
 import {
   UploadFileDto,
@@ -48,24 +49,34 @@ export class StorageController {
     private readonly uploadFileUseCase: UploadFileUseCase,
     private readonly deleteFileUseCase: DeleteFileUseCase,
     private readonly getFileUrlUseCase: GetFileUrlUseCase,
+    private readonly listFilesUseCase: ListFilesUseCase,
   ) {}
 
   @Post('upload')
-  @ApiOperation({ summary: 'Subir archivo' })
+  @ApiOperation({
+    summary: 'Subir archivo',
+    description: 'Sube un archivo al storage configurado (local, UploadThing o Cloudinary). El archivo se asocia al businessId del usuario. Se puede especificar el bucket (carpeta) destino. Soporta cualquier tipo de archivo hasta el límite configurado.',
+  })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
+    description: 'Archivo a subir (multipart/form-data). El archivo va en el campo "file".',
     schema: {
       type: 'object',
       properties: {
-        file: { type: 'string', format: 'binary' },
-        bucket: { type: 'string', example: 'images' },
-        filename: { type: 'string', example: 'photo.jpg' },
-        contentType: { type: 'string', example: 'image/jpeg' },
+        file: { type: 'string', format: 'binary', description: 'Archivo binario a subir' },
+        bucket: { type: 'string', example: 'images', description: 'Bucket o carpeta destino' },
+        filename: { type: 'string', example: 'photo.jpg', description: 'Nombre alternativo para el archivo (opcional)' },
+        contentType: { type: 'string', example: 'image/jpeg', description: 'Tipo MIME del archivo (opcional, se infiere del archivo)' },
       },
     },
   })
-  @ApiResponse({ status: 201, type: () => UploadFileResponseDto })
-  @ApiResponse({ status: 400, description: 'Archivo inválido' })
+  @ApiResponse({
+    status: 201,
+    description: 'Archivo subido exitosamente. Retorna la URL pública, clave única y metadatos del archivo.',
+    type: () => UploadFileResponseDto,
+  })
+  @ApiResponse({ status: 400, description: 'Archivo inválido o faltante.' })
+  @ApiResponse({ status: 401, description: 'No autorizado - Token JWT inválido o ausente.' })
   @UseInterceptors(FileInterceptor('file'))
   async upload(
     @CurrentBusinessId() businessId: string,
@@ -99,18 +110,54 @@ export class StorageController {
   }
 
   @Get('files')
-  @ApiOperation({ summary: 'Listar archivos (pendiente)' })
-  @ApiResponse({ status: 200, description: 'Lista de archivos' })
-  async listFiles(@CurrentBusinessId() businessId: string) {
+  @ApiOperation({
+    summary: 'Listar archivos',
+    description: 'Retorna una lista de archivos almacenados. Opcionalmente filtra por bucket o prefijo de ruta. Útil para dashboards de archivos, galerías de imágenes, etc.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de archivos obtenidos exitosamente.',
+  })
+  @ApiResponse({ status: 401, description: 'No autorizado - Token JWT inválido o ausente.' })
+  async listFiles(
+    @CurrentBusinessId() businessId: string,
+    @Query('bucket') bucket?: string,
+    @Query('prefix') prefix?: string,
+  ) {
+    const result = await this.listFilesUseCase.execute({
+      bucket,
+      prefix,
+    });
+
+    if (!result.success) {
+      throw new Error(result.error ?? 'Error listing files');
+    }
+
     return {
-      message: 'List files endpoint - pendiente de implementar',
-      businessId,
+      data: result.files?.map(file => ({
+        key: file.key,
+        bucket: file.bucket,
+        url: file.url.url,
+        isSigned: file.url.isSigned,
+        size: file.metadata.size,
+        mimeType: file.metadata.mimeType,
+        originalName: file.metadata.originalName,
+        uploadedAt: file.metadata.uploadedAt,
+      })) ?? [],
     };
   }
 
-  @Get('files/:id/url')
-  @ApiOperation({ summary: 'Obtener URL firmada de un archivo' })
-  @ApiResponse({ status: 200, description: 'URL del archivo' })
+  @Get('files/url')
+  @ApiOperation({
+    summary: 'Obtener URL firmada de un archivo',
+    description: 'Genera una URL firmada (con token de autenticación) para acceder a un archivo privado. El parámetro expiresIn define segundos de validez (por defecto 3600). Solo funciona para archivos en storage que soporte URLs firmadas.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'URL firmada generada exitosamente. Válida por el tiempo especificado en expiresIn.',
+  })
+  @ApiResponse({ status: 404, description: 'Archivo no encontrado.' })
+  @ApiResponse({ status: 401, description: 'No autorizado - Token JWT inválido o ausente.' })
   async getFileUrl(
     @Param('id', ParseUUIDPipe) id: string,
     @Query() dto: GetFileUrlDto,
@@ -128,11 +175,15 @@ export class StorageController {
     return { url: result.url };
   }
 
-  @Delete('files/:id')
+  @Delete('files')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Eliminar archivo' })
-  @ApiResponse({ status: 204, description: 'Archivo eliminado' })
-  @ApiResponse({ status: 404, description: 'Archivo no encontrado' })
+  @ApiOperation({
+    summary: 'Eliminar archivo',
+    description: 'Elimina un archivo del storage. Se identifica por bucket y key (ruta/nombre del archivo). Esta acción es irreversible.',
+  })
+  @ApiResponse({ status: 204, description: 'Archivo eliminado exitosamente.' })
+  @ApiResponse({ status: 404, description: 'Archivo no encontrado en el storage.' })
+  @ApiResponse({ status: 401, description: 'No autorizado - Token JWT inválido o ausente.' })
   async delete(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: DeleteFileDto,

@@ -111,7 +111,6 @@ ENABLED_MODULES=AI,EMAIL,STORAGE
 
 # Proveedor: local | uploadthing | cloudinary
 STORAGE_PROVIDER=uploadthing
-STORAGE_ENABLED=true
 ```
 
 ### UploadThing
