@@ -83,6 +83,16 @@ class Contact {
 }
 ```
 
+**Flags de Rol:**
+
+| Flag | Descripción | Uso típico |
+|------|-------------|------------|
+| `isCustomer` | ¿Es cliente del negocio? | Ventas, facturación, CRM |
+| `isSupplier` | ¿Es proveedor? | Compras, inventario |
+| `isEmployee` | ¿Es empleado? | Nómina, recursos humanos |
+
+Un contacto puede tener múltiples roles simultáneamente. Por ejemplo: un empleado que también es cliente del negocio.
+
 ### Entidad Activity
 
 Representa una tarea/actividad asociada a registros.

@@ -30,19 +30,7 @@ Esta documentación está organizada en secciones. Empieza por los fundamentos y
 |--------|---------------|-------------|
 | AI | `AiModule/01-ai-module-overview.md` | Integración con LLMs |
 | Email | `EmailModule/01-email-module-overview.md` | Envío de emails via SMTP |
-| Products | `dev/ProductsModule-plan.md` | Catálogo de productos, variantes, categorías |
-
-## Contactos - Modelo Unificado
-
-El módulo de **Contact** en el core implementa un modelo unificado inspirado en Odoo `res.partner` que permite gestionar clientes, proveedores y empleados en una sola entidad:
-
-- **Un solo modelo**: Contact centraliza la información de todas las personas/empresas relacionadas con el negocio
-- **Flags de rol**: `isCustomer`, `isSupplier`, `isEmployee` permiten clasificar un contacto en múltiples categorías
-- **Flexibilidad**: Un contacto puede ser simultáneamente cliente y proveedor, por ejemplo
-
-Para más detalles:
-- `dev/Contact-Model.md` - Modelo de datos y decisiones de diseño
-- `dev/Contact-Examples.md` - Ejemplos de uso para CRM, HR y aplicaciones de negocio
+| Products | `ProductsModule.md` | Catálogo de productos, variantes, categorías |
 
 ## Modelo Modular
 
