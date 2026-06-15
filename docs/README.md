@@ -40,7 +40,9 @@ El módulo de **Contact** en el core implementa un modelo unificado inspirado en
 - **Flags de rol**: `isCustomer`, `isSupplier`, `isEmployee` permiten clasificar un contacto en múltiples categorías
 - **Flexibilidad**: Un contacto puede ser simultáneamente cliente y proveedor, por ejemplo
 
-Para más detalles, ver `dev/Contact-Model.md`.
+Para más detalles:
+- `dev/Contact-Model.md` - Modelo de datos y decisiones de diseño
+- `dev/Contact-Examples.md` - Ejemplos de uso para CRM, HR y aplicaciones de negocio
 
 ## Modelo Modular
 
