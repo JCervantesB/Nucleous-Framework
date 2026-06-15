@@ -143,6 +143,21 @@ export class CreateContactDto {
   @IsString()
   @MaxLength(500)
   notes?: string;
+
+  @ApiPropertyOptional({ description: '¿Es cliente?', example: false })
+  @IsOptional()
+  @IsBoolean()
+  isCustomer?: boolean;
+
+  @ApiPropertyOptional({ description: '¿Es proveedor?', example: false })
+  @IsOptional()
+  @IsBoolean()
+  isSupplier?: boolean;
+
+  @ApiPropertyOptional({ description: '¿Es empleado?', example: false })
+  @IsOptional()
+  @IsBoolean()
+  isEmployee?: boolean;
 }
 
 export class UpdateContactDto {
@@ -197,6 +212,15 @@ export class ContactResponseDto {
 
   @ApiPropertyOptional({ type: 'string', description: 'Notas' })
   notes?: string;
+
+  @ApiProperty({ type: 'boolean', description: '¿Es cliente?' })
+  isCustomer!: boolean;
+
+  @ApiProperty({ type: 'boolean', description: '¿Es proveedor?' })
+  isSupplier!: boolean;
+
+  @ApiProperty({ type: 'boolean', description: '¿Es empleado?' })
+  isEmployee!: boolean;
 
   @ApiProperty({ type: String, format: 'date-time', description: 'Fecha de creación' })
   createdAt!: Date;

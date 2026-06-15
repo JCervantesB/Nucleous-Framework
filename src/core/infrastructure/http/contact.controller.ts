@@ -54,6 +54,9 @@ export class ContactController {
       name,
       email: dto.email,
       phone: dto.phone,
+      isCustomer: dto.isCustomer,
+      isSupplier: dto.isSupplier,
+      isEmployee: dto.isEmployee,
     });
 
     return {
@@ -62,6 +65,9 @@ export class ContactController {
       lastName: dto.lastName ?? '',
       email: result.contact.email,
       phone: result.contact.phone,
+      isCustomer: result.contact.isCustomer,
+      isSupplier: result.contact.isSupplier,
+      isEmployee: result.contact.isEmployee,
       createdAt: result.contact.createdAt,
     } as ContactResponseDto;
   }
@@ -99,6 +105,9 @@ export class ContactController {
         lastName: contact.name.split(' ').slice(1).join(' ') || '',
         email: contact.email,
         phone: contact.phone,
+        isCustomer: contact.isCustomer,
+        isSupplier: contact.isSupplier,
+        isEmployee: contact.isEmployee,
         createdAt: contact.createdAt,
       })) as ContactResponseDto[],
       total: result.total,
