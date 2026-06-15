@@ -192,6 +192,21 @@ export class UpdateContactDto {
   @IsString()
   @MaxLength(500)
   notes?: string;
+
+  @ApiPropertyOptional({ description: '¿Es cliente?', example: false })
+  @IsOptional()
+  @IsBoolean()
+  isCustomer?: boolean;
+
+  @ApiPropertyOptional({ description: '¿Es proveedor?', example: false })
+  @IsOptional()
+  @IsBoolean()
+  isSupplier?: boolean;
+
+  @ApiPropertyOptional({ description: '¿Es empleado?', example: false })
+  @IsOptional()
+  @IsBoolean()
+  isEmployee?: boolean;
 }
 
 export class ContactResponseDto {

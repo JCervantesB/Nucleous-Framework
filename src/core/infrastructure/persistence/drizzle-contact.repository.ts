@@ -45,6 +45,24 @@ export class DrizzleContactRepository implements ContactRepository {
     return this.mapToEntity(row);
   }
 
+  async update(entity: Contact): Promise<Contact> {
+    await this._db
+      .update(contact)
+      .set({
+        name: entity.name,
+        email: entity.email,
+        phone: entity.phone,
+        taxId: entity.taxId,
+        isCustomer: entity.isCustomer,
+        isSupplier: entity.isSupplier,
+        isEmployee: entity.isEmployee,
+        updatedAt: entity.updatedAt,
+        updatedBy: entity.updatedBy,
+      })
+      .where(and(eq(contact.id, entity.id), eq(contact.businessId, entity.businessId)));
+    return entity;
+  }
+
   async listByBusiness(
     businessId: string,
     options?: ListContactsOptions,

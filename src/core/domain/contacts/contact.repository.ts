@@ -14,6 +14,7 @@ export interface ListContactsOptions {
 export interface ContactRepository {
   create(contact: Contact): Promise<Contact>;
   findById(id: string, businessId: string): Promise<Contact | null>;
+  update(contact: Contact): Promise<Contact>;
   listByBusiness(
     businessId: string,
     options?: ListContactsOptions,

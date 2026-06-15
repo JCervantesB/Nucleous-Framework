@@ -2,8 +2,11 @@ import {
   Controller,
   Get,
   Post,
+  Patch,
   Body,
+  Param,
   Query,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -13,9 +16,10 @@ import {
 } from '@nestjs/swagger';
 import { CreateContactUseCase } from '../../domain/contacts/use-cases/create-contact.use-case.js';
 import { ListContactsUseCase } from '../../domain/contacts/use-cases/list-contacts.use-case.js';
+import { UpdateContactUseCase } from '../../domain/contacts/use-cases/update-contact.use-case.js';
 import { CurrentBusinessId } from '../../../common/decorators/business-id.decorator';
 import { CurrentUserId } from '../../../common/decorators/user-id.decorator';
-import { CreateContactDto, ContactResponseDto } from './dto/core.dtos';
+import { CreateContactDto, UpdateContactDto, ContactResponseDto } from './dto/core.dtos';
 
 @ApiTags('Core - Contacts')
 @ApiBearerAuth()
@@ -24,6 +28,7 @@ export class ContactController {
   constructor(
     private readonly createContactUseCase: CreateContactUseCase,
     private readonly listContactsUseCase: ListContactsUseCase,
+    private readonly updateContactUseCase: UpdateContactUseCase,
   ) {}
 
   @Post()
@@ -75,7 +80,7 @@ export class ContactController {
   @Get()
   @ApiOperation({
     summary: 'Listar contactos',
-    description: 'Retorna una lista paginada de contactos del negocio actual. Soporta búsqueda por texto en nombre o email. El businessId se extrae automáticamente del token JWT.',
+    description: 'Retorna una lista paginada de contactos del negocio actual. Soporta búsqueda por texto en nombre o email y filtrado por rol (isCustomer, isSupplier, isEmployee). El businessId se extrae automáticamente del token JWT.',
   })
   @ApiResponse({
     status: 200,
@@ -85,17 +90,40 @@ export class ContactController {
   async list(
     @CurrentBusinessId() businessId: string,
     @Query('search') search?: string,
+    @Query('role') role?: string,
     @Query('page') page?: string,
     @Query('pageSize') pageSize?: string,
   ) {
     const pageNum = page ? parseInt(page, 10) : 1;
     const pageSizeNum = pageSize ? parseInt(pageSize, 10) : 20;
 
-    const result = await this.listContactsUseCase.execute({
-      businessId,
-      search,
+    const options: {
+      search?: string;
+      isCustomer?: boolean;
+      isSupplier?: boolean;
+      isEmployee?: boolean;
+      page: number;
+      pageSize: number;
+    } = {
       page: pageNum,
       pageSize: pageSizeNum,
+    };
+
+    if (search) {
+      options.search = search;
+    }
+
+    if (role === 'customer') {
+      options.isCustomer = true;
+    } else if (role === 'supplier') {
+      options.isSupplier = true;
+    } else if (role === 'employee') {
+      options.isEmployee = true;
+    }
+
+    const result = await this.listContactsUseCase.execute({
+      businessId,
+      ...options,
     });
 
     return {
@@ -115,5 +143,57 @@ export class ContactController {
       pageSize: pageSizeNum,
       totalPages: Math.ceil(result.total / pageSizeNum),
     };
+  }
+
+  @Patch(':id')
+  @ApiOperation({
+    summary: 'Actualizar contacto',
+    description: 'Actualiza los datos de un contacto existente. Soporta actualización de flags de rol (isCustomer, isSupplier, isEmployee).',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Contacto actualizado exitosamente.',
+    type: () => ContactResponseDto,
+  })
+  @ApiResponse({ status: 404, description: 'Contacto no encontrado.' })
+  @ApiResponse({ status: 401, description: 'No autorizado.' })
+  async update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentBusinessId() businessId: string,
+    @CurrentUserId() userId: string,
+    @Body() dto: UpdateContactDto,
+  ) {
+    const fullName = dto.firstName && dto.lastName
+      ? `${dto.firstName} ${dto.lastName}`
+      : dto.firstName;
+
+    const result = await this.updateContactUseCase.execute({
+      id,
+      businessId,
+      userId,
+      name: fullName,
+      email: dto.email,
+      phone: dto.phone,
+      isCustomer: dto.isCustomer,
+      isSupplier: dto.isSupplier,
+      isEmployee: dto.isEmployee,
+    });
+
+    if (!result.contact) {
+      throw new Error('Contacto no encontrado');
+    }
+
+    return {
+      id: result.contact.id,
+      firstName: result.contact.name.split(' ')[0] ?? result.contact.name,
+      lastName: result.contact.name.split(' ').slice(1).join(' ') || '',
+      email: result.contact.email,
+      phone: result.contact.phone,
+      isCustomer: result.contact.isCustomer,
+      isSupplier: result.contact.isSupplier,
+      isEmployee: result.contact.isEmployee,
+      createdAt: result.contact.createdAt,
+      updatedAt: result.contact.updatedAt,
+    } as ContactResponseDto;
   }
 }
