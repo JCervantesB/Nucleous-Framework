@@ -1,6 +1,6 @@
 import { Injectable, Inject, Logger, OnModuleInit } from '@nestjs/common';
 import { STORAGE_CONFIG } from './storage.tokens';
-import type { StorageProvider, UploadOptions, UploadResult, DeleteResult, GetUrlOptions } from './storage.types';
+import type { StorageProvider, UploadOptions, UploadResult, DeleteResult, GetUrlOptions, ListFilesOptions, ListFilesResult } from './storage.types';
 import { StorageConfig } from '../infrastructure/config/storage.config';
 import { LocalStorageService } from '../infrastructure/providers/local-storage.service';
 import { UploadThingStorageService } from '../infrastructure/providers/uploadthing-storage.service';
@@ -19,11 +19,6 @@ export class StorageService implements OnModuleInit {
   ) {}
 
   onModuleInit() {
-    if (!this.config.isEnabled()) {
-      this.logger.log('StorageService deshabilitado (STORAGE_ENABLED=false)');
-      return;
-    }
-
     const providerType = this.config.getProvider();
 
     switch (providerType) {
@@ -68,6 +63,13 @@ export class StorageService implements OnModuleInit {
       return false;
     }
     return this.provider.exists(key, bucket);
+  }
+
+  async listFiles(options?: ListFilesOptions): Promise<ListFilesResult> {
+    if (!this.provider) {
+      return { success: false, error: 'Storage provider no inicializado' };
+    }
+    return this.provider.listFiles(options);
   }
 
   getProviderName(): string {

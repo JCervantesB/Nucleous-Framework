@@ -9,7 +9,6 @@ export interface SmtpConfig {
 }
 
 export interface EmailModuleConfig {
-  enabled: boolean;
   mode: EmailMode;
   smtp: SmtpConfig;
   defaults: {
@@ -25,21 +24,19 @@ export class EmailConfig {
   private constructor(private readonly config: EmailModuleConfig) {}
 
   static fromEnv(): EmailConfig {
-    const enabled = process.env.EMAIL_ENABLED === 'true';
     const mode = (process.env.EMAIL_MODE as EmailMode) ?? 'smtp';
     const user = process.env.EMAIL_USER ?? process.env.EMAIL_AUTH_USER ?? '';
     const password = process.env.EMAIL_PASSWORD ?? process.env.EMAIL_AUTH_PASSWORD ?? '';
 
-    if (enabled && !user) {
-      throw new Error('EmailModule requiere EMAIL_USER cuando EMAIL_ENABLED=true');
+    if (!user) {
+      throw new Error('EmailModule requiere EMAIL_USER');
     }
 
-    if (enabled && !password) {
-      throw new Error('EmailModule requiere EMAIL_PASSWORD cuando EMAIL_ENABLED=true');
+    if (!password) {
+      throw new Error('EmailModule requiere EMAIL_PASSWORD');
     }
 
     return new EmailConfig({
-      enabled,
       mode,
       smtp: {
         host: process.env.EMAIL_HOST ?? 'smtp.mailtrap.io',
@@ -64,10 +61,6 @@ export class EmailConfig {
 
   getSmtpConfig(): SmtpConfig {
     return this.config.smtp;
-  }
-
-  isEnabled(): boolean {
-    return this.config.enabled;
   }
 
   getDefaultFrom(): string {

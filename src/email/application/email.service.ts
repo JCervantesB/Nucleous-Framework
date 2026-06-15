@@ -35,20 +35,11 @@ export class EmailService implements OnModuleInit {
   ) {}
 
   onModuleInit() {
-    if (this.config.isEnabled()) {
-      this.logger.log('EmailService inicializado');
-      this.logger.log(`SMTP: ${this.config.getSmtpConfig().host}:${this.config.getSmtpConfig().port}`);
-    } else {
-      this.logger.log('EmailService deshabilitado (EMAIL_ENABLED=false)');
-    }
+    this.logger.log('EmailService inicializado');
+    this.logger.log(`SMTP: ${this.config.getSmtpConfig().host}:${this.config.getSmtpConfig().port}`);
   }
 
   async send(options: SendEmailOptions): Promise<SendEmailResult> {
-    if (!this.config.isEnabled()) {
-      this.logger.warn('Intento de enviar email con módulo deshabilitado');
-      return { success: false, messageId: '', provider: 'none' };
-    }
-
     const businessId = options.businessId ?? 'global';
 
     const allowed = await this.rateLimiter.checkLimit(businessId);

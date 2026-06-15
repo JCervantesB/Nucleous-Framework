@@ -1,35 +1,28 @@
+import 'dotenv/config';
 import { Module, type Type } from '@nestjs/common';
 import { CoreModule } from '../../src/core/core.module';
 import { AuthModule } from '../../src/auth/auth.module';
 import { DatabaseModule } from '../../src/core/infrastructure/database/database.module';
-import { AiModule } from '../../src/ai/ai.module';
-import { EmailModule } from '../../src/email/email.module';
-import { StorageModule } from '../../src/storage/storage.module';
-import { validateEnabledModules, getEnabledModules } from './module-validator';
+import { getModulesToLoad, validateModules } from './module-registry';
 
-validateEnabledModules();
+const envModules = (process.env.ENABLED_MODULES ?? '')
+  .split(',')
+  .map(m => m.trim().toUpperCase())
+  .filter(Boolean);
 
-const enabledModules = getEnabledModules();
+validateModules(envModules);
 
-const imports: Type<any>[] = [
-  DatabaseModule,
-  AuthModule,
-  CoreModule,
-];
+const enabledModules = envModules;
+const dynamicModules: Type[] = getModulesToLoad(enabledModules);
 
-if (enabledModules.includes('AI')) {
-  imports.push(AiModule);
-}
-
-if (enabledModules.includes('EMAIL')) {
-  imports.push(EmailModule);
-}
-
-if (enabledModules.includes('STORAGE')) {
-  imports.push(StorageModule);
-}
+console.log(`Módulos detectados en ENABLED_MODULES: [${enabledModules.join(', ')}]`);
 
 @Module({
-  imports,
+  imports: [
+    DatabaseModule,
+    AuthModule,
+    CoreModule,
+    ...dynamicModules,
+  ],
 })
 export class AppModule {}

@@ -41,7 +41,7 @@ nucleous-framework/
 │   └── api-default/           # Aplicación principal
 │       ├── main.ts            # Bootstrap
 │       ├── app.module.ts      # Compositor de módulos
-│       └── module-validator.ts
+│       └── module-registry.ts  # Registro centralizado de módulos
 │
 ├── src/                       # Módulos del framework
 │   ├── core/                  # Módulo base (OBLIGATORIO)
