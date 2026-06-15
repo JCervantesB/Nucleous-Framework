@@ -1,6 +1,9 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { PRODUCT_REPOSITORY } from '../products.tokens';
-import type { ProductRepository, ProductListOptions } from '../../domain/repositories/product.repository';
+import type {
+  ProductRepository,
+  ProductListOptions,
+} from '../../domain/repositories/product.repository';
 import type { Product } from '../../domain/entities/product.entity';
 
 export interface ListProductsInput {

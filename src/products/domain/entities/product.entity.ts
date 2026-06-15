@@ -87,7 +87,10 @@ export class Product {
       name: params.name ?? this.props.name,
       description: params.description ?? this.props.description,
       type: params.type ?? this.props.type,
-      categoryId: params.categoryId !== undefined ? params.categoryId : this.props.categoryId,
+      categoryId:
+        params.categoryId !== undefined
+          ? params.categoryId
+          : this.props.categoryId,
       basePrice: params.basePrice ?? this.props.basePrice,
       currencyCode: params.currencyCode ?? this.props.currencyCode,
       trackInventory: params.trackInventory ?? this.props.trackInventory,

@@ -2,8 +2,17 @@ import { Injectable, Inject, Logger } from '@nestjs/common';
 import { eq, and, desc, gte, lte, like, sql } from 'drizzle-orm';
 import { db } from '#app/database/client';
 import { emailLog } from '#app/database/schema/email';
-import { EmailLog, EmailStatus, type EmailLogProps } from '../../domain/entities/email-log.entity';
-import { EMAIL_LOG_REPOSITORY, type EmailLogRepository, type ListEmailLogsOptions, type PaginatedResult } from '../../domain/repositories/email-log.repository';
+import {
+  EmailLog,
+  EmailStatus,
+  type EmailLogProps,
+} from '../../domain/entities/email-log.entity';
+import {
+  EMAIL_LOG_REPOSITORY,
+  type EmailLogRepository,
+  type ListEmailLogsOptions,
+  type PaginatedResult,
+} from '../../domain/repositories/email-log.repository';
 
 @Injectable()
 export class DrizzleEmailLogRepository implements EmailLogRepository {
@@ -31,22 +40,32 @@ export class DrizzleEmailLogRepository implements EmailLogRepository {
   }
 
   async update(entity: EmailLog): Promise<EmailLog> {
-    await db.update(emailLog).set({
-      status: entity.status,
-      providerMessageId: entity.providerMessageId,
-      errorMessage: entity.errorMessage,
-      sentAt: entity.sentAt,
-      updatedAt: new Date(),
-    }).where(eq(emailLog.id, entity.id));
+    await db
+      .update(emailLog)
+      .set({
+        status: entity.status,
+        providerMessageId: entity.providerMessageId,
+        errorMessage: entity.errorMessage,
+        sentAt: entity.sentAt,
+        updatedAt: new Date(),
+      })
+      .where(eq(emailLog.id, entity.id));
     return entity;
   }
 
   async findById(id: string): Promise<EmailLog | null> {
-    const rows = await db.select().from(emailLog).where(eq(emailLog.id, id)).limit(1);
+    const rows = await db
+      .select()
+      .from(emailLog)
+      .where(eq(emailLog.id, id))
+      .limit(1);
     return rows[0] ? this.mapToEntity(rows[0]) : null;
   }
 
-  async findByBusinessId(businessId: string, options?: ListEmailLogsOptions): Promise<PaginatedResult<EmailLog>> {
+  async findByBusinessId(
+    businessId: string,
+    options?: ListEmailLogsOptions,
+  ): Promise<PaginatedResult<EmailLog>> {
     const page = options?.page ?? 1;
     const pageSize = options?.pageSize ?? 20;
     const offset = (page - 1) * pageSize;
@@ -69,17 +88,27 @@ export class DrizzleEmailLogRepository implements EmailLogRepository {
       conditions.push(lte(emailLog.createdAt, options.toDate));
     }
 
-    const whereClause = conditions.length > 1 ? and(...conditions) : conditions[0];
+    const whereClause =
+      conditions.length > 1 ? and(...conditions) : conditions[0];
 
     const [rows, countResult] = await Promise.all([
-      db.select().from(emailLog).where(whereClause).orderBy(desc(emailLog.createdAt)).limit(pageSize).offset(offset),
-      db.select({ count: sql<number>`count(*)::int` }).from(emailLog).where(whereClause),
+      db
+        .select()
+        .from(emailLog)
+        .where(whereClause)
+        .orderBy(desc(emailLog.createdAt))
+        .limit(pageSize)
+        .offset(offset),
+      db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(emailLog)
+        .where(whereClause),
     ]);
 
     const total = countResult[0]?.count ?? 0;
 
     return {
-      data: rows.map(row => this.mapToEntity(row)),
+      data: rows.map((row) => this.mapToEntity(row)),
       total,
       page,
       pageSize,

@@ -1,4 +1,7 @@
-import { CreateProductUseCase, CreateProductInput } from './create-product.use-case';
+import {
+  CreateProductUseCase,
+  CreateProductInput,
+} from './create-product.use-case';
 import { Product, ProductType } from '../../domain/entities/product.entity';
 
 const mockProductRepo = {
@@ -24,7 +27,7 @@ describe('CreateProductUseCase', () => {
       businessId,
       sku: 'PROD-001',
       name: 'Camiseta Azul',
-      type: 'storable' as ProductType,
+      type: 'storable',
       basePrice: 29.99,
     };
 
@@ -34,7 +37,10 @@ describe('CreateProductUseCase', () => {
 
       const result = await useCase.execute(input);
 
-      expect(mockProductRepo.findBySku).toHaveBeenCalledWith(input.sku, input.businessId);
+      expect(mockProductRepo.findBySku).toHaveBeenCalledWith(
+        input.sku,
+        input.businessId,
+      );
       expect(mockProductRepo.create).toHaveBeenCalled();
       expect(result.product).toBeInstanceOf(Product);
       expect(result.product.sku).toBe(input.sku);
@@ -42,25 +48,29 @@ describe('CreateProductUseCase', () => {
     });
 
     it('debe lanzar error si el SKU ya existe', async () => {
-      mockProductRepo.findBySku.mockResolvedValue(new Product({
-        id: 'existing-id',
-        businessId,
-        sku: input.sku,
-        name: 'Producto existente',
-        description: null,
-        type: 'storable' as ProductType,
-        categoryId: null,
-        basePrice: 19.99,
-        currencyCode: 'USD',
-        isActive: true,
-        trackInventory: true,
-        createdAt: new Date(),
-        updatedAt: null,
-        createdBy: null,
-        updatedBy: null,
-      }));
+      mockProductRepo.findBySku.mockResolvedValue(
+        new Product({
+          id: 'existing-id',
+          businessId,
+          sku: input.sku,
+          name: 'Producto existente',
+          description: null,
+          type: 'storable' as ProductType,
+          categoryId: null,
+          basePrice: 19.99,
+          currencyCode: 'USD',
+          isActive: true,
+          trackInventory: true,
+          createdAt: new Date(),
+          updatedAt: null,
+          createdBy: null,
+          updatedBy: null,
+        }),
+      );
 
-      await expect(useCase.execute(input)).rejects.toThrow(`Ya existe un producto con SKU: ${input.sku}`);
+      await expect(useCase.execute(input)).rejects.toThrow(
+        `Ya existe un producto con SKU: ${input.sku}`,
+      );
       expect(mockProductRepo.create).not.toHaveBeenCalled();
     });
 

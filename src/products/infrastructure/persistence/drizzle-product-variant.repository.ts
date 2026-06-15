@@ -2,7 +2,10 @@ import { Injectable, Inject } from '@nestjs/common';
 import { eq, and } from 'drizzle-orm';
 import { db } from '#app/database/client';
 import { productVariant } from '#app/database/schema/product';
-import { ProductVariant, type ProductVariantProps } from '../../domain/entities/product-variant.entity';
+import {
+  ProductVariant,
+  type ProductVariantProps,
+} from '../../domain/entities/product-variant.entity';
 import type { ProductVariantRepository } from '../../domain/repositories/product-variant.repository';
 
 @Injectable()
@@ -23,22 +26,35 @@ export class DrizzleProductVariantRepository implements ProductVariantRepository
     return entity;
   }
 
-  async findById(id: string, productId: string): Promise<ProductVariant | null> {
+  async findById(
+    id: string,
+    productId: string,
+  ): Promise<ProductVariant | null> {
     const rows = await this._db
       .select()
       .from(productVariant)
-      .where(and(eq(productVariant.id, id), eq(productVariant.productId, productId)))
+      .where(
+        and(eq(productVariant.id, id), eq(productVariant.productId, productId)),
+      )
       .limit(1);
     const row = rows[0];
     if (!row) return null;
     return this.mapToEntity(row);
   }
 
-  async findBySku(sku: string, productId: string): Promise<ProductVariant | null> {
+  async findBySku(
+    sku: string,
+    productId: string,
+  ): Promise<ProductVariant | null> {
     const rows = await this._db
       .select()
       .from(productVariant)
-      .where(and(eq(productVariant.sku, sku), eq(productVariant.productId, productId)))
+      .where(
+        and(
+          eq(productVariant.sku, sku),
+          eq(productVariant.productId, productId),
+        ),
+      )
       .limit(1);
     const row = rows[0];
     if (!row) return null;
@@ -50,7 +66,7 @@ export class DrizzleProductVariantRepository implements ProductVariantRepository
       .select()
       .from(productVariant)
       .where(eq(productVariant.productId, productId));
-    return rows.map(row => this.mapToEntity(row));
+    return rows.map((row) => this.mapToEntity(row));
   }
 
   async update(entity: ProductVariant): Promise<ProductVariant> {
@@ -71,7 +87,9 @@ export class DrizzleProductVariantRepository implements ProductVariantRepository
     await this._db
       .update(productVariant)
       .set({ isActive: false })
-      .where(and(eq(productVariant.id, id), eq(productVariant.productId, productId)));
+      .where(
+        and(eq(productVariant.id, id), eq(productVariant.productId, productId)),
+      );
   }
 
   private mapToEntity(row: typeof productVariant.$inferSelect): ProductVariant {
@@ -81,7 +99,7 @@ export class DrizzleProductVariantRepository implements ProductVariantRepository
       sku: row.sku,
       name: row.name,
       priceModifier: parseFloat(row.priceModifier),
-      attributes: row.attributes as Record<string, string>,
+      attributes: row.attributes,
       isActive: row.isActive,
       createdAt: row.createdAt,
       updatedAt: row.updatedAt ?? null,

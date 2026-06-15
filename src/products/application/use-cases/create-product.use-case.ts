@@ -1,7 +1,10 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
 import { PRODUCT_REPOSITORY } from '../products.tokens';
 import type { ProductRepository } from '../../domain/repositories/product.repository';
-import { Product, type ProductType } from '../../domain/entities/product.entity';
+import {
+  Product,
+  type ProductType,
+} from '../../domain/entities/product.entity';
 
 export interface CreateProductInput {
   businessId: string;
@@ -29,7 +32,10 @@ export class CreateProductUseCase {
   ) {}
 
   async execute(input: CreateProductInput): Promise<CreateProductOutput> {
-    const existingProduct = await this.productRepo.findBySku(input.sku, input.businessId);
+    const existingProduct = await this.productRepo.findBySku(
+      input.sku,
+      input.businessId,
+    );
     if (existingProduct) {
       throw new Error(`Ya existe un producto con SKU: ${input.sku}`);
     }

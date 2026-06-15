@@ -42,8 +42,15 @@ export class VariantController {
   ) {}
 
   @Post()
-  @ApiOperation({ summary: 'Crear variante', description: 'Crea una nueva variante para un producto.' })
-  @ApiResponse({ status: 201, description: 'Variante creada exitosamente', type: () => VariantResponseDto })
+  @ApiOperation({
+    summary: 'Crear variante',
+    description: 'Crea una nueva variante para un producto.',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Variante creada exitosamente',
+    type: () => VariantResponseDto,
+  })
   @ApiResponse({ status: 400, description: 'Datos inválidos o SKU duplicado' })
   @ApiResponse({ status: 401, description: 'No autorizado' })
   async create(
@@ -64,19 +71,30 @@ export class VariantController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Listar variantes', description: 'Lista todas las variantes de un producto.' })
-  @ApiResponse({ status: 200, description: 'Lista de variantes', type: () => VariantListResponseDto })
+  @ApiOperation({
+    summary: 'Listar variantes',
+    description: 'Lista todas las variantes de un producto.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de variantes',
+    type: () => VariantListResponseDto,
+  })
   @ApiResponse({ status: 401, description: 'No autorizado' })
-  async list(
-    @Param('productId', ParseUUIDPipe) productId: string,
-  ) {
+  async list(@Param('productId', ParseUUIDPipe) productId: string) {
     const result = await this.listVariantsUseCase.execute({ productId });
     return { data: result.data };
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Actualizar variante', description: 'Actualiza una variante existente.' })
-  @ApiResponse({ status: 200, description: 'Variante actualizada exitosamente' })
+  @ApiOperation({
+    summary: 'Actualizar variante',
+    description: 'Actualiza una variante existente.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Variante actualizada exitosamente',
+  })
   @ApiResponse({ status: 404, description: 'Variante no encontrada' })
   @ApiResponse({ status: 401, description: 'No autorizado' })
   async update(
@@ -97,7 +115,10 @@ export class VariantController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Eliminar variante', description: 'Elimina una variante (eliminación lógica).' })
+  @ApiOperation({
+    summary: 'Eliminar variante',
+    description: 'Elimina una variante (eliminación lógica).',
+  })
   @ApiResponse({ status: 200, description: 'Variante eliminada exitosamente' })
   @ApiResponse({ status: 404, description: 'Variante no encontrada' })
   @ApiResponse({ status: 401, description: 'No autorizado' })

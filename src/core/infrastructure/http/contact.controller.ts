@@ -19,7 +19,11 @@ import { ListContactsUseCase } from '../../domain/contacts/use-cases/list-contac
 import { UpdateContactUseCase } from '../../domain/contacts/use-cases/update-contact.use-case.js';
 import { CurrentBusinessId } from '../../../common/decorators/business-id.decorator';
 import { CurrentUserId } from '../../../common/decorators/user-id.decorator';
-import { CreateContactDto, UpdateContactDto, ContactResponseDto } from './dto/core.dtos';
+import {
+  CreateContactDto,
+  UpdateContactDto,
+  ContactResponseDto,
+} from './dto/core.dtos';
 
 @ApiTags('Core - Contacts')
 @ApiBearerAuth()
@@ -34,23 +38,33 @@ export class ContactController {
   @Post()
   @ApiOperation({
     summary: 'Crear contacto',
-    description: 'Crea un nuevo contacto asociado al negocio actual. El contacto se liga automáticamente al businessId extraído del token JWT del usuario autenticado.',
+    description:
+      'Crea un nuevo contacto asociado al negocio actual. El contacto se liga automáticamente al businessId extraído del token JWT del usuario autenticado.',
   })
   @ApiResponse({
     status: 201,
-    description: 'Contacto creado exitosamente. Retorna los datos del contacto creado.',
+    description:
+      'Contacto creado exitosamente. Retorna los datos del contacto creado.',
     type: () => ContactResponseDto,
   })
-  @ApiResponse({ status: 400, description: 'Datos inválidos - El email es requerido o tiene formato incorrecto.' })
-  @ApiResponse({ status: 401, description: 'No autorizado - Token JWT inválido o ausente.' })
+  @ApiResponse({
+    status: 400,
+    description:
+      'Datos inválidos - El email es requerido o tiene formato incorrecto.',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'No autorizado - Token JWT inválido o ausente.',
+  })
   async create(
     @CurrentBusinessId() businessId: string,
     @CurrentUserId() userId: string,
     @Body() dto: CreateContactDto,
   ) {
-    const name = dto.firstName && dto.lastName 
-      ? `${dto.firstName} ${dto.lastName}` 
-      : (dto.firstName ?? 'Unknown');
+    const name =
+      dto.firstName && dto.lastName
+        ? `${dto.firstName} ${dto.lastName}`
+        : (dto.firstName ?? 'Unknown');
 
     const result = await this.createContactUseCase.execute({
       businessId,
@@ -80,13 +94,18 @@ export class ContactController {
   @Get()
   @ApiOperation({
     summary: 'Listar contactos',
-    description: 'Retorna una lista paginada de contactos del negocio actual. Soporta búsqueda por texto en nombre o email y filtrado por rol (isCustomer, isSupplier, isEmployee). El businessId se extrae automáticamente del token JWT.',
+    description:
+      'Retorna una lista paginada de contactos del negocio actual. Soporta búsqueda por texto en nombre o email y filtrado por rol (isCustomer, isSupplier, isEmployee). El businessId se extrae automáticamente del token JWT.',
   })
   @ApiResponse({
     status: 200,
-    description: 'Lista de contactos obtenida exitosamente. Incluye datos de paginación: total, page, pageSize, totalPages.',
+    description:
+      'Lista de contactos obtenida exitosamente. Incluye datos de paginación: total, page, pageSize, totalPages.',
   })
-  @ApiResponse({ status: 401, description: 'No autorizado - Token JWT inválido o ausente.' })
+  @ApiResponse({
+    status: 401,
+    description: 'No autorizado - Token JWT inválido o ausente.',
+  })
   async list(
     @CurrentBusinessId() businessId: string,
     @Query('search') search?: string,
@@ -148,7 +167,8 @@ export class ContactController {
   @Patch(':id')
   @ApiOperation({
     summary: 'Actualizar contacto',
-    description: 'Actualiza los datos de un contacto existente. Soporta actualización de flags de rol (isCustomer, isSupplier, isEmployee).',
+    description:
+      'Actualiza los datos de un contacto existente. Soporta actualización de flags de rol (isCustomer, isSupplier, isEmployee).',
   })
   @ApiResponse({
     status: 200,
@@ -163,9 +183,10 @@ export class ContactController {
     @CurrentUserId() userId: string,
     @Body() dto: UpdateContactDto,
   ) {
-    const fullName = dto.firstName && dto.lastName
-      ? `${dto.firstName} ${dto.lastName}`
-      : dto.firstName;
+    const fullName =
+      dto.firstName && dto.lastName
+        ? `${dto.firstName} ${dto.lastName}`
+        : dto.firstName;
 
     const result = await this.updateContactUseCase.execute({
       id,

@@ -1,4 +1,11 @@
-import { Body, Controller, Get, Param, Post, ParseUUIDPipe } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  ParseUUIDPipe,
+} from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -21,15 +28,24 @@ export class BusinessController {
   @Post()
   @ApiOperation({
     summary: 'Crear un nuevo negocio',
-    description: 'Crea un nuevo negocio (business) en el sistema. El negocio es la entidad principal para la arquitectura multi-tenant. Cada negocio puede tener sus propios contactos, actividades, emails y archivos.',
+    description:
+      'Crea un nuevo negocio (business) en el sistema. El negocio es la entidad principal para la arquitectura multi-tenant. Cada negocio puede tener sus propios contactos, actividades, emails y archivos.',
   })
   @ApiResponse({
     status: 201,
-    description: 'Negocio creado exitosamente. Retorna los datos completos del negocio.',
+    description:
+      'Negocio creado exitosamente. Retorna los datos completos del negocio.',
     type: () => BusinessResponseDto,
   })
-  @ApiResponse({ status: 400, description: 'Datos inválidos - El nombre es requerido, el slug debe ser único.' })
-  @ApiResponse({ status: 401, description: 'No autorizado - Token JWT inválido o ausente.' })
+  @ApiResponse({
+    status: 400,
+    description:
+      'Datos inválidos - El nombre es requerido, el slug debe ser único.',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'No autorizado - Token JWT inválido o ausente.',
+  })
   async create(@Body() dto: CreateBusinessDto) {
     const result = await this.createBusinessUseCase.execute({
       name: dto.name,
@@ -57,15 +73,23 @@ export class BusinessController {
   @Get(':id')
   @ApiOperation({
     summary: 'Obtener negocio por ID',
-    description: 'Retorna los datos de un negocio específico. El negocio está asociado al usuario autenticado en el token JWT.',
+    description:
+      'Retorna los datos de un negocio específico. El negocio está asociado al usuario autenticado en el token JWT.',
   })
   @ApiResponse({
     status: 200,
     description: 'Negocio encontrado. Retorna los datos del negocio.',
     type: () => BusinessResponseDto,
   })
-  @ApiResponse({ status: 404, description: 'Negocio no encontrado - El ID no existe o no pertenece al usuario.' })
-  @ApiResponse({ status: 401, description: 'No autorizado - Token JWT inválido o ausente.' })
+  @ApiResponse({
+    status: 404,
+    description:
+      'Negocio no encontrado - El ID no existe o no pertenece al usuario.',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'No autorizado - Token JWT inválido o ausente.',
+  })
   async getById(@Param('id', ParseUUIDPipe) id: string) {
     const result = await this.getBusinessUseCase.execute({ id });
 

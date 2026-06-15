@@ -1,5 +1,7 @@
 export class EmailAddress {
-  private constructor(private readonly props: { email: string; name?: string }) {}
+  private constructor(
+    private readonly props: { email: string; name?: string },
+  ) {}
 
   static create(email: string, name?: string): EmailAddress {
     if (!this.isValidEmail(email)) {
@@ -22,6 +24,8 @@ export class EmailAddress {
   }
 
   toString(): string {
-    return this.props.name ? `"${this.props.name}" <${this.props.email}>` : this.props.email;
+    return this.props.name
+      ? `"${this.props.name}" <${this.props.email}>`
+      : this.props.email;
   }
 }

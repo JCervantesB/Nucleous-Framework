@@ -20,7 +20,7 @@ export class StoredFile {
       key: string;
       metadata: StoredFileMetadata;
       url: StoredFileUrl;
-    }
+    },
   ) {}
 
   static create(params: {

@@ -24,5 +24,8 @@ export interface EmailLogRepository {
   save(emailLog: EmailLog): Promise<EmailLog>;
   update(emailLog: EmailLog): Promise<EmailLog>;
   findById(id: string): Promise<EmailLog | null>;
-  findByBusinessId(businessId: string, options?: ListEmailLogsOptions): Promise<PaginatedResult<EmailLog>>;
+  findByBusinessId(
+    businessId: string,
+    options?: ListEmailLogsOptions,
+  ): Promise<PaginatedResult<EmailLog>>;
 }

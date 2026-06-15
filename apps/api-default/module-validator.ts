@@ -1,10 +1,6 @@
 // apps/api-default/module-validator.ts
 
-export const VALID_MODULES = [
-  'AI',
-  'EMAIL',
-  'STORAGE',
-] as const;
+export const VALID_MODULES = ['AI', 'EMAIL', 'STORAGE'] as const;
 
 export type ValidModuleName = (typeof VALID_MODULES)[number];
 
@@ -14,7 +10,9 @@ export function validateEnabledModules(): void {
     .map((m) => m.trim().toUpperCase())
     .filter(Boolean);
 
-  const invalid = enabled.filter((m) => !(VALID_MODULES as readonly string[]).includes(m));
+  const invalid = enabled.filter(
+    (m) => !(VALID_MODULES as readonly string[]).includes(m),
+  );
 
   if (invalid.length > 0) {
     throw new Error(

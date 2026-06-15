@@ -19,7 +19,8 @@ export interface RetryEmailResult {
 @Injectable()
 export class RetryEmailUseCase {
   constructor(
-    @Inject(SEND_EMAIL_USE_CASE) private readonly sendEmailUseCase: SendEmailUseCase,
+    @Inject(SEND_EMAIL_USE_CASE)
+    private readonly sendEmailUseCase: SendEmailUseCase,
     @Inject(EMAIL_LOG_REPOSITORY)
     private readonly emailLogRepository: EmailLogRepository,
   ) {}
@@ -28,7 +29,9 @@ export class RetryEmailUseCase {
     const emailLog = await this.emailLogRepository.findById(input.emailLogId);
 
     if (!emailLog) {
-      throw new NotFoundException(`Email log with ID ${input.emailLogId} not found`);
+      throw new NotFoundException(
+        `Email log with ID ${input.emailLogId} not found`,
+      );
     }
 
     if (emailLog.status === EmailStatus.SENT) {

@@ -1,7 +1,10 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
 import { EMAIL_SERVICE, SEND_EMAIL_USE_CASE } from '../email.tokens';
 import type { EmailService } from '../email.service';
-import { EMAIL_LOG_REPOSITORY, type EmailLogRepository } from '../../domain/repositories/email-log.repository';
+import {
+  EMAIL_LOG_REPOSITORY,
+  type EmailLogRepository,
+} from '../../domain/repositories/email-log.repository';
 import { EmailLog } from '../../domain/entities/email-log.entity';
 import { EmailAddress } from '../../domain/value-objects/email-address.value';
 
@@ -32,27 +35,38 @@ export class SendEmailUseCase {
 
   constructor(
     @Inject(EMAIL_SERVICE) private readonly emailService: EmailService,
-    @Inject(EMAIL_LOG_REPOSITORY) private readonly emailLogRepo: EmailLogRepository,
+    @Inject(EMAIL_LOG_REPOSITORY)
+    private readonly emailLogRepo: EmailLogRepository,
   ) {}
 
   async execute(input: SendEmailInput): Promise<SendEmailOutput> {
     const toAddresses = Array.isArray(input.to)
-      ? input.to.map(t => EmailAddress.create(t))
+      ? input.to.map((t) => EmailAddress.create(t))
       : [EmailAddress.create(input.to)];
 
     const ccAddresses = input.cc
-      ? (Array.isArray(input.cc) ? input.cc : [input.cc]).map(c => EmailAddress.create(c))
+      ? (Array.isArray(input.cc) ? input.cc : [input.cc]).map((c) =>
+          EmailAddress.create(c),
+        )
       : [];
 
     const bccAddresses = input.bcc
-      ? (Array.isArray(input.bcc) ? input.bcc : [input.bcc]).map(b => EmailAddress.create(b))
+      ? (Array.isArray(input.bcc) ? input.bcc : [input.bcc]).map((b) =>
+          EmailAddress.create(b),
+        )
       : [];
 
     const emailLog = EmailLog.create({
       businessId: input.businessId,
-      to: toAddresses.map(a => a.email).join(', '),
-      cc: ccAddresses.length > 0 ? ccAddresses.map(a => a.email).join(', ') : undefined,
-      bcc: bccAddresses.length > 0 ? bccAddresses.map(a => a.email).join(', ') : undefined,
+      to: toAddresses.map((a) => a.email).join(', '),
+      cc:
+        ccAddresses.length > 0
+          ? ccAddresses.map((a) => a.email).join(', ')
+          : undefined,
+      bcc:
+        bccAddresses.length > 0
+          ? bccAddresses.map((a) => a.email).join(', ')
+          : undefined,
       subject: input.subject,
       body: input.body,
       bodyHtml: input.bodyHtml,

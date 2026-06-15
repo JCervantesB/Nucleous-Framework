@@ -1,5 +1,11 @@
 import { Module, Global } from '@nestjs/common';
-import { AI_SERVICE, AI_SDK_CLIENT, AI_MODEL_REGISTRY, AI_RATE_LIMITER, AI_CONFIG } from './application/ai.tokens';
+import {
+  AI_SERVICE,
+  AI_SDK_CLIENT,
+  AI_MODEL_REGISTRY,
+  AI_RATE_LIMITER,
+  AI_CONFIG,
+} from './application/ai.tokens';
 import { AiService } from './application/ai.service';
 import { AiConfig } from './infrastructure/config/ai.config';
 import { AiSdkClient } from './infrastructure/clients/ai-sdk.client';
@@ -32,7 +38,13 @@ import { AiController } from './interfaces/http/ai.controller';
       useClass: AiRateLimiterService,
     },
   ],
-  exports: [AI_SERVICE, AI_CONFIG, AI_SDK_CLIENT, AI_MODEL_REGISTRY, AI_RATE_LIMITER],
+  exports: [
+    AI_SERVICE,
+    AI_CONFIG,
+    AI_SDK_CLIENT,
+    AI_MODEL_REGISTRY,
+    AI_RATE_LIMITER,
+  ],
 })
 export class AiModule {
   static forRoot(config: Partial<AiConfig>) {
@@ -60,7 +72,13 @@ export class AiModule {
           useClass: AiRateLimiterService,
         },
       ],
-      exports: [AI_SERVICE, AI_CONFIG, AI_SDK_CLIENT, AI_MODEL_REGISTRY, AI_RATE_LIMITER],
+      exports: [
+        AI_SERVICE,
+        AI_CONFIG,
+        AI_SDK_CLIENT,
+        AI_MODEL_REGISTRY,
+        AI_RATE_LIMITER,
+      ],
     };
   }
 }

@@ -59,7 +59,12 @@ export class DrizzleContactRepository implements ContactRepository {
         updatedAt: entity.updatedAt,
         updatedBy: entity.updatedBy,
       })
-      .where(and(eq(contact.id, entity.id), eq(contact.businessId, entity.businessId)));
+      .where(
+        and(
+          eq(contact.id, entity.id),
+          eq(contact.businessId, entity.businessId),
+        ),
+      );
     return entity;
   }
 

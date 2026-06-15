@@ -42,7 +42,9 @@ export class SmtpClientService {
       },
     });
 
-    this.logger.log(`SMTP transporter creado: ${smtpConfig.host}:${smtpConfig.port}`);
+    this.logger.log(
+      `SMTP transporter creado: ${smtpConfig.host}:${smtpConfig.port}`,
+    );
   }
 
   async send(input: SendEmailInput): Promise<string> {
@@ -52,9 +54,15 @@ export class SmtpClientService {
 
     const info = await this.transporter.sendMail({
       from: `"${input.from.name}" <${input.from.address}>`,
-      to: input.to.map(t => (t.name ? `"${t.name}" <${t.address}>` : t.address)).join(', '),
-      cc: input.cc?.map(c => (c.name ? `"${c.name}" <${c.address}>` : c.address)).join(', '),
-      bcc: input.bcc?.map(b => (b.name ? `"${b.name}" <${b.address}>` : b.address)).join(', '),
+      to: input.to
+        .map((t) => (t.name ? `"${t.name}" <${t.address}>` : t.address))
+        .join(', '),
+      cc: input.cc
+        ?.map((c) => (c.name ? `"${c.name}" <${c.address}>` : c.address))
+        .join(', '),
+      bcc: input.bcc
+        ?.map((b) => (b.name ? `"${b.name}" <${b.address}>` : b.address))
+        .join(', '),
       subject: input.subject,
       text: input.text,
       html: input.html,

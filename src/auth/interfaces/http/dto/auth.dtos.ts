@@ -1,8 +1,17 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsEmail, MinLength, MaxLength, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsEmail,
+  MinLength,
+  MaxLength,
+  IsOptional,
+} from 'class-validator';
 
 export class LoginDto {
-  @ApiProperty({ description: 'Email del usuario', example: 'usuario@example.com' })
+  @ApiProperty({
+    description: 'Email del usuario',
+    example: 'usuario@example.com',
+  })
   @IsEmail()
   email!: string;
 
@@ -19,7 +28,10 @@ export class RegisterDto {
   @MaxLength(100)
   name!: string;
 
-  @ApiProperty({ description: 'Email del usuario', example: 'usuario@example.com' })
+  @ApiProperty({
+    description: 'Email del usuario',
+    example: 'usuario@example.com',
+  })
   @IsEmail()
   email!: string;
 
@@ -42,7 +54,11 @@ export class AuthResponseDto {
   @ApiProperty({ description: 'Token de actualización' })
   refresh_token!: string;
 
-  @ApiProperty({ type: String, format: 'date-time', description: 'Fecha de expiración' })
+  @ApiProperty({
+    type: String,
+    format: 'date-time',
+    description: 'Fecha de expiración',
+  })
   expiresAt!: Date;
 
   @ApiProperty({ description: 'ID del usuario' })
@@ -62,7 +78,11 @@ export class UserResponseDto {
   @ApiPropertyOptional({ description: 'Rol del usuario' })
   role?: string;
 
-  @ApiProperty({ type: String, format: 'date-time', description: 'Fecha de creación' })
+  @ApiProperty({
+    type: String,
+    format: 'date-time',
+    description: 'Fecha de creación',
+  })
   createdAt!: Date;
 }
 
@@ -70,7 +90,11 @@ export class SessionResponseDto {
   @ApiProperty({ description: 'ID de la sesión' })
   sessionId!: string;
 
-  @ApiProperty({ type: String, format: 'date-time', description: 'Fecha de expiración' })
+  @ApiProperty({
+    type: String,
+    format: 'date-time',
+    description: 'Fecha de expiración',
+  })
   expiresAt!: Date;
 
   @ApiProperty({ description: 'ID del usuario' })

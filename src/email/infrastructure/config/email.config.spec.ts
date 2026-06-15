@@ -19,13 +19,17 @@ describe('EmailConfig', () => {
       delete process.env.EMAIL_USER;
       delete process.env.EMAIL_PASSWORD;
 
-      expect(() => EmailConfig.fromEnv()).toThrow('EmailModule requiere EMAIL_USER');
+      expect(() => EmailConfig.fromEnv()).toThrow(
+        'EmailModule requiere EMAIL_USER',
+      );
     });
 
     it('debe lanzar error si no hay EMAIL_PASSWORD', () => {
       process.env.EMAIL_USER = 'testuser';
 
-      expect(() => EmailConfig.fromEnv()).toThrow('EmailModule requiere EMAIL_PASSWORD');
+      expect(() => EmailConfig.fromEnv()).toThrow(
+        'EmailModule requiere EMAIL_PASSWORD',
+      );
     });
 
     it('debe usar valores del entorno cuando están disponibles', () => {

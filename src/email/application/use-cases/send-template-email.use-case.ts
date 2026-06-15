@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { SendEmailUseCase, type SendEmailInput, type SendEmailOutput } from './send-email.use-case';
+import {
+  SendEmailUseCase,
+  type SendEmailInput,
+  type SendEmailOutput,
+} from './send-email.use-case';
 
 export interface TemplateEmailInput extends SendEmailInput {
   templateId: string;
@@ -41,10 +45,7 @@ export class SendTemplateEmailUseCase {
     };
   }
 
-  private interpolate(
-    text: string,
-    data: Record<string, string>,
-  ): string {
+  private interpolate(text: string, data: Record<string, string>): string {
     return text.replace(/\{\{(\w+)\}\}/g, (_, key) => data[key] ?? '');
   }
 }

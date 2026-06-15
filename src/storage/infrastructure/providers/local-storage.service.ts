@@ -2,7 +2,15 @@ import { Injectable, Inject, Logger } from '@nestjs/common';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { STORAGE_CONFIG } from '../../application/storage.tokens';
-import type { StorageProvider, UploadOptions, UploadResult, DeleteResult, GetUrlOptions, ListFilesOptions, ListFilesResult } from '../../application/storage.types';
+import type {
+  StorageProvider,
+  UploadOptions,
+  UploadResult,
+  DeleteResult,
+  GetUrlOptions,
+  ListFilesOptions,
+  ListFilesResult,
+} from '../../application/storage.types';
 import { StoredFile } from '../../domain/value-objects/stored-file.vo';
 import { StorageConfig } from '../config/storage.config';
 
@@ -16,18 +24,27 @@ export class LocalStorageService implements StorageProvider {
   async upload(buffer: Buffer, options: UploadOptions): Promise<UploadResult> {
     const localConfig = this.config.getLocalConfig();
     if (!localConfig) {
-      return { success: false, error: 'Configuración de almacenamiento local no encontrada' };
+      return {
+        success: false,
+        error: 'Configuración de almacenamiento local no encontrada',
+      };
     }
 
     const filename = options.filename ?? `${crypto.randomUUID()}-${Date.now()}`;
-    const folderPath = path.join(localConfig.basePath, options.bucket, options.folder ?? '');
+    const folderPath = path.join(
+      localConfig.basePath,
+      options.bucket,
+      options.folder ?? '',
+    );
     const fullPath = path.join(folderPath, filename);
 
     try {
       await fs.mkdir(folderPath, { recursive: true });
       await fs.writeFile(fullPath, buffer);
 
-      const key = path.join(options.bucket, options.folder ?? '', filename).replace(/\\/g, '/');
+      const key = path
+        .join(options.bucket, options.folder ?? '', filename)
+        .replace(/\\/g, '/');
       const url = `${localConfig.baseUrl}/${key}`;
 
       const storedFile = StoredFile.create({
@@ -57,7 +74,10 @@ export class LocalStorageService implements StorageProvider {
   async delete(key: string, bucket: string): Promise<DeleteResult> {
     const localConfig = this.config.getLocalConfig();
     if (!localConfig) {
-      return { success: false, error: 'Configuración de almacenamiento local no encontrada' };
+      return {
+        success: false,
+        error: 'Configuración de almacenamiento local no encontrada',
+      };
     }
 
     const fullPath = path.join(localConfig.basePath, bucket, key);
@@ -73,7 +93,11 @@ export class LocalStorageService implements StorageProvider {
     }
   }
 
-  async getUrl(key: string, bucket: string, options?: GetUrlOptions): Promise<string> {
+  async getUrl(
+    key: string,
+    bucket: string,
+    options?: GetUrlOptions,
+  ): Promise<string> {
     const localConfig = this.config.getLocalConfig();
     if (!localConfig) {
       throw new Error('Configuración de almacenamiento local no encontrada');
@@ -100,7 +124,10 @@ export class LocalStorageService implements StorageProvider {
   async listFiles(options?: ListFilesOptions): Promise<ListFilesResult> {
     const localConfig = this.config.getLocalConfig();
     if (!localConfig) {
-      return { success: false, error: 'Configuración de almacenamiento local no encontrada' };
+      return {
+        success: false,
+        error: 'Configuración de almacenamiento local no encontrada',
+      };
     }
 
     const bucketPath = path.join(localConfig.basePath, options?.bucket ?? '');
@@ -108,8 +135,16 @@ export class LocalStorageService implements StorageProvider {
 
     try {
       const files: StoredFile[] = [];
-      await this.walkDir(bucketPath, prefix, files, localConfig.baseUrl, options?.bucket);
-      this.logger.log(`Listados ${files.length} archivos del almacenamiento local`);
+      await this.walkDir(
+        bucketPath,
+        prefix,
+        files,
+        localConfig.baseUrl,
+        options?.bucket,
+      );
+      this.logger.log(
+        `Listados ${files.length} archivos del almacenamiento local`,
+      );
       return { success: true, files };
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error);
@@ -118,7 +153,13 @@ export class LocalStorageService implements StorageProvider {
     }
   }
 
-  private async walkDir(dirPath: string, prefix: string, files: StoredFile[], baseUrl: string, bucket?: string): Promise<void> {
+  private async walkDir(
+    dirPath: string,
+    prefix: string,
+    files: StoredFile[],
+    baseUrl: string,
+    bucket?: string,
+  ): Promise<void> {
     try {
       const entries = await fs.readdir(dirPath, { withFileTypes: true });
 
@@ -133,20 +174,22 @@ export class LocalStorageService implements StorageProvider {
           const key = relativePath;
           const url = `${baseUrl}/${key}`;
 
-          files.push(StoredFile.create({
-            bucket: bucket ?? 'default',
-            key,
-            metadata: {
-              size: stats.size,
-              mimeType: 'application/octet-stream',
-              originalName: entry.name,
-              uploadedAt: stats.birthtime,
-            },
-            url: {
-              url,
-              isSigned: false,
-            },
-          }));
+          files.push(
+            StoredFile.create({
+              bucket: bucket ?? 'default',
+              key,
+              metadata: {
+                size: stats.size,
+                mimeType: 'application/octet-stream',
+                originalName: entry.name,
+                uploadedAt: stats.birthtime,
+              },
+              url: {
+                url,
+                isSigned: false,
+              },
+            }),
+          );
         }
       }
     } catch {

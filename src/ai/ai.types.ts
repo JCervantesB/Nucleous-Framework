@@ -1,6 +1,13 @@
 import { z } from 'zod';
 
-export const KNOWN_PROVIDERS = ['openrouter', 'openai', 'anthropic', 'groq', 'mistral', 'perplexity'] as const;
+export const KNOWN_PROVIDERS = [
+  'openrouter',
+  'openai',
+  'anthropic',
+  'groq',
+  'mistral',
+  'perplexity',
+] as const;
 export type KnownAiProvider = (typeof KNOWN_PROVIDERS)[number];
 export type AiProvider = KnownAiProvider | (string & {});
 

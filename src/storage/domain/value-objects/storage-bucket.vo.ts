@@ -6,7 +6,9 @@ export enum WellKnownBucket {
 }
 
 export class StorageBucket {
-  private constructor(private readonly props: { name: string; isPublic: boolean }) {}
+  private constructor(
+    private readonly props: { name: string; isPublic: boolean },
+  ) {}
 
   static create(name: string, isPublic: boolean = true): StorageBucket {
     if (!name || name.trim().length === 0) {
@@ -20,15 +22,24 @@ export class StorageBucket {
   }
 
   static products(): StorageBucket {
-    return new StorageBucket({ name: WellKnownBucket.PRODUCTS, isPublic: true });
+    return new StorageBucket({
+      name: WellKnownBucket.PRODUCTS,
+      isPublic: true,
+    });
   }
 
   static documents(): StorageBucket {
-    return new StorageBucket({ name: WellKnownBucket.DOCUMENTS, isPublic: false });
+    return new StorageBucket({
+      name: WellKnownBucket.DOCUMENTS,
+      isPublic: false,
+    });
   }
 
   static backups(): StorageBucket {
-    return new StorageBucket({ name: WellKnownBucket.BACKUPS, isPublic: false });
+    return new StorageBucket({
+      name: WellKnownBucket.BACKUPS,
+      isPublic: false,
+    });
   }
 
   static fromWellKnown(bucket: WellKnownBucket): StorageBucket {

@@ -22,10 +22,13 @@ export class CreateUnitMeasureUseCase {
   private readonly logger = new Logger(CreateUnitMeasureUseCase.name);
 
   constructor(
-    @Inject(PRODUCT_UNIT_MEASURE_REPOSITORY) private readonly unitRepo: ProductUnitMeasureRepository,
+    @Inject(PRODUCT_UNIT_MEASURE_REPOSITORY)
+    private readonly unitRepo: ProductUnitMeasureRepository,
   ) {}
 
-  async execute(input: CreateUnitMeasureInput): Promise<CreateUnitMeasureOutput> {
+  async execute(
+    input: CreateUnitMeasureInput,
+  ): Promise<CreateUnitMeasureOutput> {
     const unit = ProductUnitMeasure.create({
       businessId: input.businessId,
       name: input.name,

@@ -43,8 +43,15 @@ export class CategoryController {
   ) {}
 
   @Post()
-  @ApiOperation({ summary: 'Crear categoría', description: 'Crea una nueva categoría de productos.' })
-  @ApiResponse({ status: 201, description: 'Categoría creada exitosamente', type: () => CategoryResponseDto })
+  @ApiOperation({
+    summary: 'Crear categoría',
+    description: 'Crea una nueva categoría de productos.',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Categoría creada exitosamente',
+    type: () => CategoryResponseDto,
+  })
   @ApiResponse({ status: 400, description: 'Datos inválidos' })
   @ApiResponse({ status: 401, description: 'No autorizado' })
   async create(
@@ -62,8 +69,15 @@ export class CategoryController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Listar categorías', description: 'Lista las categorías de productos del negocio.' })
-  @ApiResponse({ status: 200, description: 'Lista de categorías', type: () => CategoryListResponseDto })
+  @ApiOperation({
+    summary: 'Listar categorías',
+    description: 'Lista las categorías de productos del negocio.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de categorías',
+    type: () => CategoryListResponseDto,
+  })
   @ApiResponse({ status: 401, description: 'No autorizado' })
   async list(
     @CurrentBusinessId() businessId: string,
@@ -77,8 +91,14 @@ export class CategoryController {
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Actualizar categoría', description: 'Actualiza una categoría existente.' })
-  @ApiResponse({ status: 200, description: 'Categoría actualizada exitosamente' })
+  @ApiOperation({
+    summary: 'Actualizar categoría',
+    description: 'Actualiza una categoría existente.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Categoría actualizada exitosamente',
+  })
   @ApiResponse({ status: 404, description: 'Categoría no encontrada' })
   @ApiResponse({ status: 401, description: 'No autorizado' })
   async update(
@@ -98,10 +118,16 @@ export class CategoryController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Eliminar categoría', description: 'Elimina una categoría (solo si no tiene hijos ni productos).' })
+  @ApiOperation({
+    summary: 'Eliminar categoría',
+    description: 'Elimina una categoría (solo si no tiene hijos ni productos).',
+  })
   @ApiResponse({ status: 200, description: 'Categoría eliminada exitosamente' })
   @ApiResponse({ status: 404, description: 'Categoría no encontrada' })
-  @ApiResponse({ status: 400, description: 'Categoría tiene hijos o productos asociados' })
+  @ApiResponse({
+    status: 400,
+    description: 'Categoría tiene hijos o productos asociados',
+  })
   @ApiResponse({ status: 401, description: 'No autorizado' })
   async delete(
     @Param('id', ParseUUIDPipe) id: string,

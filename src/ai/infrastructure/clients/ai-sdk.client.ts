@@ -16,7 +16,8 @@ import type {
 import { AiMessage, AiUsage, AiResponse } from '../../domain';
 
 const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1';
-const OPENROUTER_CHAT_COMPLETIONS_URL = 'https://openrouter.ai/api/v1/chat/completions';
+const OPENROUTER_CHAT_COMPLETIONS_URL =
+  'https://openrouter.ai/api/v1/chat/completions';
 
 interface ProviderEntry {
   provider: any;
@@ -49,7 +50,10 @@ export class AiSdkClient {
     });
 
     const gatewayProvider = createGateway({
-      apiKey: this.config.getApiKey('gateway') ?? process.env.AI_GATEWAY_API_KEY ?? '',
+      apiKey:
+        this.config.getApiKey('gateway') ??
+        process.env.AI_GATEWAY_API_KEY ??
+        '',
     });
     this.providers.set('gateway', {
       provider: gatewayProvider,

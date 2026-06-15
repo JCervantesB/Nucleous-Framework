@@ -42,8 +42,15 @@ export class UnitMeasureController {
   ) {}
 
   @Post()
-  @ApiOperation({ summary: 'Crear unidad de medida', description: 'Crea una nueva unidad de medida.' })
-  @ApiResponse({ status: 201, description: 'Unidad creada exitosamente', type: () => UnitMeasureResponseDto })
+  @ApiOperation({
+    summary: 'Crear unidad de medida',
+    description: 'Crea una nueva unidad de medida.',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Unidad creada exitosamente',
+    type: () => UnitMeasureResponseDto,
+  })
   @ApiResponse({ status: 400, description: 'Datos inválidos' })
   @ApiResponse({ status: 401, description: 'No autorizado' })
   async create(
@@ -63,18 +70,26 @@ export class UnitMeasureController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Listar unidades de medida', description: 'Lista todas las unidades de medida del negocio.' })
-  @ApiResponse({ status: 200, description: 'Lista de unidades', type: () => UnitMeasureListResponseDto })
+  @ApiOperation({
+    summary: 'Listar unidades de medida',
+    description: 'Lista todas las unidades de medida del negocio.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de unidades',
+    type: () => UnitMeasureListResponseDto,
+  })
   @ApiResponse({ status: 401, description: 'No autorizado' })
-  async list(
-    @CurrentBusinessId() businessId: string,
-  ) {
+  async list(@CurrentBusinessId() businessId: string) {
     const result = await this.listUnitMeasuresUseCase.execute({ businessId });
     return { data: result.data };
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Actualizar unidad de medida', description: 'Actualiza una unidad de medida existente.' })
+  @ApiOperation({
+    summary: 'Actualizar unidad de medida',
+    description: 'Actualiza una unidad de medida existente.',
+  })
   @ApiResponse({ status: 200, description: 'Unidad actualizada exitosamente' })
   @ApiResponse({ status: 404, description: 'Unidad no encontrada' })
   @ApiResponse({ status: 401, description: 'No autorizado' })
@@ -97,7 +112,10 @@ export class UnitMeasureController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Eliminar unidad de medida', description: 'Elimina una unidad de medida.' })
+  @ApiOperation({
+    summary: 'Eliminar unidad de medida',
+    description: 'Elimina una unidad de medida.',
+  })
   @ApiResponse({ status: 200, description: 'Unidad eliminada exitosamente' })
   @ApiResponse({ status: 404, description: 'Unidad no encontrada' })
   @ApiResponse({ status: 401, description: 'No autorizado' })

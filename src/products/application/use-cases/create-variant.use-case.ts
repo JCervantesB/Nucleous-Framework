@@ -1,5 +1,8 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
-import { PRODUCT_REPOSITORY, PRODUCT_VARIANT_REPOSITORY } from '../products.tokens';
+import {
+  PRODUCT_REPOSITORY,
+  PRODUCT_VARIANT_REPOSITORY,
+} from '../products.tokens';
 import type { ProductRepository } from '../../domain/repositories/product.repository';
 import type { ProductVariantRepository } from '../../domain/repositories/product-variant.repository';
 import { ProductVariant } from '../../domain/entities/product-variant.entity';
@@ -23,16 +26,23 @@ export class CreateVariantUseCase {
 
   constructor(
     @Inject(PRODUCT_REPOSITORY) private readonly productRepo: ProductRepository,
-    @Inject(PRODUCT_VARIANT_REPOSITORY) private readonly variantRepo: ProductVariantRepository,
+    @Inject(PRODUCT_VARIANT_REPOSITORY)
+    private readonly variantRepo: ProductVariantRepository,
   ) {}
 
   async execute(input: CreateVariantInput): Promise<CreateVariantOutput> {
-    const product = await this.productRepo.findById(input.productId, input.businessId);
+    const product = await this.productRepo.findById(
+      input.productId,
+      input.businessId,
+    );
     if (!product) {
       throw new Error('Producto no encontrado');
     }
 
-    const existingVariant = await this.variantRepo.findBySku(input.sku, input.productId);
+    const existingVariant = await this.variantRepo.findBySku(
+      input.sku,
+      input.productId,
+    );
     if (existingVariant) {
       throw new Error(`Ya existe una variante con SKU: ${input.sku}`);
     }

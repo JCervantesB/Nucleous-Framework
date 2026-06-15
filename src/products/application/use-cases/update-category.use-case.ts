@@ -19,18 +19,25 @@ export class UpdateCategoryUseCase {
   private readonly logger = new Logger(UpdateCategoryUseCase.name);
 
   constructor(
-    @Inject(PRODUCT_CATEGORY_REPOSITORY) private readonly categoryRepo: ProductCategoryRepository,
+    @Inject(PRODUCT_CATEGORY_REPOSITORY)
+    private readonly categoryRepo: ProductCategoryRepository,
   ) {}
 
   async execute(input: UpdateCategoryInput): Promise<UpdateCategoryOutput> {
-    const category = await this.categoryRepo.findById(input.id, input.businessId);
+    const category = await this.categoryRepo.findById(
+      input.id,
+      input.businessId,
+    );
     if (!category) {
       throw new Error('Categoría no encontrada');
     }
 
     if (input.parentId !== undefined) {
       if (input.parentId !== null) {
-        const parent = await this.categoryRepo.findById(input.parentId, input.businessId);
+        const parent = await this.categoryRepo.findById(
+          input.parentId,
+          input.businessId,
+        );
         if (!parent) {
           throw new Error('Categoría padre no encontrada');
         }

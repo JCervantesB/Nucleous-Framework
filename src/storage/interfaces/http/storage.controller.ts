@@ -55,28 +55,51 @@ export class StorageController {
   @Post('upload')
   @ApiOperation({
     summary: 'Subir archivo',
-    description: 'Sube un archivo al storage configurado (local, UploadThing o Cloudinary). El archivo se asocia al businessId del usuario. Se puede especificar el bucket (carpeta) destino. Soporta cualquier tipo de archivo hasta el límite configurado.',
+    description:
+      'Sube un archivo al storage configurado (local, UploadThing o Cloudinary). El archivo se asocia al businessId del usuario. Se puede especificar el bucket (carpeta) destino. Soporta cualquier tipo de archivo hasta el límite configurado.',
   })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
-    description: 'Archivo a subir (multipart/form-data). El archivo va en el campo "file".',
+    description:
+      'Archivo a subir (multipart/form-data). El archivo va en el campo "file".',
     schema: {
       type: 'object',
       properties: {
-        file: { type: 'string', format: 'binary', description: 'Archivo binario a subir' },
-        bucket: { type: 'string', example: 'images', description: 'Bucket o carpeta destino' },
-        filename: { type: 'string', example: 'photo.jpg', description: 'Nombre alternativo para el archivo (opcional)' },
-        contentType: { type: 'string', example: 'image/jpeg', description: 'Tipo MIME del archivo (opcional, se infiere del archivo)' },
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'Archivo binario a subir',
+        },
+        bucket: {
+          type: 'string',
+          example: 'images',
+          description: 'Bucket o carpeta destino',
+        },
+        filename: {
+          type: 'string',
+          example: 'photo.jpg',
+          description: 'Nombre alternativo para el archivo (opcional)',
+        },
+        contentType: {
+          type: 'string',
+          example: 'image/jpeg',
+          description:
+            'Tipo MIME del archivo (opcional, se infiere del archivo)',
+        },
       },
     },
   })
   @ApiResponse({
     status: 201,
-    description: 'Archivo subido exitosamente. Retorna la URL pública, clave única y metadatos del archivo.',
+    description:
+      'Archivo subido exitosamente. Retorna la URL pública, clave única y metadatos del archivo.',
     type: () => UploadFileResponseDto,
   })
   @ApiResponse({ status: 400, description: 'Archivo inválido o faltante.' })
-  @ApiResponse({ status: 401, description: 'No autorizado - Token JWT inválido o ausente.' })
+  @ApiResponse({
+    status: 401,
+    description: 'No autorizado - Token JWT inválido o ausente.',
+  })
   @UseInterceptors(FileInterceptor('file'))
   async upload(
     @CurrentBusinessId() businessId: string,
@@ -105,20 +128,24 @@ export class StorageController {
         size: storedFile.metadata.size,
         mimeType: storedFile.metadata.mimeType,
         originalName: storedFile.metadata.originalName,
-      } as StoredFileResponseDto,
+      },
     };
   }
 
   @Get('files')
   @ApiOperation({
     summary: 'Listar archivos',
-    description: 'Retorna una lista de archivos almacenados. Opcionalmente filtra por bucket o prefijo de ruta. Útil para dashboards de archivos, galerías de imágenes, etc.',
+    description:
+      'Retorna una lista de archivos almacenados. Opcionalmente filtra por bucket o prefijo de ruta. Útil para dashboards de archivos, galerías de imágenes, etc.',
   })
   @ApiResponse({
     status: 200,
     description: 'Lista de archivos obtenidos exitosamente.',
   })
-  @ApiResponse({ status: 401, description: 'No autorizado - Token JWT inválido o ausente.' })
+  @ApiResponse({
+    status: 401,
+    description: 'No autorizado - Token JWT inválido o ausente.',
+  })
   async listFiles(
     @CurrentBusinessId() businessId: string,
     @Query('bucket') bucket?: string,
@@ -134,30 +161,36 @@ export class StorageController {
     }
 
     return {
-      data: result.files?.map(file => ({
-        key: file.key,
-        bucket: file.bucket,
-        url: file.url.url,
-        isSigned: file.url.isSigned,
-        size: file.metadata.size,
-        mimeType: file.metadata.mimeType,
-        originalName: file.metadata.originalName,
-        uploadedAt: file.metadata.uploadedAt,
-      })) ?? [],
+      data:
+        result.files?.map((file) => ({
+          key: file.key,
+          bucket: file.bucket,
+          url: file.url.url,
+          isSigned: file.url.isSigned,
+          size: file.metadata.size,
+          mimeType: file.metadata.mimeType,
+          originalName: file.metadata.originalName,
+          uploadedAt: file.metadata.uploadedAt,
+        })) ?? [],
     };
   }
 
   @Get('files/url')
   @ApiOperation({
     summary: 'Obtener URL firmada de un archivo',
-    description: 'Genera una URL firmada (con token de autenticación) para acceder a un archivo privado. El parámetro expiresIn define segundos de validez (por defecto 3600). Solo funciona para archivos en storage que soporte URLs firmadas.',
+    description:
+      'Genera una URL firmada (con token de autenticación) para acceder a un archivo privado. El parámetro expiresIn define segundos de validez (por defecto 3600). Solo funciona para archivos en storage que soporte URLs firmadas.',
   })
   @ApiResponse({
     status: 200,
-    description: 'URL firmada generada exitosamente. Válida por el tiempo especificado en expiresIn.',
+    description:
+      'URL firmada generada exitosamente. Válida por el tiempo especificado en expiresIn.',
   })
   @ApiResponse({ status: 404, description: 'Archivo no encontrado.' })
-  @ApiResponse({ status: 401, description: 'No autorizado - Token JWT inválido o ausente.' })
+  @ApiResponse({
+    status: 401,
+    description: 'No autorizado - Token JWT inválido o ausente.',
+  })
   async getFileUrl(
     @Param('id', ParseUUIDPipe) id: string,
     @Query() dto: GetFileUrlDto,
@@ -179,11 +212,18 @@ export class StorageController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Eliminar archivo',
-    description: 'Elimina un archivo del storage. Se identifica por bucket y key (ruta/nombre del archivo). Esta acción es irreversible.',
+    description:
+      'Elimina un archivo del storage. Se identifica por bucket y key (ruta/nombre del archivo). Esta acción es irreversible.',
   })
   @ApiResponse({ status: 204, description: 'Archivo eliminado exitosamente.' })
-  @ApiResponse({ status: 404, description: 'Archivo no encontrado en el storage.' })
-  @ApiResponse({ status: 401, description: 'No autorizado - Token JWT inválido o ausente.' })
+  @ApiResponse({
+    status: 404,
+    description: 'Archivo no encontrado en el storage.',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'No autorizado - Token JWT inválido o ausente.',
+  })
   async delete(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: DeleteFileDto,

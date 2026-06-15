@@ -16,7 +16,8 @@ export class DeleteVariantUseCase {
   private readonly logger = new Logger(DeleteVariantUseCase.name);
 
   constructor(
-    @Inject(PRODUCT_VARIANT_REPOSITORY) private readonly variantRepo: ProductVariantRepository,
+    @Inject(PRODUCT_VARIANT_REPOSITORY)
+    private readonly variantRepo: ProductVariantRepository,
   ) {}
 
   async execute(input: DeleteVariantInput): Promise<DeleteVariantOutput> {

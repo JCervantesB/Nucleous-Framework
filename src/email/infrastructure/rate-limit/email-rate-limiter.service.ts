@@ -15,10 +15,12 @@ export class EmailRateLimiterService {
     const maxPerMinute = this.config.getRateLimit();
 
     const timestamps = this.sentEmails.get(businessId) ?? [];
-    const validTimestamps = timestamps.filter(ts => now - ts < windowMs);
+    const validTimestamps = timestamps.filter((ts) => now - ts < windowMs);
 
     if (validTimestamps.length >= maxPerMinute) {
-      this.logger.warn(`Límite de rate limiting excedido para businessId: ${businessId}`);
+      this.logger.warn(
+        `Límite de rate limiting excedido para businessId: ${businessId}`,
+      );
       return false;
     }
 

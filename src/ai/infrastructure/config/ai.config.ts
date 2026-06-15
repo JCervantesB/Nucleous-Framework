@@ -36,7 +36,9 @@ export class AiConfig {
       'openrouter';
 
     const defaultModel =
-      process.env.AI_DEFAULT_MODEL ?? overrides.defaultModel ?? DEFAULT_MODELS.reasoning;
+      process.env.AI_DEFAULT_MODEL ??
+      overrides.defaultModel ??
+      DEFAULT_MODELS.reasoning;
 
     const defaultModelAlias: ModelAlias =
       (process.env.AI_DEFAULT_MODEL_ALIAS as ModelAlias) ??

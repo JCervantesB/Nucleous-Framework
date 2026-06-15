@@ -6,17 +6,26 @@ export class CreateVariantDto {
   @IsString()
   sku!: string;
 
-  @ApiProperty({ example: 'Camiseta Roja Talla M', description: 'Nombre de la variante' })
+  @ApiProperty({
+    example: 'Camiseta Roja Talla M',
+    description: 'Nombre de la variante',
+  })
   @IsString()
   name!: string;
 
-  @ApiPropertyOptional({ example: 5.0, description: 'Modificador de precio (se suma al precio base)' })
+  @ApiPropertyOptional({
+    example: 5.0,
+    description: 'Modificador de precio (se suma al precio base)',
+  })
   @IsOptional()
   @IsNumber()
   @Min(0)
   priceModifier?: number;
 
-  @ApiPropertyOptional({ example: { color: 'rojo', talla: 'M' }, description: 'Atributos de la variante' })
+  @ApiPropertyOptional({
+    example: { color: 'rojo', talla: 'M' },
+    description: 'Atributos de la variante',
+  })
   @IsOptional()
   attributes?: Record<string, string>;
 }
@@ -54,16 +63,29 @@ export class VariantResponseDto {
   @ApiProperty({ type: 'number', description: 'Modificador de precio' })
   priceModifier!: number;
 
-  @ApiProperty({ type: 'object', additionalProperties: { type: 'string' }, description: 'Atributos de la variante' })
+  @ApiProperty({
+    type: 'object',
+    additionalProperties: { type: 'string' },
+    description: 'Atributos de la variante',
+  })
   attributes!: Record<string, string>;
 
   @ApiProperty({ type: 'boolean', description: 'Si está activa' })
   isActive!: boolean;
 
-  @ApiProperty({ type: String, format: 'date-time', description: 'Fecha de creación' })
+  @ApiProperty({
+    type: String,
+    format: 'date-time',
+    description: 'Fecha de creación',
+  })
   createdAt!: Date;
 
-  @ApiPropertyOptional({ type: String, format: 'date-time', nullable: true, description: 'Fecha de actualización' })
+  @ApiPropertyOptional({
+    type: String,
+    format: 'date-time',
+    nullable: true,
+    description: 'Fecha de actualización',
+  })
   updatedAt!: Date | null;
 }
 

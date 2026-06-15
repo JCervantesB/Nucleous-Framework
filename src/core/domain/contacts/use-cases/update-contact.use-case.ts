@@ -31,7 +31,10 @@ export class UpdateContactUseCase {
   ) {}
 
   async execute(input: UpdateContactInput): Promise<UpdateContactOutput> {
-    const existing = await this.contactRepo.findById(input.id, input.businessId);
+    const existing = await this.contactRepo.findById(
+      input.id,
+      input.businessId,
+    );
     if (!existing) {
       throw new Error('Contacto no encontrado');
     }

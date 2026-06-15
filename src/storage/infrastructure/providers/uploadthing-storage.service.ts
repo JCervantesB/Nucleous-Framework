@@ -2,7 +2,15 @@ import { Injectable, Inject, Logger } from '@nestjs/common';
 import { UTApi } from 'uploadthing/server';
 import { UTFile } from 'uploadthing/server';
 import { STORAGE_CONFIG } from '../../application/storage.tokens';
-import type { StorageProvider, UploadOptions, UploadResult, DeleteResult, GetUrlOptions, ListFilesOptions, ListFilesResult } from '../../application/storage.types';
+import type {
+  StorageProvider,
+  UploadOptions,
+  UploadResult,
+  DeleteResult,
+  GetUrlOptions,
+  ListFilesOptions,
+  ListFilesResult,
+} from '../../application/storage.types';
 import { StoredFile } from '../../domain/value-objects/stored-file.vo';
 import { StorageConfig } from '../config/storage.config';
 
@@ -23,7 +31,8 @@ export class UploadThingStorageService implements StorageProvider {
 
   async upload(buffer: Buffer, options: UploadOptions): Promise<UploadResult> {
     try {
-      const filename = options.filename ?? `${crypto.randomUUID()}-${Date.now()}`;
+      const filename =
+        options.filename ?? `${crypto.randomUUID()}-${Date.now()}`;
 
       const uint8Array = new Uint8Array(buffer);
       const utFile = new UTFile([uint8Array], filename, {
@@ -34,7 +43,8 @@ export class UploadThingStorageService implements StorageProvider {
       const firstResult = results[0];
 
       if (!firstResult || ('error' in firstResult && firstResult.error)) {
-        const errorMsg = 'error' in firstResult ? firstResult.error?.message : 'Upload failed';
+        const errorMsg =
+          'error' in firstResult ? firstResult.error?.message : 'Upload failed';
         this.logger.error(`Error de UploadThing: ${errorMsg}`);
         return { success: false, error: errorMsg };
       }
@@ -76,7 +86,11 @@ export class UploadThingStorageService implements StorageProvider {
     }
   }
 
-  async getUrl(key: string, bucket: string, options?: GetUrlOptions): Promise<string> {
+  async getUrl(
+    key: string,
+    bucket: string,
+    options?: GetUrlOptions,
+  ): Promise<string> {
     try {
       const result = await this.utApi.getSignedURL(key, {
         expiresIn: options?.expiresIn ?? 3600,
@@ -109,20 +123,22 @@ export class UploadThingStorageService implements StorageProvider {
         const signedUrl = await this.utApi.getSignedURL(file.key);
         const url = typeof signedUrl === 'string' ? signedUrl : signedUrl.url;
 
-        files.push(StoredFile.create({
-          bucket: options?.bucket ?? 'default',
-          key: file.key,
-          metadata: {
-            size: file.size,
-            mimeType: 'application/octet-stream',
-            originalName: file.name,
-            uploadedAt: new Date(file.uploadedAt),
-          },
-          url: {
-            url: url,
-            isSigned: true,
-          },
-        }));
+        files.push(
+          StoredFile.create({
+            bucket: options?.bucket ?? 'default',
+            key: file.key,
+            metadata: {
+              size: file.size,
+              mimeType: 'application/octet-stream',
+              originalName: file.name,
+              uploadedAt: new Date(file.uploadedAt),
+            },
+            url: {
+              url: url,
+              isSigned: true,
+            },
+          }),
+        );
       }
 
       this.logger.log(`Listados ${files.length} archivos de UploadThing`);

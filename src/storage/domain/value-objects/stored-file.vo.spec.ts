@@ -1,4 +1,8 @@
-import { StoredFile, StoredFileUrl, StoredFileMetadata } from './stored-file.vo';
+import {
+  StoredFile,
+  StoredFileUrl,
+  StoredFileMetadata,
+} from './stored-file.vo';
 
 describe('StoredFile', () => {
   const createTestMetadata = (): StoredFileMetadata => ({

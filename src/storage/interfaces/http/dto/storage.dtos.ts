@@ -36,7 +36,10 @@ export class GetFileUrlDto {
   @IsString()
   key!: string;
 
-  @ApiPropertyOptional({ description: 'Tiempo de expiración en segundos', default: 3600 })
+  @ApiPropertyOptional({
+    description: 'Tiempo de expiración en segundos',
+    default: 3600,
+  })
   @IsOptional()
   expiresIn?: number;
 }
@@ -65,12 +68,18 @@ export class StoredFileResponseDto {
 }
 
 export class UploadFileResponseDto {
-  @ApiProperty({ type: () => StoredFileResponseDto, description: 'Datos del archivo subido' })
+  @ApiProperty({
+    type: () => StoredFileResponseDto,
+    description: 'Datos del archivo subido',
+  })
   file!: StoredFileResponseDto;
 }
 
 export class DeleteFileResponseDto {
-  @ApiProperty({ type: 'boolean', description: 'Si la eliminación fue exitosa' })
+  @ApiProperty({
+    type: 'boolean',
+    description: 'Si la eliminación fue exitosa',
+  })
   success!: boolean;
 }
 

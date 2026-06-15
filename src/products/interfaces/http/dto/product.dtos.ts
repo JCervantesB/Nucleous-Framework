@@ -1,6 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsString, IsNumber, IsOptional, IsBoolean, IsEnum, Min } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  IsOptional,
+  IsBoolean,
+  IsEnum,
+  Min,
+} from 'class-validator';
 
 export enum ProductTypeDto {
   STORABLE = 'storable',
@@ -13,20 +20,33 @@ export class CreateProductDto {
   @IsString()
   sku!: string;
 
-  @ApiProperty({ example: 'Camiseta Básica', description: 'Nombre del producto' })
+  @ApiProperty({
+    example: 'Camiseta Básica',
+    description: 'Nombre del producto',
+  })
   @IsString()
   name!: string;
 
-  @ApiPropertyOptional({ example: 'Camiseta de algodón 100%', description: 'Descripción del producto' })
+  @ApiPropertyOptional({
+    example: 'Camiseta de algodón 100%',
+    description: 'Descripción del producto',
+  })
   @IsOptional()
   @IsString()
   description?: string;
 
-  @ApiProperty({ enum: ProductTypeDto, example: ProductTypeDto.STORABLE, description: 'Tipo de producto' })
+  @ApiProperty({
+    enum: ProductTypeDto,
+    example: ProductTypeDto.STORABLE,
+    description: 'Tipo de producto',
+  })
   @IsEnum(ProductTypeDto)
   type!: ProductTypeDto;
 
-  @ApiPropertyOptional({ example: 'uuid-categoria', description: 'ID de categoría' })
+  @ApiPropertyOptional({
+    example: 'uuid-categoria',
+    description: 'ID de categoría',
+  })
   @IsOptional()
   @IsString()
   categoryId?: string;
@@ -36,12 +56,18 @@ export class CreateProductDto {
   @Min(0)
   basePrice!: number;
 
-  @ApiPropertyOptional({ example: 'USD', description: 'Código de moneda ISO 4217' })
+  @ApiPropertyOptional({
+    example: 'USD',
+    description: 'Código de moneda ISO 4217',
+  })
   @IsOptional()
   @IsString()
   currencyCode?: string;
 
-  @ApiPropertyOptional({ example: true, description: 'Si requiere control de inventario' })
+  @ApiPropertyOptional({
+    example: true,
+    description: 'Si requiere control de inventario',
+  })
   @IsOptional()
   @IsBoolean()
   trackInventory?: boolean;
@@ -58,7 +84,10 @@ export class UpdateProductDto {
   @IsString()
   description?: string;
 
-  @ApiPropertyOptional({ enum: ['storable', 'consumable', 'service'], description: 'Tipo de producto' })
+  @ApiPropertyOptional({
+    enum: ['storable', 'consumable', 'service'],
+    description: 'Tipo de producto',
+  })
   @IsOptional()
   @IsString()
   type?: string;
@@ -95,13 +124,24 @@ export class ProductResponseDto {
   @ApiProperty({ type: 'string', description: 'Nombre del producto' })
   name!: string;
 
-  @ApiPropertyOptional({ type: 'string', nullable: true, description: 'Descripción del producto' })
+  @ApiPropertyOptional({
+    type: 'string',
+    nullable: true,
+    description: 'Descripción del producto',
+  })
   description!: string | null;
 
-  @ApiProperty({ enum: ['storable', 'consumable', 'service'], description: 'Tipo de producto' })
+  @ApiProperty({
+    enum: ['storable', 'consumable', 'service'],
+    description: 'Tipo de producto',
+  })
   type!: string;
 
-  @ApiPropertyOptional({ type: 'string', nullable: true, description: 'ID de categoría' })
+  @ApiPropertyOptional({
+    type: 'string',
+    nullable: true,
+    description: 'ID de categoría',
+  })
   categoryId!: string | null;
 
   @ApiProperty({ type: 'number', description: 'Precio base' })
@@ -116,10 +156,19 @@ export class ProductResponseDto {
   @ApiProperty({ type: 'boolean', description: 'Si rastrea inventario' })
   trackInventory!: boolean;
 
-  @ApiProperty({ type: String, format: 'date-time', description: 'Fecha de creación' })
+  @ApiProperty({
+    type: String,
+    format: 'date-time',
+    description: 'Fecha de creación',
+  })
   createdAt!: Date;
 
-  @ApiPropertyOptional({ type: String, format: 'date-time', nullable: true, description: 'Fecha de actualización' })
+  @ApiPropertyOptional({
+    type: String,
+    format: 'date-time',
+    nullable: true,
+    description: 'Fecha de actualización',
+  })
   updatedAt!: Date | null;
 }
 
@@ -155,7 +204,10 @@ export class ListProductsQueryDto {
   @IsString()
   search?: string;
 
-  @ApiPropertyOptional({ enum: ['storable', 'consumable', 'service'], description: 'Tipo de producto' })
+  @ApiPropertyOptional({
+    enum: ['storable', 'consumable', 'service'],
+    description: 'Tipo de producto',
+  })
   @IsOptional()
   @IsString()
   type?: string;

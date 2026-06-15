@@ -27,14 +27,14 @@ describe('ListProductsUseCase', () => {
           businessId,
           sku: 'PROD-001',
           name: 'Producto 1',
-          type: 'storable' as ProductType,
+          type: 'storable',
           basePrice: 10,
         }),
         Product.create({
           businessId,
           sku: 'PROD-002',
           name: 'Producto 2',
-          type: 'consumable' as ProductType,
+          type: 'consumable',
           basePrice: 20,
         }),
       ];

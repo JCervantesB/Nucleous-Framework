@@ -1,9 +1,5 @@
 import { Inject, Injectable, OnModuleInit, Logger } from '@nestjs/common';
-import {
-  AI_SDK_CLIENT,
-  AI_MODEL_REGISTRY,
-  AI_RATE_LIMITER,
-} from './ai.tokens';
+import { AI_SDK_CLIENT, AI_MODEL_REGISTRY, AI_RATE_LIMITER } from './ai.tokens';
 import { AiSdkClient } from '../infrastructure/clients/ai-sdk.client';
 import { ModelRegistryService } from '../infrastructure/clients/model-registry.service';
 import { AiRateLimiterService } from '../infrastructure/rate-limit/ai-rate-limiter.service';
@@ -32,7 +28,8 @@ export class AiService implements OnModuleInit {
 
   constructor(
     @Inject(AI_SDK_CLIENT) private readonly sdkClient: AiSdkClient,
-    @Inject(AI_MODEL_REGISTRY) private readonly modelRegistry: ModelRegistryService,
+    @Inject(AI_MODEL_REGISTRY)
+    private readonly modelRegistry: ModelRegistryService,
     @Inject(AI_RATE_LIMITER) private readonly rateLimiter: AiRateLimiterService,
   ) {}
 
@@ -47,7 +44,10 @@ export class AiService implements OnModuleInit {
     this.rateLimiter.checkLimit(provider, modelAlias);
 
     const prompt = input.systemPrompt
-      ? AiPrompt.create({ userPrompt: input.prompt, systemPrompt: input.systemPrompt })
+      ? AiPrompt.create({
+          userPrompt: input.prompt,
+          systemPrompt: input.systemPrompt,
+        })
       : AiPrompt.fromSingle(input.prompt);
 
     const sdkMessages = prompt.toMessages();
@@ -68,7 +68,9 @@ export class AiService implements OnModuleInit {
 
   async generateTextWithPrompt(prompt: AiPrompt): Promise<AiResponse> {
     const provider = this.modelRegistry.getDefaultProvider();
-    const model = this.modelRegistry.getModelForAlias(this.modelRegistry.getDefaultModelAlias() as any);
+    const model = this.modelRegistry.getModelForAlias(
+      this.modelRegistry.getDefaultModelAlias(),
+    );
     const modelAlias = this.modelRegistry.getDefaultModelAlias();
 
     this.rateLimiter.checkLimit(provider, modelAlias);
@@ -80,12 +82,14 @@ export class AiService implements OnModuleInit {
       prompt: lastMessage.content,
       model,
       provider,
-      systemPrompt: prompt.hasSystemPrompt ? sdkMessages.find(m => m.role === 'system')?.content : undefined,
+      systemPrompt: prompt.hasSystemPrompt
+        ? sdkMessages.find((m) => m.role === 'system')?.content
+        : undefined,
     });
 
     this.rateLimiter.recordRequest(provider, modelAlias);
 
-    const usage = AiUsage.fromSdk(result.usage as any);
+    const usage = AiUsage.fromSdk(result.usage);
     return AiResponse.create({
       text: result.text,
       usage: usage.toJSON(),
@@ -127,7 +131,9 @@ export class AiService implements OnModuleInit {
     this.rateLimiter.recordRequest(provider, modelAlias);
   }
 
-  async streamObject<TResult>(input: StreamObjectInput<TResult>): Promise<void> {
+  async streamObject<TResult>(
+    input: StreamObjectInput<TResult>,
+  ): Promise<void> {
     const { provider, model, modelAlias } = this.resolveConfig(input);
 
     this.rateLimiter.checkLimit(provider, modelAlias);
@@ -147,8 +153,8 @@ export class AiService implements OnModuleInit {
 
     this.rateLimiter.checkLimit(provider, modelAlias);
 
-    const messages = input.messages.map(m =>
-      AiMessage.create({ role: m.role as any, content: m.content })
+    const messages = input.messages.map((m) =>
+      AiMessage.create({ role: m.role as any, content: m.content }),
     );
 
     const result = await this.sdkClient.chat({
@@ -164,22 +170,24 @@ export class AiService implements OnModuleInit {
 
   async chatWithMessages(messages: AiMessage[]): Promise<AiResponse> {
     const provider = this.modelRegistry.getDefaultProvider();
-    const model = this.modelRegistry.getModelForAlias(this.modelRegistry.getDefaultModelAlias() as any);
+    const model = this.modelRegistry.getModelForAlias(
+      this.modelRegistry.getDefaultModelAlias(),
+    );
     const modelAlias = this.modelRegistry.getDefaultModelAlias();
 
     this.rateLimiter.checkLimit(provider, modelAlias);
 
-    const sdkMessages = messages.map(m => m.toSdkFormat());
+    const sdkMessages = messages.map((m) => m.toSdkFormat());
 
     const result = await this.sdkClient.chat({
-      messages: sdkMessages as any,
+      messages: sdkMessages,
       model,
       provider,
     });
 
     this.rateLimiter.recordRequest(provider, modelAlias);
 
-    const usage = AiUsage.fromSdk(result.usage as any);
+    const usage = AiUsage.fromSdk(result.usage);
     return AiResponse.create({
       text: result.text,
       usage: usage.toJSON(),
@@ -195,7 +203,9 @@ export class AiService implements OnModuleInit {
   }): { provider: string; model: string; modelAlias: string } {
     return {
       provider: input.provider ?? this.modelRegistry.getDefaultProvider(),
-      model: input.model ?? this.modelRegistry.getModelForAlias(input.modelAlias as any),
+      model:
+        input.model ??
+        this.modelRegistry.getModelForAlias(input.modelAlias as any),
       modelAlias: input.modelAlias ?? this.modelRegistry.getDefaultModelAlias(),
     };
   }

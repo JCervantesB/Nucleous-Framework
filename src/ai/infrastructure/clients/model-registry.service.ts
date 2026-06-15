@@ -13,7 +13,7 @@ export class ModelRegistryService {
     this.providerToModel.set('openai', DEFAULT_MODELS.fast);
 
     for (const [alias, model] of Object.entries(DEFAULT_MODELS)) {
-      this.aliasToModel.set(alias as ModelAlias, model as string);
+      this.aliasToModel.set(alias as ModelAlias, model);
     }
   }
 

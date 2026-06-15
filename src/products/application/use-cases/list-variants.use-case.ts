@@ -14,7 +14,8 @@ export interface ListVariantsOutput {
 @Injectable()
 export class ListVariantsUseCase {
   constructor(
-    @Inject(PRODUCT_VARIANT_REPOSITORY) private readonly variantRepo: ProductVariantRepository,
+    @Inject(PRODUCT_VARIANT_REPOSITORY)
+    private readonly variantRepo: ProductVariantRepository,
   ) {}
 
   async execute(input: ListVariantsInput): Promise<ListVariantsOutput> {

@@ -1,5 +1,7 @@
 export class StoragePath {
-  private constructor(private readonly props: { path: string; normalized: string }) {}
+  private constructor(
+    private readonly props: { path: string; normalized: string },
+  ) {}
 
   static create(bucket: string, ...parts: string[]): StoragePath {
     const pathParts = [bucket, ...parts.filter(Boolean)];

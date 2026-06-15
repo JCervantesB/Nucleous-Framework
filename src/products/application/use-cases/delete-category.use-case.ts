@@ -16,18 +16,24 @@ export class DeleteCategoryUseCase {
   private readonly logger = new Logger(DeleteCategoryUseCase.name);
 
   constructor(
-    @Inject(PRODUCT_CATEGORY_REPOSITORY) private readonly categoryRepo: ProductCategoryRepository,
+    @Inject(PRODUCT_CATEGORY_REPOSITORY)
+    private readonly categoryRepo: ProductCategoryRepository,
   ) {}
 
   async execute(input: DeleteCategoryInput): Promise<DeleteCategoryOutput> {
-    const category = await this.categoryRepo.findById(input.id, input.businessId);
+    const category = await this.categoryRepo.findById(
+      input.id,
+      input.businessId,
+    );
     if (!category) {
       throw new Error('Categoría no encontrada');
     }
 
     const hasChildren = await this.categoryRepo.hasChildren(input.id);
     if (hasChildren) {
-      throw new Error('No se puede eliminar una categoría que tiene subcategorías');
+      throw new Error(
+        'No se puede eliminar una categoría que tiene subcategorías',
+      );
     }
 
     const hasProducts = await this.categoryRepo.hasProducts(input.id);

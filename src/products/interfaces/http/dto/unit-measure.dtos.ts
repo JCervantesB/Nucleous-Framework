@@ -1,5 +1,12 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsNumber, IsOptional, IsBoolean, IsEnum, Min } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  IsOptional,
+  IsBoolean,
+  IsEnum,
+  Min,
+} from 'class-validator';
 
 export enum UnitTypeDto {
   UNIT = 'unit',
@@ -18,17 +25,27 @@ export class CreateUnitMeasureDto {
   @IsString()
   abbreviation!: string;
 
-  @ApiProperty({ enum: UnitTypeDto, example: UnitTypeDto.WEIGHT, description: 'Tipo de unidad' })
+  @ApiProperty({
+    enum: UnitTypeDto,
+    example: UnitTypeDto.WEIGHT,
+    description: 'Tipo de unidad',
+  })
   @IsEnum(UnitTypeDto)
   type!: UnitTypeDto;
 
-  @ApiPropertyOptional({ example: 1000, description: 'Factor de conversión a unidad base' })
+  @ApiPropertyOptional({
+    example: 1000,
+    description: 'Factor de conversión a unidad base',
+  })
   @IsOptional()
   @IsNumber()
   @Min(1)
   conversionFactor?: number;
 
-  @ApiPropertyOptional({ example: false, description: 'Si es la unidad por defecto' })
+  @ApiPropertyOptional({
+    example: false,
+    description: 'Si es la unidad por defecto',
+  })
   @IsOptional()
   @IsBoolean()
   isDefault?: boolean;
@@ -72,7 +89,10 @@ export class UnitMeasureResponseDto {
   @ApiProperty({ type: 'string', description: 'Abreviatura' })
   abbreviation!: string;
 
-  @ApiProperty({ enum: ['weight', 'volume', 'length', 'area', 'quantity'], description: 'Tipo de unidad' })
+  @ApiProperty({
+    enum: ['weight', 'volume', 'length', 'area', 'quantity'],
+    description: 'Tipo de unidad',
+  })
   type!: string;
 
   @ApiProperty({ type: 'number', description: 'Factor de conversión' })
@@ -81,10 +101,19 @@ export class UnitMeasureResponseDto {
   @ApiProperty({ type: 'boolean', description: 'Si es la unidad por defecto' })
   isDefault!: boolean;
 
-  @ApiProperty({ type: String, format: 'date-time', description: 'Fecha de creación' })
+  @ApiProperty({
+    type: String,
+    format: 'date-time',
+    description: 'Fecha de creación',
+  })
   createdAt!: Date;
 
-  @ApiPropertyOptional({ type: String, format: 'date-time', nullable: true, description: 'Fecha de actualización' })
+  @ApiPropertyOptional({
+    type: String,
+    format: 'date-time',
+    nullable: true,
+    description: 'Fecha de actualización',
+  })
   updatedAt!: Date | null;
 }
 

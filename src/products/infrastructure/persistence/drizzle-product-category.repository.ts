@@ -2,8 +2,14 @@ import { Injectable, Inject } from '@nestjs/common';
 import { eq, and } from 'drizzle-orm';
 import { db } from '#app/database/client';
 import { productCategory, product } from '#app/database/schema/product';
-import { ProductCategory, type ProductCategoryProps } from '../../domain/entities/product-category.entity';
-import type { ProductCategoryRepository, ProductCategoryListOptions } from '../../domain/repositories/product-category.repository';
+import {
+  ProductCategory,
+  type ProductCategoryProps,
+} from '../../domain/entities/product-category.entity';
+import type {
+  ProductCategoryRepository,
+  ProductCategoryListOptions,
+} from '../../domain/repositories/product-category.repository';
 
 @Injectable()
 export class DrizzleProductCategoryRepository implements ProductCategoryRepository {
@@ -22,18 +28,29 @@ export class DrizzleProductCategoryRepository implements ProductCategoryReposito
     return entity;
   }
 
-  async findById(id: string, businessId: string): Promise<ProductCategory | null> {
+  async findById(
+    id: string,
+    businessId: string,
+  ): Promise<ProductCategory | null> {
     const rows = await this._db
       .select()
       .from(productCategory)
-      .where(and(eq(productCategory.id, id), eq(productCategory.businessId, businessId)))
+      .where(
+        and(
+          eq(productCategory.id, id),
+          eq(productCategory.businessId, businessId),
+        ),
+      )
       .limit(1);
     const row = rows[0];
     if (!row) return null;
     return this.mapToEntity(row);
   }
 
-  async list(businessId: string, options?: ProductCategoryListOptions): Promise<{ data: ProductCategory[]; total: number }> {
+  async list(
+    businessId: string,
+    options?: ProductCategoryListOptions,
+  ): Promise<{ data: ProductCategory[]; total: number }> {
     const page = options?.page ?? 1;
     const pageSize = options?.pageSize ?? 50;
     const offset = (page - 1) * pageSize;
@@ -51,7 +68,7 @@ export class DrizzleProductCategoryRepository implements ProductCategoryReposito
       .where(eq(productCategory.businessId, businessId));
 
     return {
-      data: rows.map(row => this.mapToEntity(row)),
+      data: rows.map((row) => this.mapToEntity(row)),
       total: countResult.length,
     };
   }
@@ -60,8 +77,13 @@ export class DrizzleProductCategoryRepository implements ProductCategoryReposito
     const rows = await this._db
       .select()
       .from(productCategory)
-      .where(and(eq(productCategory.businessId, businessId), eq(productCategory.isActive, true)));
-    return rows.map(row => this.mapToEntity(row));
+      .where(
+        and(
+          eq(productCategory.businessId, businessId),
+          eq(productCategory.isActive, true),
+        ),
+      );
+    return rows.map((row) => this.mapToEntity(row));
   }
 
   async update(entity: ProductCategory): Promise<ProductCategory> {
@@ -82,14 +104,24 @@ export class DrizzleProductCategoryRepository implements ProductCategoryReposito
     await this._db
       .update(productCategory)
       .set({ isActive: false })
-      .where(and(eq(productCategory.id, id), eq(productCategory.businessId, businessId)));
+      .where(
+        and(
+          eq(productCategory.id, id),
+          eq(productCategory.businessId, businessId),
+        ),
+      );
   }
 
   async hasChildren(id: string): Promise<boolean> {
     const rows = await this._db
       .select()
       .from(productCategory)
-      .where(and(eq(productCategory.parentId, id), eq(productCategory.isActive, true)))
+      .where(
+        and(
+          eq(productCategory.parentId, id),
+          eq(productCategory.isActive, true),
+        ),
+      )
       .limit(1);
     return rows.length > 0;
   }
@@ -103,7 +135,9 @@ export class DrizzleProductCategoryRepository implements ProductCategoryReposito
     return rows.length > 0;
   }
 
-  private mapToEntity(row: typeof productCategory.$inferSelect): ProductCategory {
+  private mapToEntity(
+    row: typeof productCategory.$inferSelect,
+  ): ProductCategory {
     const props: ProductCategoryProps = {
       id: row.id,
       businessId: row.businessId,

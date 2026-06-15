@@ -14,7 +14,8 @@ export interface ListUnitMeasuresOutput {
 @Injectable()
 export class ListUnitMeasuresUseCase {
   constructor(
-    @Inject(PRODUCT_UNIT_MEASURE_REPOSITORY) private readonly unitRepo: ProductUnitMeasureRepository,
+    @Inject(PRODUCT_UNIT_MEASURE_REPOSITORY)
+    private readonly unitRepo: ProductUnitMeasureRepository,
   ) {}
 
   async execute(input: ListUnitMeasuresInput): Promise<ListUnitMeasuresOutput> {

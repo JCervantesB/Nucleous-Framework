@@ -2,8 +2,15 @@ import { Injectable, Inject } from '@nestjs/common';
 import { eq, and, like, or } from 'drizzle-orm';
 import { db } from '#app/database/client';
 import { product } from '#app/database/schema/product';
-import { Product, type ProductProps, type ProductType } from '../../domain/entities/product.entity';
-import type { ProductRepository, ProductListOptions } from '../../domain/repositories/product.repository';
+import {
+  Product,
+  type ProductProps,
+  type ProductType,
+} from '../../domain/entities/product.entity';
+import type {
+  ProductRepository,
+  ProductListOptions,
+} from '../../domain/repositories/product.repository';
 
 @Injectable()
 export class DrizzleProductRepository implements ProductRepository {
@@ -50,12 +57,18 @@ export class DrizzleProductRepository implements ProductRepository {
     return this.mapToEntity(row);
   }
 
-  async list(businessId: string, options?: ProductListOptions): Promise<{ data: Product[]; total: number }> {
+  async list(
+    businessId: string,
+    options?: ProductListOptions,
+  ): Promise<{ data: Product[]; total: number }> {
     const page = options?.page ?? 1;
     const pageSize = options?.pageSize ?? 20;
     const offset = (page - 1) * pageSize;
 
-    let query = this._db.select().from(product).where(eq(product.businessId, businessId));
+    let query = this._db
+      .select()
+      .from(product)
+      .where(eq(product.businessId, businessId));
 
     if (options?.search) {
       const searchPattern = `%${options.search}%`;
@@ -67,9 +80,9 @@ export class DrizzleProductRepository implements ProductRepository {
             eq(product.businessId, businessId),
             or(
               like(product.name, searchPattern),
-              like(product.sku, searchPattern)
-            )
-          )
+              like(product.sku, searchPattern),
+            ),
+          ),
         );
     }
 
@@ -80,7 +93,7 @@ export class DrizzleProductRepository implements ProductRepository {
       .where(eq(product.businessId, businessId));
 
     return {
-      data: rows.map(row => this.mapToEntity(row)),
+      data: rows.map((row) => this.mapToEntity(row)),
       total: countResult.length,
     };
   }

@@ -1,4 +1,9 @@
-export type MoveType = 'INBOUND' | 'OUTBOUND' | 'TRANSFER' | 'ADJUSTMENT' | 'INTERNAL';
+export type MoveType =
+  | 'INBOUND'
+  | 'OUTBOUND'
+  | 'TRANSFER'
+  | 'ADJUSTMENT'
+  | 'INTERNAL';
 export type MoveState = 'DRAFT' | 'CONFIRMED' | 'DONE' | 'CANCELLED';
 
 export interface InventoryMoveProps {
@@ -89,7 +94,9 @@ export class InventoryMove {
 
   done(): InventoryMove {
     if (this.props.state !== 'CONFIRMED') {
-      throw new Error('Solo se pueden completar movimientos en estado CONFIRMED');
+      throw new Error(
+        'Solo se pueden completar movimientos en estado CONFIRMED',
+      );
     }
     return new InventoryMove({
       ...this.props,
@@ -124,8 +131,14 @@ export class InventoryMove {
     return new InventoryMove({
       ...this.props,
       quantity: params.quantity ?? this.props.quantity,
-      fromLocationId: params.fromLocationId !== undefined ? params.fromLocationId : this.props.fromLocationId,
-      toLocationId: params.toLocationId !== undefined ? params.toLocationId : this.props.toLocationId,
+      fromLocationId:
+        params.fromLocationId !== undefined
+          ? params.fromLocationId
+          : this.props.fromLocationId,
+      toLocationId:
+        params.toLocationId !== undefined
+          ? params.toLocationId
+          : this.props.toLocationId,
       notes: params.notes !== undefined ? params.notes : this.props.notes,
       updatedAt: new Date(),
       updatedBy: params.updatedBy ?? null,

@@ -1,4 +1,9 @@
-export type LocationType = 'INTERNAL' | 'SUPPLIER' | 'CUSTOMER' | 'TRANSIT' | 'ADJUSTMENT';
+export type LocationType =
+  | 'INTERNAL'
+  | 'SUPPLIER'
+  | 'CUSTOMER'
+  | 'TRANSIT'
+  | 'ADJUSTMENT';
 
 export interface InventoryLocationProps {
   id: string;
@@ -84,8 +89,12 @@ export class InventoryLocation {
       code: params.code ?? this.props.code,
       name: params.name ?? this.props.name,
       type: params.type ?? this.props.type,
-      contactId: params.contactId !== undefined ? params.contactId : this.props.contactId,
-      address: params.address !== undefined ? params.address : this.props.address,
+      contactId:
+        params.contactId !== undefined
+          ? params.contactId
+          : this.props.contactId,
+      address:
+        params.address !== undefined ? params.address : this.props.address,
       isTransit: params.type ? params.type === 'TRANSIT' : this.props.isTransit,
       updatedAt: new Date(),
       updatedBy: params.updatedBy ?? null,

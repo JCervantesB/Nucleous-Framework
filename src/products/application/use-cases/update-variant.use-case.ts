@@ -19,7 +19,8 @@ export class UpdateVariantUseCase {
   private readonly logger = new Logger(UpdateVariantUseCase.name);
 
   constructor(
-    @Inject(PRODUCT_VARIANT_REPOSITORY) private readonly variantRepo: ProductVariantRepository,
+    @Inject(PRODUCT_VARIANT_REPOSITORY)
+    private readonly variantRepo: ProductVariantRepository,
   ) {}
 
   async execute(input: UpdateVariantInput): Promise<UpdateVariantOutput> {

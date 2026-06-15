@@ -17,16 +17,16 @@ const MODULE_REGISTRY: ModuleRegistryEntry[] = [
   { name: 'PRODUCTS', module: ProductsModule },
 ];
 
-export const VALID_MODULES = MODULE_REGISTRY.map(m => m.name);
+export const VALID_MODULES = MODULE_REGISTRY.map((m) => m.name);
 
 export function getModulesToLoad(envModules: string[]): Type[] {
-  return MODULE_REGISTRY
-    .filter(entry => envModules.includes(entry.name))
-    .map(entry => entry.module);
+  return MODULE_REGISTRY.filter((entry) => envModules.includes(entry.name)).map(
+    (entry) => entry.module,
+  );
 }
 
 export function validateModules(modules: string[]): string[] {
-  const invalid = modules.filter(m => !VALID_MODULES.includes(m));
+  const invalid = modules.filter((m) => !VALID_MODULES.includes(m));
   if (invalid.length > 0) {
     throw new Error(
       `Módulos inválidos: ${invalid.join(', ')}. Válidos: ${VALID_MODULES.join(', ')}`,

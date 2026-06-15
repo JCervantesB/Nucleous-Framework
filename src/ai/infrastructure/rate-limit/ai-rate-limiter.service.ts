@@ -35,7 +35,10 @@ export class AiRateLimiterService {
     }
   }
 
-  private checkWindow(key: string, limit: { maxRequests: number; windowMs: number }): void {
+  private checkWindow(
+    key: string,
+    limit: { maxRequests: number; windowMs: number },
+  ): void {
     const now = Date.now();
     const timestamps = this.requestLog.get(key) ?? [];
     const validTimestamps = timestamps.filter((t) => now - t < limit.windowMs);

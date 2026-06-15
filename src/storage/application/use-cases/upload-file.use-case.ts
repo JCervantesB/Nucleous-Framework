@@ -41,7 +41,9 @@ export class UploadFileUseCase {
       });
 
       if (result.success && result.file) {
-        this.logger.log(`Archivo subido: ${result.file.key} en bucket ${input.bucket}`);
+        this.logger.log(
+          `Archivo subido: ${result.file.key} en bucket ${input.bucket}`,
+        );
       }
 
       return result;

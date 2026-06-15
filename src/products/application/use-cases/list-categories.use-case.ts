@@ -15,13 +15,14 @@ export interface ListCategoriesOutput {
 @Injectable()
 export class ListCategoriesUseCase {
   constructor(
-    @Inject(PRODUCT_CATEGORY_REPOSITORY) private readonly categoryRepo: ProductCategoryRepository,
+    @Inject(PRODUCT_CATEGORY_REPOSITORY)
+    private readonly categoryRepo: ProductCategoryRepository,
   ) {}
 
   async execute(input: ListCategoriesInput): Promise<ListCategoriesOutput> {
     const categories = input.asTree
       ? await this.categoryRepo.listAsTree(input.businessId)
-      : await this.categoryRepo.list(input.businessId).then(r => r.data);
+      : await this.categoryRepo.list(input.businessId).then((r) => r.data);
 
     return { data: categories };
   }

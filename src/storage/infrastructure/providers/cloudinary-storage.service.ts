@@ -1,7 +1,15 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
 import { v2 as cloudinary } from 'cloudinary';
 import { STORAGE_CONFIG } from '../../application/storage.tokens';
-import type { StorageProvider, UploadOptions, UploadResult, DeleteResult, GetUrlOptions, ListFilesOptions, ListFilesResult } from '../../application/storage.types';
+import type {
+  StorageProvider,
+  UploadOptions,
+  UploadResult,
+  DeleteResult,
+  GetUrlOptions,
+  ListFilesOptions,
+  ListFilesResult,
+} from '../../application/storage.types';
 import { StoredFile } from '../../domain/value-objects/stored-file.vo';
 import { StorageConfig } from '../config/storage.config';
 
@@ -24,12 +32,19 @@ export class CloudinaryStorageService implements StorageProvider {
   async upload(buffer: Buffer, options: UploadOptions): Promise<UploadResult> {
     const cloudinaryConfig = this.config.getCloudinaryConfig();
     if (!cloudinaryConfig) {
-      return { success: false, error: 'Configuración de Cloudinary no encontrada' };
+      return {
+        success: false,
+        error: 'Configuración de Cloudinary no encontrada',
+      };
     }
 
     return new Promise((resolve) => {
-      const folder = `${options.bucket}/${options.folder ?? ''}`.replace(/\/+$/, '');
-      const filename = options.filename ?? `${crypto.randomUUID()}-${Date.now()}`;
+      const folder = `${options.bucket}/${options.folder ?? ''}`.replace(
+        /\/+$/,
+        '',
+      );
+      const filename =
+        options.filename ?? `${crypto.randomUUID()}-${Date.now()}`;
 
       const uploadStream = cloudinary.uploader.upload_stream(
         {
@@ -46,7 +61,10 @@ export class CloudinaryStorageService implements StorageProvider {
           }
 
           if (!result) {
-            resolve({ success: false, error: 'No se recibió respuesta de Cloudinary' });
+            resolve({
+              success: false,
+              error: 'No se recibió respuesta de Cloudinary',
+            });
             return;
           }
 
@@ -86,7 +104,11 @@ export class CloudinaryStorageService implements StorageProvider {
     }
   }
 
-  async getUrl(key: string, bucket: string, options?: GetUrlOptions): Promise<string> {
+  async getUrl(
+    key: string,
+    bucket: string,
+    options?: GetUrlOptions,
+  ): Promise<string> {
     try {
       const result = cloudinary.url(key, {
         secure: true,
@@ -114,11 +136,18 @@ export class CloudinaryStorageService implements StorageProvider {
   async listFiles(options?: ListFilesOptions): Promise<ListFilesResult> {
     const cloudinaryConfig = this.config.getCloudinaryConfig();
     if (!cloudinaryConfig) {
-      return { success: false, error: 'Configuración de Cloudinary no encontrada' };
+      return {
+        success: false,
+        error: 'Configuración de Cloudinary no encontrada',
+      };
     }
 
     try {
-      const folder = `${options?.bucket ?? 'default'}/${options?.prefix ?? ''}`.replace(/\/+$/, '');
+      const folder =
+        `${options?.bucket ?? 'default'}/${options?.prefix ?? ''}`.replace(
+          /\/+$/,
+          '',
+        );
       const result = await cloudinary.api.resources({
         type: 'upload',
         prefix: folder || undefined,
@@ -135,7 +164,10 @@ export class CloudinaryStorageService implements StorageProvider {
           metadata: {
             size: resource.bytes,
             mimeType: resource.format,
-            originalName: resource.original_filename ?? resource.public_id.split('/').pop() ?? '',
+            originalName:
+              resource.original_filename ??
+              resource.public_id.split('/').pop() ??
+              '',
             uploadedAt: new Date(resource.created_at),
           },
           url: {

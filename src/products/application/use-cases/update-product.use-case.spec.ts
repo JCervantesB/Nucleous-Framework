@@ -27,7 +27,7 @@ describe('UpdateProductUseCase', () => {
         businessId,
         sku: 'PROD-001',
         name: 'Camiseta Azul',
-        type: 'storable' as ProductType,
+        type: 'storable',
         basePrice: 29.99,
       });
 
@@ -41,7 +41,10 @@ describe('UpdateProductUseCase', () => {
         basePrice: 39.99,
       });
 
-      expect(mockProductRepo.findById).toHaveBeenCalledWith(productId, businessId);
+      expect(mockProductRepo.findById).toHaveBeenCalledWith(
+        productId,
+        businessId,
+      );
       expect(mockProductRepo.update).toHaveBeenCalled();
       expect(result.success).toBe(true);
     });
@@ -65,7 +68,7 @@ describe('UpdateProductUseCase', () => {
         businessId,
         sku: 'PROD-001',
         name: 'Camiseta Azul',
-        type: 'storable' as ProductType,
+        type: 'storable',
         basePrice: 29.99,
       });
 

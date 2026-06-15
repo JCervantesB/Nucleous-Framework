@@ -16,10 +16,13 @@ export class DeleteUnitMeasureUseCase {
   private readonly logger = new Logger(DeleteUnitMeasureUseCase.name);
 
   constructor(
-    @Inject(PRODUCT_UNIT_MEASURE_REPOSITORY) private readonly unitRepo: ProductUnitMeasureRepository,
+    @Inject(PRODUCT_UNIT_MEASURE_REPOSITORY)
+    private readonly unitRepo: ProductUnitMeasureRepository,
   ) {}
 
-  async execute(input: DeleteUnitMeasureInput): Promise<DeleteUnitMeasureOutput> {
+  async execute(
+    input: DeleteUnitMeasureInput,
+  ): Promise<DeleteUnitMeasureOutput> {
     const unit = await this.unitRepo.findById(input.id, input.businessId);
     if (!unit) {
       throw new Error('Unidad de medida no encontrada');

@@ -30,7 +30,11 @@ export class GetFileUrlUseCase {
         return { success: false, error: 'El archivo no existe' };
       }
 
-      const url = await this.storageService.getUrl(input.key, input.bucket, input.options);
+      const url = await this.storageService.getUrl(
+        input.key,
+        input.bucket,
+        input.options,
+      );
 
       return { success: true, url };
     } catch (error: unknown) {

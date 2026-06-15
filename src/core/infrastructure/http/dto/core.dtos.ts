@@ -1,5 +1,15 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsOptional, IsBoolean, IsArray, ValidateNested, IsUUID, MinLength, MaxLength, IsEmail } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsBoolean,
+  IsArray,
+  ValidateNested,
+  IsUUID,
+  MinLength,
+  MaxLength,
+  IsEmail,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateBusinessDto {
@@ -15,25 +25,37 @@ export class CreateBusinessDto {
   @MaxLength(50)
   slug!: string;
 
-  @ApiPropertyOptional({ description: 'Nombre legal', example: 'Mi Empresa S.A.S' })
+  @ApiPropertyOptional({
+    description: 'Nombre legal',
+    example: 'Mi Empresa S.A.S',
+  })
   @IsOptional()
   @IsString()
   @MaxLength(200)
   legalName?: string;
 
-  @ApiPropertyOptional({ description: 'Código de país (ISO 3166-1 alpha-2)', example: 'CO' })
+  @ApiPropertyOptional({
+    description: 'Código de país (ISO 3166-1 alpha-2)',
+    example: 'CO',
+  })
   @IsOptional()
   @IsString()
   @MaxLength(3)
   countryCode?: string;
 
-  @ApiPropertyOptional({ description: 'Zona horaria', example: 'America/Bogota' })
+  @ApiPropertyOptional({
+    description: 'Zona horaria',
+    example: 'America/Bogota',
+  })
   @IsOptional()
   @IsString()
   @MaxLength(50)
   timezone?: string;
 
-  @ApiPropertyOptional({ description: 'Código de moneda (ISO 4217)', example: 'COP' })
+  @ApiPropertyOptional({
+    description: 'Código de moneda (ISO 4217)',
+    example: 'COP',
+  })
   @IsOptional()
   @IsString()
   @MaxLength(3)
@@ -237,12 +259,19 @@ export class ContactResponseDto {
   @ApiProperty({ type: 'boolean', description: '¿Es empleado?' })
   isEmployee!: boolean;
 
-  @ApiProperty({ type: String, format: 'date-time', description: 'Fecha de creación' })
+  @ApiProperty({
+    type: String,
+    format: 'date-time',
+    description: 'Fecha de creación',
+  })
   createdAt!: Date;
 }
 
 export class CreateActivityDto {
-  @ApiProperty({ description: 'Título de la actividad', example: 'Llamar al cliente' })
+  @ApiProperty({
+    description: 'Título de la actividad',
+    example: 'Llamar al cliente',
+  })
   @IsString()
   @MinLength(1)
   @MaxLength(200)
@@ -263,7 +292,10 @@ export class CreateActivityDto {
   @IsUUID()
   assignedUserId?: string;
 
-  @ApiPropertyOptional({ description: 'Tabla relacionada', example: 'contacts' })
+  @ApiPropertyOptional({
+    description: 'Tabla relacionada',
+    example: 'contacts',
+  })
   @IsOptional()
   @IsString()
   relatedTable?: string;
@@ -310,13 +342,20 @@ export class ActivityResponseDto {
   @ApiPropertyOptional({ type: 'string', description: 'ID del registro' })
   recordId?: string;
 
-  @ApiPropertyOptional({ type: 'string', description: 'ID del usuario asignado' })
+  @ApiPropertyOptional({
+    type: 'string',
+    description: 'ID del usuario asignado',
+  })
   assignedToId?: string;
 
   @ApiProperty({ type: 'boolean', description: 'Si está completada' })
   completed!: boolean;
 
-  @ApiProperty({ type: String, format: 'date-time', description: 'Fecha de creación' })
+  @ApiProperty({
+    type: String,
+    format: 'date-time',
+    description: 'Fecha de creación',
+  })
   createdAt!: Date;
 }
 
@@ -358,7 +397,11 @@ export class RecordEventResponseDto {
   @ApiPropertyOptional({ type: Object, description: 'Metadatos' })
   metadata?: Record<string, unknown>;
 
-  @ApiProperty({ type: String, format: 'date-time', description: 'Fecha de creación' })
+  @ApiProperty({
+    type: String,
+    format: 'date-time',
+    description: 'Fecha de creación',
+  })
   createdAt!: Date;
 }
 
@@ -385,6 +428,10 @@ export class ConfigParameterResponseDto {
   @ApiPropertyOptional({ type: 'string', description: 'Descripción' })
   description?: string;
 
-  @ApiProperty({ type: String, format: 'date-time', description: 'Fecha de actualización' })
+  @ApiProperty({
+    type: String,
+    format: 'date-time',
+    description: 'Fecha de actualización',
+  })
   updatedAt!: Date;
 }

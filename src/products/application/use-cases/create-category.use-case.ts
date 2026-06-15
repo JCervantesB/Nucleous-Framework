@@ -19,12 +19,16 @@ export class CreateCategoryUseCase {
   private readonly logger = new Logger(CreateCategoryUseCase.name);
 
   constructor(
-    @Inject(PRODUCT_CATEGORY_REPOSITORY) private readonly categoryRepo: ProductCategoryRepository,
+    @Inject(PRODUCT_CATEGORY_REPOSITORY)
+    private readonly categoryRepo: ProductCategoryRepository,
   ) {}
 
   async execute(input: CreateCategoryInput): Promise<CreateCategoryOutput> {
     if (input.parentId) {
-      const parent = await this.categoryRepo.findById(input.parentId, input.businessId);
+      const parent = await this.categoryRepo.findById(
+        input.parentId,
+        input.businessId,
+      );
       if (!parent) {
         throw new Error('Categoría padre no encontrada');
       }

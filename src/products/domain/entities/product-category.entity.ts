@@ -59,7 +59,8 @@ export class ProductCategory {
       ...this.props,
       name: params.name ?? this.props.name,
       description: params.description ?? this.props.description,
-      parentId: params.parentId !== undefined ? params.parentId : this.props.parentId,
+      parentId:
+        params.parentId !== undefined ? params.parentId : this.props.parentId,
       updatedAt: new Date(),
     });
   }

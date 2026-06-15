@@ -27,7 +27,7 @@ describe('GetProductUseCase', () => {
         businessId,
         sku: 'PROD-001',
         name: 'Camiseta Azul',
-        type: 'storable' as ProductType,
+        type: 'storable',
         basePrice: 29.99,
       });
 
@@ -35,7 +35,10 @@ describe('GetProductUseCase', () => {
 
       const result = await useCase.execute({ id: productId, businessId });
 
-      expect(mockProductRepo.findById).toHaveBeenCalledWith(productId, businessId);
+      expect(mockProductRepo.findById).toHaveBeenCalledWith(
+        productId,
+        businessId,
+      );
       expect(result.product).toBeInstanceOf(Product);
       expect(result.product?.id).toBe(product.id);
     });

@@ -47,8 +47,15 @@ export class ProductController {
   ) {}
 
   @Post()
-  @ApiOperation({ summary: 'Crear producto', description: 'Crea un nuevo producto en el catálogo del negocio.' })
-  @ApiResponse({ status: 201, description: 'Producto creado exitosamente', type: () => ProductResponseDto })
+  @ApiOperation({
+    summary: 'Crear producto',
+    description: 'Crea un nuevo producto en el catálogo del negocio.',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Producto creado exitosamente',
+    type: () => ProductResponseDto,
+  })
   @ApiResponse({ status: 400, description: 'Datos inválidos o SKU duplicado' })
   @ApiResponse({ status: 401, description: 'No autorizado' })
   async create(
@@ -60,7 +67,7 @@ export class ProductController {
       sku: dto.sku,
       name: dto.name,
       description: dto.description,
-      type: dto.type as ProductType,
+      type: dto.type,
       categoryId: dto.categoryId,
       basePrice: dto.basePrice,
       currencyCode: dto.currencyCode,
@@ -71,8 +78,15 @@ export class ProductController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Listar productos', description: 'Lista productos del negocio con paginación y filtros.' })
-  @ApiResponse({ status: 200, description: 'Lista de productos', type: () => ProductListResponseDto })
+  @ApiOperation({
+    summary: 'Listar productos',
+    description: 'Lista productos del negocio con paginación y filtros.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de productos',
+    type: () => ProductListResponseDto,
+  })
   @ApiResponse({ status: 401, description: 'No autorizado' })
   async list(
     @CurrentBusinessId() businessId: string,
@@ -96,8 +110,15 @@ export class ProductController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Obtener producto', description: 'Obtiene un producto por su ID.' })
-  @ApiResponse({ status: 200, description: 'Producto encontrado', type: () => ProductResponseDto })
+  @ApiOperation({
+    summary: 'Obtener producto',
+    description: 'Obtiene un producto por su ID.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Producto encontrado',
+    type: () => ProductResponseDto,
+  })
   @ApiResponse({ status: 404, description: 'Producto no encontrado' })
   @ApiResponse({ status: 401, description: 'No autorizado' })
   async getById(
@@ -112,8 +133,14 @@ export class ProductController {
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Actualizar producto', description: 'Actualiza los datos de un producto existente.' })
-  @ApiResponse({ status: 200, description: 'Producto actualizado exitosamente' })
+  @ApiOperation({
+    summary: 'Actualizar producto',
+    description: 'Actualiza los datos de un producto existente.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Producto actualizado exitosamente',
+  })
   @ApiResponse({ status: 404, description: 'Producto no encontrado' })
   @ApiResponse({ status: 401, description: 'No autorizado' })
   async update(
@@ -138,7 +165,10 @@ export class ProductController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Eliminar producto', description: 'Elimina lógicamente un producto (lo desactiva).' })
+  @ApiOperation({
+    summary: 'Eliminar producto',
+    description: 'Elimina lógicamente un producto (lo desactiva).',
+  })
   @ApiResponse({ status: 200, description: 'Producto eliminado exitosamente' })
   @ApiResponse({ status: 404, description: 'Producto no encontrado' })
   @ApiResponse({ status: 401, description: 'No autorizado' })

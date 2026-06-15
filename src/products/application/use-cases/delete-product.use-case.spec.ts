@@ -27,7 +27,7 @@ describe('DeleteProductUseCase', () => {
         businessId,
         sku: 'PROD-001',
         name: 'Camiseta Azul',
-        type: 'storable' as ProductType,
+        type: 'storable',
         basePrice: 29.99,
       });
 
@@ -36,8 +36,14 @@ describe('DeleteProductUseCase', () => {
 
       const result = await useCase.execute({ id: productId, businessId });
 
-      expect(mockProductRepo.findById).toHaveBeenCalledWith(productId, businessId);
-      expect(mockProductRepo.delete).toHaveBeenCalledWith(productId, businessId);
+      expect(mockProductRepo.findById).toHaveBeenCalledWith(
+        productId,
+        businessId,
+      );
+      expect(mockProductRepo.delete).toHaveBeenCalledWith(
+        productId,
+        businessId,
+      );
       expect(result.success).toBe(true);
     });
 

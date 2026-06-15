@@ -1,7 +1,17 @@
 export class EmailContent {
-  private constructor(private readonly props: { subject: string; body: string; bodyHtml?: string }) {}
+  private constructor(
+    private readonly props: {
+      subject: string;
+      body: string;
+      bodyHtml?: string;
+    },
+  ) {}
 
-  static create(subject: string, body: string, bodyHtml?: string): EmailContent {
+  static create(
+    subject: string,
+    body: string,
+    bodyHtml?: string,
+  ): EmailContent {
     return new EmailContent({ subject, body, bodyHtml });
   }
 

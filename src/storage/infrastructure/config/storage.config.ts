@@ -27,7 +27,8 @@ export class StorageConfig {
   private constructor(private readonly config: StorageModuleConfig) {}
 
   static fromEnv(): StorageConfig {
-    const provider = (process.env.STORAGE_PROVIDER as StorageProviderType) ?? 'local';
+    const provider =
+      (process.env.STORAGE_PROVIDER as StorageProviderType) ?? 'local';
 
     const config: StorageModuleConfig = {
       provider,
@@ -35,13 +36,18 @@ export class StorageConfig {
 
     if (provider === 'uploadthing') {
       const appId = process.env.UPLOADTHING_APP_ID ?? '';
-      const token = process.env.UPLOADTHING_TOKEN ?? process.env.UPLOADTHING_SECRET ?? '';
+      const token =
+        process.env.UPLOADTHING_TOKEN ?? process.env.UPLOADTHING_SECRET ?? '';
 
       if (!appId) {
-        throw new Error('STORAGE_PROVIDER=uploadthing requiere UPLOADTHING_APP_ID');
+        throw new Error(
+          'STORAGE_PROVIDER=uploadthing requiere UPLOADTHING_APP_ID',
+        );
       }
       if (!token) {
-        throw new Error('STORAGE_PROVIDER=uploadthing requiere UPLOADTHING_TOKEN o UPLOADTHING_SECRET');
+        throw new Error(
+          'STORAGE_PROVIDER=uploadthing requiere UPLOADTHING_TOKEN o UPLOADTHING_SECRET',
+        );
       }
 
       config.uploadthing = { appId, token };
@@ -58,7 +64,8 @@ export class StorageConfig {
     if (provider === 'local') {
       config.local = {
         basePath: process.env.LOCAL_STORAGE_PATH ?? './uploads',
-        baseUrl: process.env.LOCAL_STORAGE_BASE_URL ?? 'http://localhost:3000/uploads',
+        baseUrl:
+          process.env.LOCAL_STORAGE_BASE_URL ?? 'http://localhost:3000/uploads',
       };
     }
 

@@ -1,9 +1,20 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsOptional, IsNumber, IsArray, ValidateNested, Min, Max } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsNumber,
+  IsArray,
+  ValidateNested,
+  Min,
+  Max,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class GenerateTextDto {
-  @ApiProperty({ description: 'Prompt para generar texto', example: 'Explica qué es NestJS en 2 oraciones' })
+  @ApiProperty({
+    description: 'Prompt para generar texto',
+    example: 'Explica qué es NestJS en 2 oraciones',
+  })
   @IsString()
   prompt!: string;
 
@@ -12,17 +23,28 @@ export class GenerateTextDto {
   @IsString()
   provider?: string;
 
-  @ApiPropertyOptional({ description: 'Modelo específico', example: 'gpt-4o-mini' })
+  @ApiPropertyOptional({
+    description: 'Modelo específico',
+    example: 'gpt-4o-mini',
+  })
   @IsOptional()
   @IsString()
   model?: string;
 
-  @ApiPropertyOptional({ description: 'Alias del modelo (reasoning, fast)', example: 'fast' })
+  @ApiPropertyOptional({
+    description: 'Alias del modelo (reasoning, fast)',
+    example: 'fast',
+  })
   @IsOptional()
   @IsString()
   modelAlias?: string;
 
-  @ApiPropertyOptional({ description: 'Temperatura (0-1)', example: 0.7, minimum: 0, maximum: 1 })
+  @ApiPropertyOptional({
+    description: 'Temperatura (0-1)',
+    example: 0.7,
+    minimum: 0,
+    maximum: 1,
+  })
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
@@ -36,18 +58,28 @@ export class GenerateTextDto {
   @IsNumber()
   maxTokens?: number;
 
-  @ApiPropertyOptional({ description: 'Prompt del sistema', example: 'Eres un asistente útil' })
+  @ApiPropertyOptional({
+    description: 'Prompt del sistema',
+    example: 'Eres un asistente útil',
+  })
   @IsOptional()
   @IsString()
   systemPrompt?: string;
 }
 
 export class ChatMessageDto {
-  @ApiProperty({ description: 'Rol del mensaje', example: 'user', enum: ['user', 'assistant', 'system'] })
+  @ApiProperty({
+    description: 'Rol del mensaje',
+    example: 'user',
+    enum: ['user', 'assistant', 'system'],
+  })
   @IsString()
   role!: 'user' | 'assistant' | 'system';
 
-  @ApiProperty({ description: 'Contenido del mensaje', example: '¿Qué es TypeScript?' })
+  @ApiProperty({
+    description: 'Contenido del mensaje',
+    example: '¿Qué es TypeScript?',
+  })
   @IsString()
   content!: string;
 }
@@ -64,7 +96,10 @@ export class ChatDto {
   @IsString()
   provider?: string;
 
-  @ApiPropertyOptional({ description: 'Modelo específico', example: 'gpt-4o-mini' })
+  @ApiPropertyOptional({
+    description: 'Modelo específico',
+    example: 'gpt-4o-mini',
+  })
   @IsOptional()
   @IsString()
   model?: string;
@@ -93,7 +128,10 @@ export class AiUsageResponseDto {
   @ApiProperty({ type: 'number', description: 'Tokens usados en el prompt' })
   promptTokens!: number;
 
-  @ApiProperty({ type: 'number', description: 'Tokens generados en la respuesta' })
+  @ApiProperty({
+    type: 'number',
+    description: 'Tokens generados en la respuesta',
+  })
   completionTokens!: number;
 
   @ApiProperty({ type: 'number', description: 'Total de tokens' })

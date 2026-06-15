@@ -8,7 +8,10 @@ export interface ProductCategoryListOptions {
 export interface ProductCategoryRepository {
   create(category: ProductCategory): Promise<ProductCategory>;
   findById(id: string, businessId: string): Promise<ProductCategory | null>;
-  list(businessId: string, options?: ProductCategoryListOptions): Promise<{ data: ProductCategory[]; total: number }>;
+  list(
+    businessId: string,
+    options?: ProductCategoryListOptions,
+  ): Promise<{ data: ProductCategory[]; total: number }>;
   listAsTree(businessId: string): Promise<ProductCategory[]>;
   update(category: ProductCategory): Promise<ProductCategory>;
   delete(id: string, businessId: string): Promise<void>;

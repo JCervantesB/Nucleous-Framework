@@ -1,6 +1,14 @@
 import { Injectable, Inject, Logger, OnModuleInit } from '@nestjs/common';
 import { STORAGE_CONFIG } from './storage.tokens';
-import type { StorageProvider, UploadOptions, UploadResult, DeleteResult, GetUrlOptions, ListFilesOptions, ListFilesResult } from './storage.types';
+import type {
+  StorageProvider,
+  UploadOptions,
+  UploadResult,
+  DeleteResult,
+  GetUrlOptions,
+  ListFilesOptions,
+  ListFilesResult,
+} from './storage.types';
 import { StorageConfig } from '../infrastructure/config/storage.config';
 import { LocalStorageService } from '../infrastructure/providers/local-storage.service';
 import { UploadThingStorageService } from '../infrastructure/providers/uploadthing-storage.service';
@@ -34,7 +42,9 @@ export class StorageService implements OnModuleInit {
         break;
     }
 
-    this.logger.log(`StorageService inicializado con provider: ${providerType}`);
+    this.logger.log(
+      `StorageService inicializado con provider: ${providerType}`,
+    );
   }
 
   async upload(buffer: Buffer, options: UploadOptions): Promise<UploadResult> {
@@ -51,7 +61,11 @@ export class StorageService implements OnModuleInit {
     return this.provider.delete(key, bucket);
   }
 
-  async getUrl(key: string, bucket: string, options?: GetUrlOptions): Promise<string> {
+  async getUrl(
+    key: string,
+    bucket: string,
+    options?: GetUrlOptions,
+  ): Promise<string> {
     if (!this.provider) {
       throw new Error('Storage provider no inicializado');
     }
@@ -77,4 +91,10 @@ export class StorageService implements OnModuleInit {
   }
 }
 
-export type { StorageProvider, UploadOptions, UploadResult, DeleteResult, GetUrlOptions } from './storage.types';
+export type {
+  StorageProvider,
+  UploadOptions,
+  UploadResult,
+  DeleteResult,
+  GetUrlOptions,
+} from './storage.types';
