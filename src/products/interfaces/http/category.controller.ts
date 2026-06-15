@@ -16,6 +16,7 @@ import {
   ApiOperation,
   ApiResponse,
   ApiBearerAuth,
+  ApiExtraModels,
 } from '@nestjs/swagger';
 import { CreateCategoryUseCase } from '../../application/use-cases/create-category.use-case';
 import { UpdateCategoryUseCase } from '../../application/use-cases/update-category.use-case';
@@ -31,6 +32,7 @@ import {
 
 @ApiTags('Products - Categories')
 @ApiBearerAuth()
+@ApiExtraModels(CategoryResponseDto, CategoryListResponseDto)
 @Controller('product-categories')
 export class CategoryController {
   constructor(

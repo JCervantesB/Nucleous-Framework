@@ -15,6 +15,7 @@ import {
   ApiOperation,
   ApiResponse,
   ApiBearerAuth,
+  ApiExtraModels,
 } from '@nestjs/swagger';
 import { CreateUnitMeasureUseCase } from '../../application/use-cases/create-unit-measure.use-case';
 import { UpdateUnitMeasureUseCase } from '../../application/use-cases/update-unit-measure.use-case';
@@ -30,6 +31,7 @@ import {
 
 @ApiTags('Products - Unit Measures')
 @ApiBearerAuth()
+@ApiExtraModels(UnitMeasureResponseDto, UnitMeasureListResponseDto)
 @Controller('product-unit-measures')
 export class UnitMeasureController {
   constructor(

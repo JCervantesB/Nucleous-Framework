@@ -15,6 +15,7 @@ import {
   ApiOperation,
   ApiResponse,
   ApiBearerAuth,
+  ApiExtraModels,
 } from '@nestjs/swagger';
 import { CreateVariantUseCase } from '../../application/use-cases/create-variant.use-case';
 import { UpdateVariantUseCase } from '../../application/use-cases/update-variant.use-case';
@@ -30,6 +31,7 @@ import {
 
 @ApiTags('Products - Variants')
 @ApiBearerAuth()
+@ApiExtraModels(VariantResponseDto, VariantListResponseDto)
 @Controller('products/:productId/variants')
 export class VariantController {
   constructor(

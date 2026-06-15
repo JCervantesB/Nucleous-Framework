@@ -58,10 +58,10 @@ export class UpdateProductDto {
   @IsString()
   description?: string;
 
-  @ApiPropertyOptional({ enum: ProductTypeDto })
+  @ApiPropertyOptional({ enum: ['storable', 'consumable', 'service'], description: 'Tipo de producto' })
   @IsOptional()
-  @IsEnum(ProductTypeDto)
-  type?: ProductTypeDto;
+  @IsString()
+  type?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -86,54 +86,54 @@ export class UpdateProductDto {
 }
 
 export class ProductResponseDto {
-  @ApiProperty()
+  @ApiProperty({ type: 'string', description: 'ID único del producto' })
   id!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string', description: 'SKU del producto' })
   sku!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string', description: 'Nombre del producto' })
   name!: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: 'string', nullable: true, description: 'Descripción del producto' })
   description!: string | null;
 
-  @ApiProperty()
-  type!: ProductTypeDto;
+  @ApiProperty({ enum: ['storable', 'consumable', 'service'], description: 'Tipo de producto' })
+  type!: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: 'string', nullable: true, description: 'ID de categoría' })
   categoryId!: string | null;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'number', description: 'Precio base' })
   basePrice!: number;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string', description: 'Código de moneda' })
   currencyCode!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'boolean', description: 'Si está activo' })
   isActive!: boolean;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'boolean', description: 'Si rastrea inventario' })
   trackInventory!: boolean;
 
-  @ApiProperty()
+  @ApiProperty({ type: String, format: 'date-time', description: 'Fecha de creación' })
   createdAt!: Date;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: String, format: 'date-time', nullable: true, description: 'Fecha de actualización' })
   updatedAt!: Date | null;
 }
 
 export class ProductListResponseDto {
-  @ApiProperty({ type: () => [ProductResponseDto] })
+  @ApiProperty({ type: [ProductResponseDto] })
   data!: ProductResponseDto[];
 
-  @ApiProperty()
+  @ApiProperty({ type: 'number', description: 'Total de registros' })
   total!: number;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'number', description: 'Página actual' })
   page!: number;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'number', description: 'Elementos por página' })
   pageSize!: number;
 }
 
@@ -155,8 +155,8 @@ export class ListProductsQueryDto {
   @IsString()
   search?: string;
 
-  @ApiPropertyOptional({ enum: ProductTypeDto })
+  @ApiPropertyOptional({ enum: ['storable', 'consumable', 'service'], description: 'Tipo de producto' })
   @IsOptional()
-  @IsEnum(ProductTypeDto)
-  type?: ProductTypeDto;
+  @IsString()
+  type?: string;
 }

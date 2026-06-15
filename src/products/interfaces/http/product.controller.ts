@@ -16,6 +16,7 @@ import {
   ApiOperation,
   ApiResponse,
   ApiBearerAuth,
+  ApiExtraModels,
 } from '@nestjs/swagger';
 import { CreateProductUseCase } from '../../application/use-cases/create-product.use-case';
 import { UpdateProductUseCase } from '../../application/use-cases/update-product.use-case';
@@ -23,6 +24,7 @@ import { GetProductUseCase } from '../../application/use-cases/get-product.use-c
 import { ListProductsUseCase } from '../../application/use-cases/list-products.use-case';
 import { DeleteProductUseCase } from '../../application/use-cases/delete-product.use-case';
 import { CurrentBusinessId } from '../../../common/decorators/business-id.decorator';
+import type { ProductType } from '../../domain/entities/product.entity';
 import {
   CreateProductDto,
   UpdateProductDto,
@@ -33,6 +35,7 @@ import {
 
 @ApiTags('Products')
 @ApiBearerAuth()
+@ApiExtraModels(ProductResponseDto, ProductListResponseDto)
 @Controller('products')
 export class ProductController {
   constructor(
@@ -57,7 +60,7 @@ export class ProductController {
       sku: dto.sku,
       name: dto.name,
       description: dto.description,
-      type: dto.type,
+      type: dto.type as ProductType,
       categoryId: dto.categoryId,
       basePrice: dto.basePrice,
       currencyCode: dto.currencyCode,
@@ -123,7 +126,7 @@ export class ProductController {
       businessId,
       name: dto.name,
       description: dto.description,
-      type: dto.type,
+      type: dto.type as ProductType,
       categoryId: dto.categoryId,
       basePrice: dto.basePrice,
       currencyCode: dto.currencyCode,

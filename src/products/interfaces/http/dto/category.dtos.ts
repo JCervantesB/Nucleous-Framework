@@ -35,29 +35,29 @@ export class UpdateCategoryDto {
 }
 
 export class CategoryResponseDto {
-  @ApiProperty()
+  @ApiProperty({ type: 'string', description: 'ID único de la categoría' })
   id!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string', description: 'Nombre de la categoría' })
   name!: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: 'string', nullable: true, description: 'Descripción de la categoría' })
   description!: string | null;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: 'string', nullable: true, description: 'ID de categoría padre' })
   parentId!: string | null;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'boolean', description: 'Si está activa' })
   isActive!: boolean;
 
-  @ApiProperty()
+  @ApiProperty({ type: String, format: 'date-time', description: 'Fecha de creación' })
   createdAt!: Date;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: String, format: 'date-time', nullable: true, description: 'Fecha de actualización' })
   updatedAt!: Date | null;
 }
 
 export class CategoryListResponseDto {
-  @ApiProperty({ type: () => [CategoryResponseDto] })
+  @ApiProperty({ type: [CategoryResponseDto] })
   data!: CategoryResponseDto[];
 }

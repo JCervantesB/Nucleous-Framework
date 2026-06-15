@@ -39,35 +39,35 @@ export class UpdateVariantDto {
 }
 
 export class VariantResponseDto {
-  @ApiProperty()
+  @ApiProperty({ type: 'string', description: 'ID único de la variante' })
   id!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string', description: 'ID del producto padre' })
   productId!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string', description: 'SKU de la variante' })
   sku!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string', description: 'Nombre de la variante' })
   name!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'number', description: 'Modificador de precio' })
   priceModifier!: number;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'object', additionalProperties: { type: 'string' }, description: 'Atributos de la variante' })
   attributes!: Record<string, string>;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'boolean', description: 'Si está activa' })
   isActive!: boolean;
 
-  @ApiProperty()
+  @ApiProperty({ type: String, format: 'date-time', description: 'Fecha de creación' })
   createdAt!: Date;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: String, format: 'date-time', nullable: true, description: 'Fecha de actualización' })
   updatedAt!: Date | null;
 }
 
 export class VariantListResponseDto {
-  @ApiProperty({ type: () => [VariantResponseDto] })
+  @ApiProperty({ type: [VariantResponseDto] })
   data!: VariantResponseDto[];
 }

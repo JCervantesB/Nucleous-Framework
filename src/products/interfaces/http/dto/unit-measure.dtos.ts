@@ -63,32 +63,32 @@ export class UpdateUnitMeasureDto {
 }
 
 export class UnitMeasureResponseDto {
-  @ApiProperty()
+  @ApiProperty({ type: 'string', description: 'ID único de la unidad' })
   id!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string', description: 'Nombre de la unidad' })
   name!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string', description: 'Abreviatura' })
   abbreviation!: string;
 
-  @ApiProperty()
-  type!: UnitTypeDto;
+  @ApiProperty({ enum: ['weight', 'volume', 'length', 'area', 'quantity'], description: 'Tipo de unidad' })
+  type!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'number', description: 'Factor de conversión' })
   conversionFactor!: number;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'boolean', description: 'Si es la unidad por defecto' })
   isDefault!: boolean;
 
-  @ApiProperty()
+  @ApiProperty({ type: String, format: 'date-time', description: 'Fecha de creación' })
   createdAt!: Date;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: String, format: 'date-time', nullable: true, description: 'Fecha de actualización' })
   updatedAt!: Date | null;
 }
 
 export class UnitMeasureListResponseDto {
-  @ApiProperty({ type: () => [UnitMeasureResponseDto] })
+  @ApiProperty({ type: [UnitMeasureResponseDto] })
   data!: UnitMeasureResponseDto[];
 }
