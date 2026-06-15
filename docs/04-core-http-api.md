@@ -63,16 +63,25 @@ export class ContactController {
     @Query('page') page?: number,
     @Query('pageSize') pageSize?: number,
     @Query('search') search?: string,
-    @Query('isCustomer') isCustomer?: boolean,
-    @Query('isSupplier') isSupplier?: boolean,
-    @Query('isEmployee') isEmployee?: boolean,
+    @Query('role') role?: 'customer' | 'supplier' | 'employee',
+  ) { ... }
+
+  @Patch(':id')
+  async update(
+    @Param('id') id: string,
+    @Body() body: UpdateContactDto,
   ) { ... }
 }
 ```
 
 **Endpoints:**
-- `POST /core/contacts` - Crear contacto
-- `GET /core/contacts` - Listar contactos con filtros
+- `POST /core/contacts` - Crear contacto (soporta `isCustomer`, `isSupplier`, `isEmployee`)
+- `GET /core/contacts` - Listar contactos con filtros y paginación
+- `PATCH /core/contacts/:id` - Actualizar contacto (incluye flags de rol)
+
+**Filtro por rol:** Use `?role=customer`, `?role=supplier` o `?role=employee` para filtrar por tipo de contacto.
+
+**Modelo unificado:** Contact es el modelo unificado para clientes, proveedores y empleados (inspirado en Odoo `res.partner`). Los flags `isCustomer`, `isSupplier`, `isEmployee` permiten clasificar un contacto en múltiples categorías simultáneamente.
 
 ## Controlador de Activity
 

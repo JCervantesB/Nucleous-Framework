@@ -44,7 +44,7 @@ class Business {
 
 ### Entidad Contact
 
-Representa un contacto (persona o empresa) dentro de un negocio.
+Representa un contacto (persona o empresa) dentro de un negocio. **Modelo unificado inspirado en Odoo `res.partner`** que permite clasificar un contacto como cliente, proveedor y/o empleado simultáneamente.
 
 ```typescript
 // Ubicación: src/core/domain/contacts/contact.entity.ts
@@ -59,9 +59,9 @@ interface ContactProps {
   email: string | null;
   phone: string | null;
   taxId: string | null;
-  isCustomer: boolean;
-  isSupplier: boolean;
-  isEmployee: boolean;
+  isCustomer: boolean;    // ¿Es cliente?
+  isSupplier: boolean;    // ¿Es proveedor?
+  isEmployee: boolean;    // ¿Es empleado?
   createdAt: Date;
   updatedAt: Date | null;
   createdBy: string | null;
@@ -71,10 +71,14 @@ interface ContactProps {
 class Contact {
   static create(params: { businessId: string; name: string; type: ContactType; ... }): Contact
   static fromProps(props: ContactProps): Contact
+  update(params: { name?: string; isCustomer?: boolean; ... }): Contact
 
   get id(): string
   get businessId(): string
   get name(): string
+  get isCustomer(): boolean
+  get isSupplier(): boolean
+  get isEmployee(): boolean
   // ... otros getters
 }
 ```
