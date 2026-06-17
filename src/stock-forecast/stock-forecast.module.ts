@@ -1,4 +1,4 @@
-import { Module, Global, Inject, Optional, type Provider } from '@nestjs/common';
+import { Module, Global, type Provider } from '@nestjs/common';
 import { StockForecastController } from './interfaces/http/stock-forecast.controller';
 import { ForecastStockUseCase } from './application/use-cases/forecast-stock.use-case';
 import { MathStockForecastService } from './infrastructure/math/math-stock-forecast.service';
@@ -6,7 +6,14 @@ import { AIStockForecastService } from './infrastructure/ai/ai-stock-forecast.se
 import { MockInventoryHistoryProvider } from './infrastructure/persistence/mock-inventory-history.provider';
 import { INVENTORY_HISTORY_PROVIDER } from './application/stock-forecast.tokens';
 import type { InventoryHistoryProvider } from './domain/ports/inventory-history.provider';
-import { INVENTORY_MOVE_REPOSITORY } from '../../inventory/domain/inventory.tokens';
+
+const INVENTORY_MOVE_REPOSITORY_TOKEN =
+  'INVENTORY_MOVE_REPOSITORY' as const;
+
+const isInventoryEnabled = () => {
+  const enabled = process.env.ENABLED_MODULES ?? '';
+  return enabled.includes('INVENTORY');
+};
 
 @Global()
 @Module({
@@ -14,7 +21,7 @@ import { INVENTORY_MOVE_REPOSITORY } from '../../inventory/domain/inventory.toke
   providers: [
     {
       provide: INVENTORY_HISTORY_PROVIDER,
-      useFactory: (moveRepo: any) => {
+      useFactory: async (moveRepo: any) => {
         if (moveRepo) {
           return createInventoryHistoryProviderFromRepo(moveRepo);
         }
@@ -22,7 +29,7 @@ import { INVENTORY_MOVE_REPOSITORY } from '../../inventory/domain/inventory.toke
       },
       inject: [
         {
-          token: INVENTORY_MOVE_REPOSITORY,
+          token: INVENTORY_MOVE_REPOSITORY_TOKEN,
           optional: true,
         },
       ],
@@ -38,7 +45,16 @@ import { INVENTORY_MOVE_REPOSITORY } from '../../inventory/domain/inventory.toke
     AIStockForecastService,
   ],
 })
-export class StockForecastModule {}
+export class StockForecastModule {
+  static withInventoryMoveRepository(
+    repository: any,
+  ): Provider {
+    return {
+      provide: INVENTORY_MOVE_REPOSITORY_TOKEN,
+      useValue: repository,
+    };
+  }
+}
 
 function createInventoryHistoryProviderFromRepo(
   moveRepo: any,
