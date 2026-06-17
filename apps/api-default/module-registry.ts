@@ -10,7 +10,6 @@ export interface ModuleRegistryEntry {
   module: Type;
 }
 
-// Registro centralizado de módulos disponibles
 const MODULE_REGISTRY: ModuleRegistryEntry[] = [
   { name: 'AI', module: AiModule },
   { name: 'EMAIL', module: EmailModule },
@@ -35,4 +34,17 @@ export function validateModules(modules: string[]): string[] {
     );
   }
   return modules;
+}
+
+export function getEnabledModules(): string[] {
+  const envModules = (process.env.ENABLED_MODULES ?? '')
+    .split(',')
+    .map((m) => m.trim().toUpperCase())
+    .filter(Boolean);
+
+  if (envModules.length === 0) {
+    return [...VALID_MODULES];
+  }
+
+  return envModules;
 }
