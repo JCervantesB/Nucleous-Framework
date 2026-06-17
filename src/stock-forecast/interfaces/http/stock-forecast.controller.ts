@@ -1,12 +1,11 @@
-import { Controller, Get, Param, Query, Logger, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Param, Query, Logger } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
-import type { ForecastStockUseCase } from '../../../application/use-cases/forecast-stock.use-case';
-import type { StockForecastProvider } from '../../../domain/ports/stock-forecast.provider';
-import type { MathStockForecastService } from '../../../infrastructure/math/math-stock-forecast.service';
-import type { AIStockForecastService } from '../../../infrastructure/ai/ai-stock-forecast.service';
-import type { ForecastQueryDto, StockAlertQueryDto, ForecastResponseDto } from './dto/stock-forecast.dtos';
+import { ForecastStockUseCase } from '../../application/use-cases/forecast-stock.use-case';
+import { MathStockForecastService } from '../../infrastructure/math/math-stock-forecast.service';
+import { AIStockForecastService } from '../../infrastructure/ai/ai-stock-forecast.service';
+import type { ForecastQueryDto, ForecastResponseDto } from './dto/stock-forecast.dtos';
 
-@ApiTags('Stock Forecast')
+@ApiTags('Stock Forecast', 'Modulo transversal para predicciones de inventario. Proporciona forecasts de stock usando metodos matematicos o IA.')
 @Controller('stock-forecast')
 export class StockForecastController {
   private readonly logger = new Logger(StockForecastController.name);
