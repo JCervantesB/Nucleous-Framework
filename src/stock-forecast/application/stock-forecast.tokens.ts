@@ -1,2 +1,3 @@
 export const STOCK_FORECAST_PROVIDER = Symbol('StockForecastProvider');
 export const INVENTORY_HISTORY_PROVIDER = Symbol('InventoryHistoryProvider');
+export const AI_STOCK_FORECAST_SERVICE = Symbol('AIStockForecastService');
