@@ -28,10 +28,12 @@ export class ForecastStockUseCase {
   ): Promise<ForecastResult> {
     const productId = input.productId;
     const locationId = input.locationId;
-    const daysAhead = input.daysAhead ?? 30;
+    const daysAhead = input.daysAhead && input.daysAhead > 0 ? input.daysAhead : 30;
     const method = input.method ?? 'AUTO';
 
-    this.logger.log(`Forecast para producto=${productId}, método=${method}`);
+    this.logger.log(
+      `Forecast para producto=${productId}, location=${locationId ?? 'ALL'}, método=${method}`,
+    );
 
     const inventoryMoves = await this.historyProvider.getHistoricalMoves({
       productId,
@@ -46,6 +48,10 @@ export class ForecastStockUseCase {
         `No hay movimientos históricos para el producto ${productId}`,
       );
     }
+
+    this.logger.log(
+      `Forecast: producto=${productId}, historial=${historicalMoves.length} movimientos`,
+    );
 
     const forecastParams = {
       productId,

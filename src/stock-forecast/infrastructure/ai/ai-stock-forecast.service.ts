@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger, UnprocessableEntityException } from '@nestjs/common';
+import { Inject, Injectable, Logger, Optional, UnprocessableEntityException } from '@nestjs/common';
 import { z } from 'zod';
 import type { ForecastParams, ForecastResult, DailyPrediction, HistoricalMove } from '../../application/types';
 import type { StockForecastProvider } from '../../domain/ports/stock-forecast.provider';
@@ -29,7 +29,7 @@ export class AIStockForecastService implements StockForecastProvider {
   private readonly logger = new Logger(AIStockForecastService.name);
 
   constructor(
-    @Inject(AI_SERVICE) private readonly aiService: AiService,
+    @Optional() @Inject(AI_SERVICE) private readonly aiService: AiService | null,
   ) {}
 
   async forecast(params: ForecastParams): Promise<ForecastResult> {
@@ -39,6 +39,12 @@ export class AIStockForecastService implements StockForecastProvider {
     if (!enabled) {
       throw new UnprocessableEntityException(
         'Predicción con IA no está habilitada. Configure AI_STOCK_FORECAST_ENABLED=true',
+      );
+    }
+
+    if (!this.aiService) {
+      throw new UnprocessableEntityException(
+        'AI Module no está cargado. Asegúrese de que AiModule esté habilitado.',
       );
     }
 
