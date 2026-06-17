@@ -2,8 +2,8 @@ import { Controller, Get, Param, Query, Logger, NotFoundException } from '@nestj
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import type { ForecastStockUseCase } from '../../../application/use-cases/forecast-stock.use-case';
 import type { StockForecastProvider } from '../../../domain/ports/stock-forecast.provider';
-import { MathStockForecastService } from '../../../infrastructure/math/math-stock-forecast.service';
-import { AIStockForecastService } from '../../../infrastructure/ai/ai-stock-forecast.service';
+import type { MathStockForecastService } from '../../../infrastructure/math/math-stock-forecast.service';
+import type { AIStockForecastService } from '../../../infrastructure/ai/ai-stock-forecast.service';
 import type { ForecastQueryDto, StockAlertQueryDto, ForecastResponseDto } from './dto/stock-forecast.dtos';
 
 @ApiTags('Stock Forecast')
@@ -33,8 +33,8 @@ export class StockForecastController {
         {
           productId,
           locationId: query.locationId,
-          daysAhead: query.daysAhead,
-          method: query.method,
+          daysAhead: query.daysAhead ?? 30,
+          method: query.method ?? 'AUTO',
         },
         this.mathService,
         this.aiService,
