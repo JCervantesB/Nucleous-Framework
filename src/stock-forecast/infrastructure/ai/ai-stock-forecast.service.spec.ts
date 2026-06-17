@@ -1,5 +1,5 @@
 import { UnprocessableEntityException } from '@nestjs/common';
-import { AIStockForecastService } from './ai-stock-forecast.service';
+import { AIStockForecastService, AI_MIN_HISTORY_DAYS } from './ai-stock-forecast.service';
 import type { ForecastParams, HistoricalMove } from '../../application/types';
 import type { AiService } from '../../../ai/application/ai.service';
 
@@ -65,7 +65,7 @@ describe('AIStockForecastService', () => {
       };
 
       await expect(service.forecast(params)).rejects.toThrow(
-        'La predicción con IA requiere al menos 30 días de historial',
+        `La predicción con IA requiere al menos ${AI_MIN_HISTORY_DAYS} días de historial`,
       );
     });
 
@@ -107,6 +107,38 @@ describe('AIStockForecastService', () => {
       expect(result.daysUntilStockout).toBe(15);
       expect(result.confidence).toBe(0.85);
       expect(result.predictions).toHaveLength(1);
+      expect(result.predictions[0].date).toBe('2026-06-18');
+    });
+
+    it('debe pasar el schema Zod a AiService', async () => {
+      process.env.AI_STOCK_FORECAST_ENABLED = 'true';
+
+      const moves = createMoves(35, 10);
+      const params: ForecastParams = {
+        productId: 'product-1',
+        daysAhead: 7,
+        historicalMoves: moves,
+      };
+
+      const mockResponse = {
+        object: {
+          currentStock: 100,
+          consumptionRate: 5,
+          daysUntilStockout: 20,
+          confidence: 0.9,
+          predictions: [],
+        },
+      };
+
+      mockGenerateObject.mockResolvedValue(mockResponse);
+
+      await service.forecast(params);
+
+      expect(mockGenerateObject).toHaveBeenCalledWith(
+        expect.objectContaining({
+          schema: expect.any(Object),
+        }),
+      );
     });
 
     it('debe usar modelo configurado via variable de entorno', async () => {

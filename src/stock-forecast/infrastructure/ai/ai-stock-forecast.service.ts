@@ -22,6 +22,8 @@ const AiForecastResponseSchema = z.object({
 
 type AiForecastResponse = z.infer<typeof AiForecastResponseSchema>;
 
+export const AI_MIN_HISTORY_DAYS = 30;
+
 @Injectable()
 export class AIStockForecastService implements StockForecastProvider {
   private readonly logger = new Logger(AIStockForecastService.name);
@@ -40,9 +42,9 @@ export class AIStockForecastService implements StockForecastProvider {
       );
     }
 
-    if (params.historicalMoves.length < 30) {
+    if (params.historicalMoves.length < AI_MIN_HISTORY_DAYS) {
       throw new UnprocessableEntityException(
-        'La predicción con IA requiere al menos 30 días de historial',
+        `La predicción con IA requiere al menos ${AI_MIN_HISTORY_DAYS} días de historial`,
       );
     }
 
@@ -55,21 +57,33 @@ export class AIStockForecastService implements StockForecastProvider {
         schema: AiForecastResponseSchema,
       });
 
+      const predictions: DailyPrediction[] = result.object.predictions.map(
+        (p) => ({
+          date: p.date.split('T')[0],
+          predictedQuantity: p.predictedQuantity,
+          lowerBound: p.lowerBound,
+          upperBound: p.upperBound,
+        }),
+      );
+
       return {
         productId: params.productId,
         locationId: params.locationId ?? null,
         currentStock: result.object.currentStock,
         predictedStock:
-          result.object.predictions[result.object.predictions.length - 1]
-            ?.predictedQuantity ?? result.object.currentStock,
+          predictions[predictions.length - 1]?.predictedQuantity ??
+          result.object.currentStock,
         consumptionRate: result.object.consumptionRate,
         daysUntilStockout: result.object.daysUntilStockout,
         confidence: result.object.confidence,
         method: 'AI',
-        predictions: result.object.predictions,
+        predictions,
       };
     } catch (error) {
-      this.logger.error('Error en predicción con IA', error);
+      this.logger.error(
+        `Error en predicción con IA para producto=${params.productId}`,
+        error instanceof Error ? error.stack : String(error),
+      );
       throw new UnprocessableEntityException(
         'Error al generar predicción con IA. Intente con método MATH.',
       );
