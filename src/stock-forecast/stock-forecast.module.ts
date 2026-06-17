@@ -1,4 +1,4 @@
-import { Module, Global, type Provider } from '@nestjs/common';
+import { Module, Global, Inject, Optional, type Provider } from '@nestjs/common';
 import { StockForecastController } from './interfaces/http/stock-forecast.controller';
 import { ForecastStockUseCase } from './application/use-cases/forecast-stock.use-case';
 import { MathStockForecastService } from './infrastructure/math/math-stock-forecast.service';
@@ -6,6 +6,7 @@ import { AIStockForecastService } from './infrastructure/ai/ai-stock-forecast.se
 import { MockInventoryHistoryProvider } from './infrastructure/persistence/mock-inventory-history.provider';
 import { INVENTORY_HISTORY_PROVIDER } from './application/stock-forecast.tokens';
 import type { InventoryHistoryProvider } from './domain/ports/inventory-history.provider';
+import { INVENTORY_MOVE_REPOSITORY } from '../../inventory/domain/inventory.tokens';
 
 @Global()
 @Module({
@@ -13,7 +14,18 @@ import type { InventoryHistoryProvider } from './domain/ports/inventory-history.
   providers: [
     {
       provide: INVENTORY_HISTORY_PROVIDER,
-      useClass: MockInventoryHistoryProvider,
+      useFactory: (moveRepo: any) => {
+        if (moveRepo) {
+          return createInventoryHistoryProviderFromRepo(moveRepo);
+        }
+        return new MockInventoryHistoryProvider();
+      },
+      inject: [
+        {
+          token: INVENTORY_MOVE_REPOSITORY,
+          optional: true,
+        },
+      ],
     },
     ForecastStockUseCase,
     MathStockForecastService,
@@ -26,31 +38,42 @@ import type { InventoryHistoryProvider } from './domain/ports/inventory-history.
     AIStockForecastService,
   ],
 })
-export class StockForecastModule {
-  static withInventoryHistoryProvider(
-    provider: InventoryHistoryProvider,
-  ): Provider {
-    return {
-      provide: INVENTORY_HISTORY_PROVIDER,
-      useValue: provider,
-    };
-  }
+export class StockForecastModule {}
 
-  static forRoot() {
-    return {
-      module: StockForecastModule,
-      imports: [],
-      controllers: [StockForecastController],
-      providers: [
-        ForecastStockUseCase,
-        MathStockForecastService,
-        AIStockForecastService,
-      ],
-      exports: [
-        ForecastStockUseCase,
-        MathStockForecastService,
-        AIStockForecastService,
-      ],
-    };
-  }
+function createInventoryHistoryProviderFromRepo(
+  moveRepo: any,
+): InventoryHistoryProvider {
+  return {
+    async getHistoricalMoves(params: {
+      productId: string;
+      locationId?: string;
+      daysBack?: number;
+    }) {
+      const daysBack = params.daysBack ?? 90;
+      const sinceDate = new Date();
+      sinceDate.setDate(sinceDate.getDate() - daysBack);
+
+      const moves = await moveRepo.listByProduct(
+        params.productId,
+        'default-business',
+      );
+
+      return moves
+        .filter((move: any) => {
+          if (move.createdAt < sinceDate) return false;
+          if (params.locationId) {
+            const matchesLocation =
+              move.toLocationId === params.locationId ||
+              move.fromLocationId === params.locationId;
+            if (!matchesLocation) return false;
+          }
+          return true;
+        })
+        .map((move: any) => ({
+          date: move.createdAt,
+          quantity: parseFloat(move.quantity),
+          moveType: move.moveType,
+        }));
+    },
+  };
 }
