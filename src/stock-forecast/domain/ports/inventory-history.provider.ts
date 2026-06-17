@@ -1,4 +1,4 @@
-import type { InventoryMove } from '../../../inventory/domain/entities/inventory-move.entity';
+import type { InventoryMoveInput } from '../../application/types';
 
 export interface InventoryHistoryParams {
   productId: string;
@@ -7,5 +7,5 @@ export interface InventoryHistoryParams {
 }
 
 export interface InventoryHistoryProvider {
-  getHistoricalMoves(params: InventoryHistoryParams): Promise<InventoryMove[]>;
+  getHistoricalMoves(params: InventoryHistoryParams): Promise<InventoryMoveInput[]>;
 }
