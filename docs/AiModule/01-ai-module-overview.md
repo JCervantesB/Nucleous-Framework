@@ -111,7 +111,37 @@ AI_GATEWAY_API_KEY=...
 AI_DEFAULT_PROVIDER=openrouter
 AI_DEFAULT_MODEL=google/gemma-4-31b-it:free
 AI_DEFAULT_MODEL_ALIAS=reasoning
+
+# Configuración para Stock Forecast IA (opcional)
+AI_STOCK_FORECAST_ENABLED=false
+AI_STOCK_FORECAST_MODEL=openai/gpt-4o-mini
 ```
+
+## Integración con Otros Módulos
+
+El `AiModule` puede ser consumido por cualquier módulo de la aplicación. Un ejemplo real es `StockForecastModule`:
+
+```
+StockForecastModule/
+├── infrastructure/ai/
+│   └── ai-stock-forecast.service.ts  # Usa AI_SERVICE para forecasting con IA
+```
+
+Cualquier servicio puede usar `@Optional() @Inject(AI_SERVICE)` para obtener una referencia al `AiService` y usarla si está disponible:
+
+```typescript
+constructor(
+  @Optional() @Inject(AI_SERVICE) private readonly aiService: AiService | null,
+) {}
+
+async miMetodo() {
+  if (this.aiService) {
+    const result = await this.aiService.generateText({ prompt: '...' });
+  }
+}
+```
+
+Esto permite que módulos como `StockForecast` funcionen con o sin `AiModule` cargado.
 
 ## Tests
 
