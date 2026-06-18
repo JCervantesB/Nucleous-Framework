@@ -1,13 +1,6 @@
 import { drizzle } from 'drizzle-orm/node-postgres';
 import pg from 'pg';
-import {
-  business,
-  inventoryLocation,
-  productCategory,
-  productUnitMeasure,
-  product,
-  inventoryMove,
-} from '../packages/database/src/schema/index.js';
+import * as schema from '../packages/database/src/schema/index.js';
 
 const { Pool } = pg;
 
@@ -15,7 +8,16 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL!,
 });
 
-const db = drizzle(pool, { schema });
+const db = drizzle(pool, { schema: schema });
+
+const {
+  business,
+  inventoryLocation,
+  productCategory,
+  productUnitMeasure,
+  product,
+  inventoryMove,
+} = schema;
 
 const BUSINESS_ID = '00000000-0000-0000-0000-000000000001';
 
