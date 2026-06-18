@@ -1,18 +1,13 @@
 import { drizzle } from 'drizzle-orm/node-postgres';
-import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import pg from 'pg';
-import * as schema from '../packages/database/src/schema/index.js';
 import {
   business,
-  contact,
   inventoryLocation,
-  inventoryMove,
-  product,
   productCategory,
-  productVariant,
   productUnitMeasure,
+  product,
+  inventoryMove,
 } from '../packages/database/src/schema/index.js';
-import { eq } from 'drizzle-orm';
 
 const { Pool } = pg;
 
@@ -23,7 +18,6 @@ const pool = new Pool({
 const db = drizzle(pool, { schema });
 
 const BUSINESS_ID = '00000000-0000-0000-0000-000000000001';
-const BUSINESS_ID_SUPPLIER = '00000000-0000-0000-0000-000000000002';
 
 const now = new Date();
 const daysAgo = (days: number) => {
@@ -61,7 +55,7 @@ async function seed() {
   }).onConflictDoNothing();
   console.log('✓ Business creado: TechStore Ecommerce\n');
 
-  console.log('📍 Creando Locations (Inventory)...');
+  console.log('📍 Creando Locations (Inventario)...');
   const warehouseId = '00000000-0000-0000-0000-000000000011';
   const supplierId = '00000000-0000-0000-0000-000000000012';
   const customerId = '00000000-0000-0000-0000-000000000013';
@@ -82,7 +76,7 @@ async function seed() {
     {
       id: supplierId,
       businessId: BUSINESS_ID,
-      code: 'SUPPLIER',
+      code: 'PROV-001',
       name: 'Proveedor Genérico',
       type: 'SUPPLIER',
       isActive: true,
@@ -92,7 +86,7 @@ async function seed() {
     {
       id: customerId,
       businessId: BUSINESS_ID,
-      code: 'CUSTOMER',
+      code: 'CLIENTE-001',
       name: 'Cliente Externo',
       type: 'CUSTOMER',
       isActive: true,
@@ -102,7 +96,7 @@ async function seed() {
     {
       id: transitId,
       businessId: BUSINESS_ID,
-      code: 'TRANSIT',
+      code: 'TRANSITO-001',
       name: 'En Tránsito',
       type: 'TRANSIT',
       isActive: true,
@@ -112,7 +106,7 @@ async function seed() {
     {
       id: adjustmentId,
       businessId: BUSINESS_ID,
-      code: 'ADJUSTMENT',
+      code: 'AJUSTE-001',
       name: 'Ajuste de Inventario',
       type: 'ADJUSTMENT',
       isActive: true,
@@ -120,24 +114,24 @@ async function seed() {
       createdAt: new Date(),
     },
   ]).onConflictDoNothing();
-  console.log('✓ Locations creados: WH-001, SUPPLIER, CUSTOMER, TRANSIT, ADJUSTMENT\n');
+  console.log('✓ Locations creados: WH-001, PROV-001, CLIENTE-001, TRANSITO-001, AJUSTE-001\n');
 
-  console.log('📏 Creando Unit Measures (Sistema Americano)...');
+  console.log('📏 Creando Unidades de Medida (Sistema Americano)...');
   const unitMeasures = [
-    { id: '00000000-0000-0000-0000-000000000020', name: 'Unit', abbreviation: 'u', type: 'unit', conversionFactor: '1', isDefault: true },
-    { id: '00000000-0000-0000-0000-000000000021', name: 'Piece', abbreviation: 'pc', type: 'unit', conversionFactor: '1', isDefault: false },
-    { id: '00000000-0000-0000-0000-000000000022', name: 'Pound', abbreviation: 'lb', type: 'weight', conversionFactor: '453.592', isDefault: false },
-    { id: '00000000-0000-0000-0000-000000000023', name: 'Ounce', abbreviation: 'oz', type: 'weight', conversionFactor: '28.3495', isDefault: false },
-    { id: '00000000-0000-0000-0000-000000000024', name: 'Gallon', abbreviation: 'gal', type: 'volume', conversionFactor: '3785.41', isDefault: false },
-    { id: '00000000-0000-0000-0000-000000000025', name: 'Liter', abbreviation: 'L', type: 'volume', conversionFactor: '1000', isDefault: false },
-    { id: '00000000-0000-0000-0000-000000000026', name: 'Milliliter', abbreviation: 'mL', type: 'volume', conversionFactor: '1', isDefault: false },
-    { id: '00000000-0000-0000-0000-000000000027', name: 'Foot', abbreviation: 'ft', type: 'length', conversionFactor: '304.8', isDefault: false },
-    { id: '00000000-0000-0000-0000-000000000028', name: 'Inch', abbreviation: 'in', type: 'length', conversionFactor: '25.4', isDefault: false },
-    { id: '00000000-0000-0000-0000-000000000029', name: 'Box', abbreviation: 'box', type: 'unit', conversionFactor: '1', isDefault: false },
-    { id: '00000000-0000-0000-0000-000000000030', name: 'Pack', abbreviation: 'pack', type: 'unit', conversionFactor: '6', isDefault: false },
-    { id: '00000000-0000-0000-0000-000000000031', name: 'Dozen', abbreviation: 'dz', type: 'unit', conversionFactor: '12', isDefault: false },
-    { id: '00000000-0000-0000-0000-000000000032', name: 'Kilogram', abbreviation: 'kg', type: 'weight', conversionFactor: '1000', isDefault: false },
-    { id: '00000000-0000-0000-0000-000000000033', name: 'Square Foot', abbreviation: 'sq ft', type: 'area', conversionFactor: '929.03', isDefault: false },
+    { id: '00000000-0000-0000-0000-000000000020', name: 'Unidad', abbreviation: 'u', type: 'unit', conversionFactor: '1', isDefault: true },
+    { id: '00000000-0000-0000-0000-000000000021', name: 'Pieza', abbreviation: 'pza', type: 'unit', conversionFactor: '1', isDefault: false },
+    { id: '00000000-0000-0000-0000-000000000022', name: 'Libra', abbreviation: 'lb', type: 'weight', conversionFactor: '453.592', isDefault: false },
+    { id: '00000000-0000-0000-0000-000000000023', name: 'Onza', abbreviation: 'oz', type: 'weight', conversionFactor: '28.3495', isDefault: false },
+    { id: '00000000-0000-0000-0000-000000000024', name: 'Galón', abbreviation: 'gal', type: 'volume', conversionFactor: '3785.41', isDefault: false },
+    { id: '00000000-0000-0000-0000-000000000025', name: 'Litro', abbreviation: 'L', type: 'volume', conversionFactor: '1000', isDefault: false },
+    { id: '00000000-0000-0000-0000-000000000026', name: 'Mililitro', abbreviation: 'mL', type: 'volume', conversionFactor: '1', isDefault: false },
+    { id: '00000000-0000-0000-0000-000000000027', name: 'Pie', abbreviation: 'ft', type: 'length', conversionFactor: '304.8', isDefault: false },
+    { id: '00000000-0000-0000-0000-000000000028', name: 'Pulgada', abbreviation: 'in', type: 'length', conversionFactor: '25.4', isDefault: false },
+    { id: '00000000-0000-0000-0000-000000000029', name: 'Caja', abbreviation: 'caja', type: 'unit', conversionFactor: '1', isDefault: false },
+    { id: '00000000-0000-0000-0000-000000000030', name: 'Paquete', abbreviation: 'paq', type: 'unit', conversionFactor: '6', isDefault: false },
+    { id: '00000000-0000-0000-0000-000000000031', name: 'Docena', abbreviation: 'dz', type: 'unit', conversionFactor: '12', isDefault: false },
+    { id: '00000000-0000-0000-0000-000000000032', name: 'Kilogramo', abbreviation: 'kg', type: 'weight', conversionFactor: '1000', isDefault: false },
+    { id: '00000000-0000-0000-0000-000000000033', name: 'Pie Cuadrado', abbreviation: 'sq ft', type: 'area', conversionFactor: '929.03', isDefault: false },
   ];
 
   await db.insert(productUnitMeasure).values(
@@ -147,28 +141,28 @@ async function seed() {
       createdAt: new Date(),
     }))
   ).onConflictDoNothing();
-  console.log('✓ Unit Measures creados: Unit, Piece, Pound, Ounce, Gallon, Liter, mL, Foot, Inch, Box, Pack, Dozen, Kilogram, sq ft\n');
+  console.log('✓ Unidades de Medida creadas: Unidad, Pieza, Libra, Onza, Galón, Litro, mL, Pie, Pulgada, Caja, Paquete, Docena, Kilogramo, Pie Cuadrado\n');
 
-  console.log('🏷️  Creando Categories...');
+  console.log('🏷️  Creando Categorías...');
   const categories = [
-    { id: '00000000-0000-0000-0000-000000000040', name: 'Electronics', description: 'Electronic devices and accessories' },
-    { id: '00000000-0000-0000-0000-000000000041', name: 'Clothing & Apparel', description: 'Fashion and clothing items' },
-    { id: '00000000-0000-0000-0000-000000000042', name: 'Home & Garden', description: 'Home decor and garden supplies' },
-    { id: '00000000-0000-0000-0000-000000000043', name: 'Sports & Outdoors', description: 'Sports equipment and outdoor gear' },
-    { id: '00000000-0000-0000-0000-000000000044', name: 'Beauty & Personal Care', description: 'Beauty products and personal care items' },
-    { id: '00000000-0000-0000-0000-000000000045', name: 'Toys & Games', description: 'Toys and board games' },
-    { id: '00000000-0000-0000-0000-000000000046', name: 'Books & Media', description: 'Books, music and movies' },
-    { id: '00000000-0000-0000-0000-000000000047', name: 'Food & Beverages', description: 'Food items and drinks' },
-    { id: '00000000-0000-0000-0000-000000000048', name: 'Office Supplies', description: 'Office and school supplies' },
-    { id: '00000000-0000-0000-0000-000000000049', name: 'Automotive', description: 'Car parts and accessories' },
-    { id: '00000000-0000-0000-0000-000000000050', name: 'Pet Supplies', description: 'Pet food and accessories' },
-    { id: '00000000-0000-0000-0000-000000000051', name: 'Health & Wellness', description: 'Health products and wellness items' },
-    { id: '00000000-0000-0000-0000-000000000052', name: 'Baby & Kids', description: 'Baby products and kids items' },
-    { id: '00000000-0000-0000-0000-000000000053', name: 'Tools & Hardware', description: 'Tools and hardware supplies' },
-    { id: '00000000-0000-0000-0000-000000000054', name: 'Luggage & Travel', description: 'Luggage and travel accessories' },
-    { id: '00000000-0000-0000-0000-000000000055', name: 'Jewelry & Watches', description: 'Jewelry and timepieces' },
-    { id: '00000000-0000-0000-0000-000000000056', name: 'Party & Events', description: 'Party supplies and event decorations' },
-    { id: '00000000-0000-0000-0000-000000000057', name: 'Digital Products', description: 'Digital downloads and software' },
+    { id: '00000000-0000-0000-0000-000000000040', name: 'Electrónica', description: 'Dispositivos electrónicos y accesorios' },
+    { id: '00000000-0000-0000-0000-000000000041', name: 'Ropa y Accesorios', description: 'Moda y prendas de vestir' },
+    { id: '00000000-0000-0000-0000-000000000042', name: 'Hogar y Jardín', description: 'Decoración del hogar y suministros de jardín' },
+    { id: '00000000-0000-0000-0000-000000000043', name: 'Deportes y Exterior', description: 'Equipamiento deportivo y actividades al aire libre' },
+    { id: '00000000-0000-0000-0000-000000000044', name: 'Belleza y Cuidado Personal', description: 'Productos de belleza y cuidado personal' },
+    { id: '00000000-0000-0000-0000-000000000045', name: 'Juguetes y Juegos', description: 'Juguetes y juegos de mesa' },
+    { id: '00000000-0000-0000-0000-000000000046', name: 'Libros y Medios', description: 'Libros, música y películas' },
+    { id: '00000000-0000-0000-0000-000000000047', name: 'Alimentos y Bebidas', description: 'Alimentos y bebidas' },
+    { id: '00000000-0000-0000-0000-000000000048', name: 'Papelería y Oficina', description: 'Suministros de oficina y escuela' },
+    { id: '00000000-0000-0000-0000-000000000049', name: 'Automotriz', description: 'Refacciones y accesorios para automóviles' },
+    { id: '00000000-0000-0000-0000-000000000050', name: 'Mascotas', description: 'Alimento y accesorios para mascotas' },
+    { id: '00000000-0000-0000-0000-000000000051', name: 'Salud y Bienestar', description: 'Productos de salud y bienestar' },
+    { id: '00000000-0000-0000-0000-000000000052', name: 'Bebés y Niños', description: 'Productos para bebés y niños' },
+    { id: '00000000-0000-0000-0000-000000000053', name: 'Herramientas y Ferretería', description: 'Herramientas y suministros de ferretería' },
+    { id: '00000000-0000-0000-0000-000000000054', name: 'Maletas y Viajes', description: 'Equipaje y accesorios de viaje' },
+    { id: '00000000-0000-0000-0000-000000000055', name: 'Joyería y Relojes', description: 'Joyería y artículos de relojeria' },
+    { id: '00000000-0000-0000-0000-000000000056', name: 'Fiestas y Eventos', description: 'Suministros para fiestas y decoración de eventos' },
+    { id: '00000000-0000-0000-0000-000000000057', name: 'Productos Digitales', description: 'Descargas digitales y software' },
   ];
 
   await db.insert(productCategory).values(
@@ -179,137 +173,137 @@ async function seed() {
       createdAt: new Date(),
     }))
   ).onConflictDoNothing();
-  console.log(`✓ ${categories.length} Categories creadas\n`);
+  console.log(`✓ ${categories.length} Categorías creadas\n`);
 
-  console.log('📦 Creando Products...');
+  console.log('📦 Creando Productos...');
 
   const unitId = '00000000-0000-0000-0000-000000000020';
   const productsData = [
-    // Electronics (5)
-    { sku: 'ELEC-001', name: 'Wireless Bluetooth Headphones', description: 'High-quality wireless headphones with noise cancellation', basePrice: '79.99', categoryId: '00000000-0000-0000-0000-000000000040' },
-    { sku: 'ELEC-002', name: 'USB-C Charging Cable 6ft', description: 'Durable braided USB-C cable', basePrice: '12.99', categoryId: '00000000-0000-0000-0000-000000000040' },
-    { sku: 'ELEC-003', name: 'Portable Power Bank 10000mAh', description: 'Compact power bank for mobile devices', basePrice: '29.99', categoryId: '00000000-0000-0000-0000-000000000040' },
-    { sku: 'ELEC-004', name: 'Wireless Mouse', description: 'Ergonomic wireless mouse', basePrice: '24.99', categoryId: '00000000-0000-0000-0000-000000000040' },
-    { sku: 'ELEC-005', name: 'Smart Watch Band', description: 'Replacement watch band for smart watches', basePrice: '15.99', categoryId: '00000000-0000-0000-0000-000000000040' },
+    // Electrónica (5)
+    { sku: 'ELEC-001', name: 'Audífonos Bluetooth Inalámbricos', description: 'Audífonos inalámbricos de alta calidad con cancelación de ruido', basePrice: '79.99', categoryId: '00000000-0000-0000-0000-000000000040' },
+    { sku: 'ELEC-002', name: 'Cable USB-C 6ft', description: 'Cable USB-C trenzado de alta durabilidad', basePrice: '12.99', categoryId: '00000000-0000-0000-0000-000000000040' },
+    { sku: 'ELEC-003', name: 'Batería Portátil 10000mAh', description: 'Batería externa compacta para dispositivos móviles', basePrice: '29.99', categoryId: '00000000-0000-0000-0000-000000000040' },
+    { sku: 'ELEC-004', name: 'Ratón Inalámbrico', description: 'Ratón inalámbrico ergonómico', basePrice: '24.99', categoryId: '00000000-0000-0000-0000-000000000040' },
+    { sku: 'ELEC-005', name: 'Correa para Smartwatch', description: 'Correa de repuesto para relojes inteligentes', basePrice: '15.99', categoryId: '00000000-0000-0000-0000-000000000040' },
 
-    // Clothing & Apparel (5)
-    { sku: 'CLTH-001', name: 'Cotton T-Shirt Basic', description: '100% cotton crew neck t-shirt', basePrice: '19.99', categoryId: '00000000-0000-0000-0000-000000000041' },
-    { sku: 'CLTH-002', name: 'Denim Jeans Classic', description: 'Classic fit denim jeans', basePrice: '49.99', categoryId: '00000000-0000-0000-0000-000000000041' },
-    { sku: 'CLTH-003', name: 'Running Shoes', description: 'Lightweight running shoes', basePrice: '89.99', categoryId: '00000000-0000-0000-0000-000000000041' },
-    { sku: 'CLTH-004', name: 'Winter Jacket', description: 'Insulated winter jacket', basePrice: '129.99', categoryId: '00000000-0000-0000-0000-000000000041' },
-    { sku: 'CLTH-005', name: 'Baseball Cap', description: 'Adjustable baseball cap', basePrice: '14.99', categoryId: '00000000-0000-0000-0000-000000000041' },
+    // Ropa y Accesorios (5)
+    { sku: 'ROPA-001', name: 'Camiseta de Algodón Básica', description: 'Camiseta de manga corta 100% algodón', basePrice: '19.99', categoryId: '00000000-0000-0000-0000-000000000041' },
+    { sku: 'ROPA-002', name: 'Pantalones de Mezclilla Clásicos', description: 'Pantalones de mezclilla de corte clásico', basePrice: '49.99', categoryId: '00000000-0000-0000-0000-000000000041' },
+    { sku: 'ROPA-003', name: 'Zapatillas para Correr', description: 'Zapatillas ligeras para correr', basePrice: '89.99', categoryId: '00000000-0000-0000-0000-000000000041' },
+    { sku: 'ROPA-004', name: 'Chaqueta de Invierno', description: 'Chaqueta insulated para invierno', basePrice: '129.99', categoryId: '00000000-0000-0000-0000-000000000041' },
+    { sku: 'ROPA-005', name: 'Gorra de Béisbol', description: 'Gorra de béisbol ajustable', basePrice: '14.99', categoryId: '00000000-0000-0000-0000-000000000041' },
 
-    // Home & Garden (5)
-    { sku: 'HOME-001', name: 'LED Desk Lamp', description: 'Adjustable LED desk lamp with USB port', basePrice: '34.99', categoryId: '00000000-0000-0000-0000-000000000042' },
-    { sku: 'HOME-002', name: 'Indoor Plant Pot Set', description: 'Set of 3 ceramic plant pots', basePrice: '28.99', categoryId: '00000000-0000-0000-0000-000000000042' },
-    { sku: 'HOME-003', name: 'Throw Blanket', description: 'Soft fleece throw blanket', basePrice: '39.99', categoryId: '00000000-0000-0000-0000-000000000042' },
-    { sku: 'HOME-004', name: 'Garden Hose 50ft', description: 'Expandable garden hose', basePrice: '32.99', categoryId: '00000000-0000-0000-0000-000000000042' },
-    { sku: 'HOME-005', name: 'Wall Clock', description: 'Modern minimalist wall clock', basePrice: '22.99', categoryId: '00000000-0000-0000-0000-000000000042' },
+    // Hogar y Jardín (5)
+    { sku: 'HOGAR-001', name: 'Lámpara de Escritorio LED', description: 'Lámpara LED ajustable con puerto USB', basePrice: '34.99', categoryId: '00000000-0000-0000-0000-000000000042' },
+    { sku: 'HOGAR-002', name: 'Set de Macetas Decorativas', description: 'Set de 3 macetas cerámicas decorativas', basePrice: '28.99', categoryId: '00000000-0000-0000-0000-000000000042' },
+    { sku: 'HOGAR-003', name: 'Manta Decorativa', description: 'Manta suave de felpa para sofá', basePrice: '39.99', categoryId: '00000000-0000-0000-0000-000000000042' },
+    { sku: 'HOGAR-004', name: 'Manguera de Jardín 50ft', description: 'Manguera expandible para jardín', basePrice: '32.99', categoryId: '00000000-0000-0000-0000-000000000042' },
+    { sku: 'HOGAR-005', name: 'Reloj de Pared Moderno', description: 'Reloj de pared minimalista moderno', basePrice: '22.99', categoryId: '00000000-0000-0000-0000-000000000042' },
 
-    // Sports & Outdoors (5)
-    { sku: 'SPRT-001', name: 'Yoga Mat', description: 'Non-slip yoga mat 6mm', basePrice: '24.99', categoryId: '00000000-0000-0000-0000-000000000043' },
-    { sku: 'SPRT-002', name: 'Dumbbell Set 20lb', description: 'Adjustable dumbbell set', basePrice: '59.99', categoryId: '00000000-0000-0000-0000-000000000043' },
-    { sku: 'SPRT-003', name: 'Camping Tent 4-Person', description: 'Waterproof camping tent', basePrice: '149.99', categoryId: '00000000-0000-0000-0000-000000000043' },
-    { sku: 'SPRT-004', name: 'Hiking Backpack 40L', description: 'Large capacity hiking backpack', basePrice: '79.99', categoryId: '00000000-0000-0000-0000-000000000043' },
-    { sku: 'SPRT-005', name: 'Bicycle Water Bottle', description: 'Insulated bike water bottle', basePrice: '14.99', categoryId: '00000000-0000-0000-0000-000000000043' },
+    // Deportes y Exterior (5)
+    { sku: 'DEP-001', name: 'Mat de Yoga', description: 'Mat de yoga anti-deslizante 6mm', basePrice: '24.99', categoryId: '00000000-0000-0000-0000-000000000043' },
+    { sku: 'DEP-002', name: 'Set de Mancuernas 20lb', description: 'Set de mancuernas ajustables', basePrice: '59.99', categoryId: '00000000-0000-0000-0000-000000000043' },
+    { sku: 'DEP-003', name: 'Tienda de Campaña 4 Personas', description: 'Tienda de campaña impermeable', basePrice: '149.99', categoryId: '00000000-0000-0000-0000-000000000043' },
+    { sku: 'DEP-004', name: 'Mochila de Senderismo 40L', description: 'Mochila de gran capacidad para senderismo', basePrice: '79.99', categoryId: '00000000-0000-0000-0000-000000000043' },
+    { sku: 'DEP-005', name: 'Botella de Agua para Bicicleta', description: 'Botella térmica para bicicleta', basePrice: '14.99', categoryId: '00000000-0000-0000-0000-000000000043' },
 
-    // Beauty & Personal Care (5)
-    { sku: 'BEAU-001', name: 'Moisturizing Face Cream', description: 'Daily moisturizer for all skin types', basePrice: '24.99', categoryId: '00000000-0000-0000-0000-000000000044' },
-    { sku: 'BEAU-002', name: 'Hair Shampoo 500mL', description: 'Nourishing shampoo for dry hair', basePrice: '12.99', categoryId: '00000000-0000-0000-0000-000000000044' },
-    { sku: 'BEAU-003', name: 'Electric Toothbrush', description: 'Sonic electric toothbrush', basePrice: '49.99', categoryId: '00000000-0000-0000-0000-000000000044' },
-    { sku: 'BEAU-004', name: 'Sunscreen SPF 50', description: 'Broad spectrum sunscreen', basePrice: '15.99', categoryId: '00000000-0000-0000-0000-000000000044' },
-    { sku: 'BEAU-005', name: 'Perfume Gift Set', description: 'Eau de parfum gift box', basePrice: '69.99', categoryId: '00000000-0000-0000-0000-000000000044' },
+    // Belleza y Cuidado Personal (5)
+    { sku: 'BELLE-001', name: 'Crema Hidratante Facial', description: 'Hidratante diario para todo tipo de piel', basePrice: '24.99', categoryId: '00000000-0000-0000-0000-000000000044' },
+    { sku: 'BELLE-002', name: 'Shampoo Nutritivo 500mL', description: 'Shampoo nutritivo para cabello seco', basePrice: '12.99', categoryId: '00000000-0000-0000-0000-000000000044' },
+    { sku: 'BELLE-003', name: 'Cepillo de Dientes Eléctrico', description: 'Cepillo dental eléctrico sónico', basePrice: '49.99', categoryId: '00000000-0000-0000-0000-000000000044' },
+    { sku: 'BELLE-004', name: 'Protector Solar SPF 50', description: 'Protector solar de amplio espectro', basePrice: '15.99', categoryId: '00000000-0000-0000-0000-000000000044' },
+    { sku: 'BELLE-005', name: 'Set de Perfume Regalo', description: 'Caja de regalo Eau de parfum', basePrice: '69.99', categoryId: '00000000-0000-0000-0000-000000000044' },
 
-    // Toys & Games (5)
-    { sku: 'TOYS-001', name: 'Building Blocks Set 500pc', description: 'Creative building blocks for kids', basePrice: '34.99', categoryId: '00000000-0000-0000-0000-000000000045' },
-    { sku: 'TOYS-002', name: 'Board Game Monopoly', description: 'Classic Monopoly game', basePrice: '29.99', categoryId: '00000000-0000-0000-0000-000000000045' },
-    { sku: 'TOYS-003', name: 'Remote Control Car', description: 'Fast RC car with rechargeable battery', basePrice: '44.99', categoryId: '00000000-0000-0000-0000-000000000045' },
-    { sku: 'TOYS-004', name: 'Puzzle 1000 Pieces', description: 'Challenging jigsaw puzzle', basePrice: '14.99', categoryId: '00000000-0000-0000-0000-000000000045' },
-    { sku: 'TOYS-005', name: 'Stuffed Animal Bear', description: 'Soft plush teddy bear', basePrice: '19.99', categoryId: '00000000-0000-0000-0000-000000000045' },
+    // Juguetes y Juegos (5)
+    { sku: 'JUGU-001', name: 'Set de Bloques de Construcción 500pc', description: 'Bloques creativos para niños', basePrice: '34.99', categoryId: '00000000-0000-0000-0000-000000000045' },
+    { sku: 'JUGU-002', name: 'Juego de Mesa Dominó', description: 'Juego clásico de dominó', basePrice: '29.99', categoryId: '00000000-0000-0000-0000-000000000045' },
+    { sku: 'JUGU-003', name: 'Carro de Control Remoto', description: 'Carro RC rápido con batería recargable', basePrice: '44.99', categoryId: '00000000-0000-0000-0000-000000000045' },
+    { sku: 'JUGU-004', name: 'Rompecabezas 1000 Piezas', description: 'Rompecabezas desafiante', basePrice: '14.99', categoryId: '00000000-0000-0000-0000-000000000045' },
+    { sku: 'JUGU-005', name: 'Peluche de Oso', description: 'Oso de peluche suave de felpa', basePrice: '19.99', categoryId: '00000000-0000-0000-0000-000000000045' },
 
-    // Books & Media (5)
-    { sku: 'BOOK-001', name: 'Bestseller Novel Hardcover', description: 'Award-winning fiction novel', basePrice: '24.99', categoryId: '00000000-0000-0000-0000-000000000046' },
-    { sku: 'BOOK-002', name: 'Cookbook Mediterranean', description: 'Mediterranean recipes cookbook', basePrice: '29.99', categoryId: '00000000-0000-0000-0000-000000000046' },
-    { sku: 'BOOK-003', name: 'Bluetooth Speaker', description: 'Portable wireless speaker', basePrice: '39.99', categoryId: '00000000-0000-0000-0000-000000000046' },
-    { sku: 'BOOK-004', name: 'Vinyl Record Classic Rock', description: 'Classic rock vinyl album', basePrice: '34.99', categoryId: '00000000-0000-0000-0000-000000000046' },
-    { sku: 'BOOK-005', name: 'E-Reader Screen Protector', description: 'Tempered glass screen protector', basePrice: '9.99', categoryId: '00000000-0000-0000-0000-000000000046' },
+    // Libros y Medios (5)
+    { sku: 'LIB-001', name: 'Novela Best-seller Tapa Dura', description: 'Novela de ficción premiada', basePrice: '24.99', categoryId: '00000000-0000-0000-0000-000000000046' },
+    { sku: 'LIB-002', name: 'Libro de Cocina Mediterránea', description: 'Recetario de cocina mediterránea', basePrice: '29.99', categoryId: '00000000-0000-0000-0000-000000000046' },
+    { sku: 'LIB-003', name: 'Bocina Bluetooth Portátil', description: 'Bocina inalámbrica portable', basePrice: '39.99', categoryId: '00000000-0000-0000-0000-000000000046' },
+    { sku: 'LIB-004', name: 'Disco de Vinilo Rock Clásico', description: 'Álbum de rock clásico en vinilo', basePrice: '34.99', categoryId: '00000000-0000-0000-0000-000000000046' },
+    { sku: 'LIB-005', name: 'Protector de Pantalla para E-Reader', description: 'Protector de vidrio templado', basePrice: '9.99', categoryId: '00000000-0000-0000-0000-000000000046' },
 
-    // Food & Beverages (5)
-    { sku: 'FOOD-001', name: 'Organic Coffee Beans 1lb', description: 'Fair trade organic coffee', basePrice: '14.99', categoryId: '00000000-0000-0000-0000-000000000047' },
-    { sku: 'FOOD-002', name: 'Green Tea 100 bags', description: 'Premium Japanese green tea', basePrice: '12.99', categoryId: '00000000-0000-0000-0000-000000000047' },
-    { sku: 'FOOD-003', name: 'Protein Bars 12 pack', description: 'High protein energy bars', basePrice: '24.99', categoryId: '00000000-0000-0000-0000-000000000047' },
-    { sku: 'FOOD-004', name: 'Olive Oil Extra Virgin 500mL', description: 'Cold pressed olive oil', basePrice: '18.99', categoryId: '00000000-0000-0000-0000-000000000047' },
-    { sku: 'FOOD-005', name: 'Dark Chocolate Bar 70%', description: 'Premium dark chocolate', basePrice: '5.99', categoryId: '00000000-0000-0000-0000-000000000047' },
+    // Alimentos y Bebidas (5)
+    { sku: 'ALIM-001', name: 'Granos de Café Orgánico 1lb', description: 'Café orgánico de comercio justo', basePrice: '14.99', categoryId: '00000000-0000-0000-0000-000000000047' },
+    { sku: 'ALIM-002', name: 'Té Verde 100 bolsas', description: 'Té verde japonés premium', basePrice: '12.99', categoryId: '00000000-0000-0000-0000-000000000047' },
+    { sku: 'ALIM-003', name: 'Barras de Proteína 12 pzas', description: 'Barras energéticas altas en proteína', basePrice: '24.99', categoryId: '00000000-0000-0000-0000-000000000047' },
+    { sku: 'ALIM-004', name: 'Aceite de Oliva Extra Virgen 500mL', description: 'Aceite de oliva prensado en frío', basePrice: '18.99', categoryId: '00000000-0000-0000-0000-000000000047' },
+    { sku: 'ALIM-005', name: 'Chocolate Obscuro 70%', description: 'Chocolate premium obscuro', basePrice: '5.99', categoryId: '00000000-0000-0000-0000-000000000047' },
 
-    // Office Supplies (5)
-    { sku: 'OFFC-001', name: 'Ballpoint Pens 24 pack', description: 'Blue ink ballpoint pens', basePrice: '8.99', categoryId: '00000000-0000-0000-0000-000000000048' },
-    { sku: 'OFFC-002', name: 'Legal Pad Yellow', description: 'Ruled legal size notepad', basePrice: '6.99', categoryId: '00000000-0000-0000-0000-000000000048' },
-    { sku: 'OFFC-003', name: 'Stapler Heavy Duty', description: 'Desktop stapler with staples', basePrice: '14.99', categoryId: '00000000-0000-0000-0000-000000000048' },
-    { sku: 'OFFC-004', name: 'File Folders 50 pack', description: 'Letter size manila folders', basePrice: '12.99', categoryId: '00000000-0000-0000-0000-000000000048' },
-    { sku: 'OFFC-005', name: 'Desk Organizer', description: 'Mesh metal desk organizer', basePrice: '19.99', categoryId: '00000000-0000-0000-0000-000000000048' },
+    // Papelería y Oficina (5)
+    { sku: 'PAPEL-001', name: 'Bolígrafos de Punto Fino 24 pzas', description: 'Bolígrafos de tinta azul', basePrice: '8.99', categoryId: '00000000-0000-0000-0000-000000000048' },
+    { sku: 'PAPEL-002', name: 'Block de Notas Amarillo', description: 'Block de notas tamaño legal', basePrice: '6.99', categoryId: '00000000-0000-0000-0000-000000000048' },
+    { sku: 'PAPEL-003', name: 'Grapadora Profesional', description: 'Grapadora de escritorio con grapas', basePrice: '14.99', categoryId: '00000000-0000-0000-0000-000000000048' },
+    { sku: 'PAPEL-004', name: 'Folders Manila 50 pzas', description: 'Folders tamaño carta manila', basePrice: '12.99', categoryId: '00000000-0000-0000-0000-000000000048' },
+    { sku: 'PAPEL-005', name: 'Organizador de Escritorio', description: 'Organizador de escritorio de malla', basePrice: '19.99', categoryId: '00000000-0000-0000-0000-000000000048' },
 
-    // Automotive (5)
-    { sku: 'AUTO-001', name: 'Car Phone Mount', description: 'Magnetic phone holder for car', basePrice: '16.99', categoryId: '00000000-0000-0000-0000-000000000049' },
-    { sku: 'AUTO-002', name: 'Tire Pressure Gauge', description: 'Digital tire pressure meter', basePrice: '12.99', categoryId: '00000000-0000-0000-0000-000000000049' },
-    { sku: 'AUTO-003', name: 'Car Air Freshener', description: 'Long lasting car scent', basePrice: '7.99', categoryId: '00000000-0000-0000-0000-000000000049' },
-    { sku: 'AUTO-004', name: 'Windshield Sunshade', description: 'Foldable sun reflector', basePrice: '18.99', categoryId: '00000000-0000-0000-0000-000000000049' },
-    { sku: 'AUTO-005', name: 'Car Vacuum Cleaner', description: 'Portable car vacuum', basePrice: '29.99', categoryId: '00000000-0000-0000-0000-000000000049' },
+    // Automotriz (5)
+    { sku: 'AUTO-001', name: 'Soporte para Teléfono en Auto', description: 'Soporte magnético para auto', basePrice: '16.99', categoryId: '00000000-0000-0000-0000-000000000049' },
+    { sku: 'AUTO-002', name: 'Medidor de Presión de Llantas', description: 'Medidor digital de presión de llantas', basePrice: '12.99', categoryId: '00000000-0000-0000-0000-000000000049' },
+    { sku: 'AUTO-003', name: 'Ambientador para Auto', description: 'Fragancia duradera para auto', basePrice: '7.99', categoryId: '00000000-0000-0000-0000-000000000049' },
+    { sku: 'AUTO-004', name: 'Cortina Parasol', description: 'Reflector de sol plegable', basePrice: '18.99', categoryId: '00000000-0000-0000-0000-000000000049' },
+    { sku: 'AUTO-005', name: 'Aspiradora Portátil para Auto', description: 'Aspiradora de auto portátil', basePrice: '29.99', categoryId: '00000000-0000-0000-0000-000000000049' },
 
-    // Pet Supplies (5)
-    { sku: 'PET-001', name: 'Dog Food 20lb', description: 'Premium dry dog food', basePrice: '44.99', categoryId: '00000000-0000-0000-0000-000000000050' },
-    { sku: 'PET-002', name: 'Cat Litter 25lb', description: 'Clumping cat litter', basePrice: '19.99', categoryId: '00000000-0000-0000-0000-000000000050' },
-    { sku: 'PET-003', name: 'Pet Collar', description: 'Adjustable nylon collar', basePrice: '12.99', categoryId: '00000000-0000-0000-0000-000000000050' },
-    { sku: 'PET-004', name: 'Dog Leash 6ft', description: 'Retractable dog leash', basePrice: '18.99', categoryId: '00000000-0000-0000-0000-000000000050' },
-    { sku: 'PET-005', name: 'Pet Toys Variety Pack', description: 'Assorted pet chew toys', basePrice: '14.99', categoryId: '00000000-0000-0000-0000-000000000050' },
+    // Mascotas (5)
+    { sku: 'MASC-001', name: 'Alimento para Perro 20lb', description: 'Alimento seco premium para perro', basePrice: '44.99', categoryId: '00000000-0000-0000-0000-000000000050' },
+    { sku: 'MASC-002', name: 'Arena para Gato 25lb', description: 'Arena para gato aglomerante', basePrice: '19.99', categoryId: '00000000-0000-0000-0000-000000000050' },
+    { sku: 'MASC-003', name: 'Collar para Mascota', description: 'Collar ajustable de nylon', basePrice: '12.99', categoryId: '00000000-0000-0000-0000-000000000050' },
+    { sku: 'MASC-004', name: 'Correa para Perro 6ft', description: 'Correa extensible para perro', basePrice: '18.99', categoryId: '00000000-0000-0000-0000-000000000050' },
+    { sku: 'MASC-005', name: 'Set de Juguetes para Mascota', description: 'Variedad de juguetes para masticar', basePrice: '14.99', categoryId: '00000000-0000-0000-0000-000000000050' },
 
-    // Health & Wellness (5)
-    { sku: 'HLTH-001', name: 'Vitamins Multivitamin', description: 'Daily multivitamin bottles', basePrice: '19.99', categoryId: '00000000-0000-0000-0000-000000000051' },
-    { sku: 'HLTH-002', name: 'First Aid Kit', description: 'Comprehensive first aid kit', basePrice: '29.99', categoryId: '00000000-0000-0000-0000-000000000051' },
-    { sku: 'HLTH-003', name: 'Digital Thermometer', description: 'Fast-read digital thermometer', basePrice: '9.99', categoryId: '00000000-0000-0000-0000-000000000051' },
-    { sku: 'HLTH-004', name: 'Massage Gun', description: 'Percussion muscle massage device', basePrice: '79.99', categoryId: '00000000-0000-0000-0000-000000000051' },
-    { sku: 'HLTH-005', name: 'Sleep Mask', description: 'Contoured sleep eye mask', basePrice: '12.99', categoryId: '00000000-0000-0000-0000-000000000051' },
+    // Salud y Bienestar (5)
+    { sku: 'SALUD-001', name: 'Vitaminas Multivitamínicas', description: 'Frasco de multivitaminas diario', basePrice: '19.99', categoryId: '00000000-0000-0000-0000-000000000051' },
+    { sku: 'SALUD-002', name: 'Kit de Primeros Auxilios', description: 'Kit completo de primeros auxilios', basePrice: '29.99', categoryId: '00000000-0000-0000-0000-000000000051' },
+    { sku: 'SALUD-003', name: 'Termómetro Digital', description: 'Termómetro digital de lectura rápida', basePrice: '9.99', categoryId: '00000000-0000-0000-0000-000000000051' },
+    { sku: 'SALUD-004', name: 'Pistola de Masajes', description: 'Dispositivo de masaje muscular percusivo', basePrice: '79.99', categoryId: '00000000-0000-0000-0000-000000000051' },
+    { sku: 'SALUD-005', name: 'Máscara de Sueño', description: 'Máscara ocular contorneada para dormir', basePrice: '12.99', categoryId: '00000000-0000-0000-0000-000000000051' },
 
-    // Baby & Kids (5)
-    { sku: 'BABY-001', name: 'Baby Diapers Huggies 80ct', description: 'Size 3 disposable diapers', basePrice: '34.99', categoryId: '00000000-0000-0000-0000-000000000052' },
-    { sku: 'BABY-002', name: 'Baby Formula 32oz', description: 'Iron fortified infant formula', basePrice: '28.99', categoryId: '00000000-0000-0000-0000-000000000052' },
-    { sku: 'BABY-003', name: 'Stuffed Animal Rabbit', description: 'Soft plush bunny toy', basePrice: '15.99', categoryId: '00000000-0000-0000-0000-000000000052' },
-    { sku: 'BABY-004', name: 'Baby Wipes 100ct', description: 'Gentle baby wipes', basePrice: '8.99', categoryId: '00000000-0000-0000-0000-000000000052' },
-    { sku: 'BABY-005', name: 'Nursing Pillow', description: 'Support nursing pillow', basePrice: '34.99', categoryId: '00000000-0000-0000-0000-000000000052' },
+    // Bebés y Niños (5)
+    { sku: 'BEBE-001', name: 'Pañales Talla 3 Huggies 80ct', description: 'Pañales desechables tamaño 3', basePrice: '34.99', categoryId: '00000000-0000-0000-0000-000000000052' },
+    { sku: 'BEBE-002', name: 'Fórmula Infantil 32oz', description: 'Fórmula infantil fortificada con hierro', basePrice: '28.99', categoryId: '00000000-0000-0000-0000-000000000052' },
+    { sku: 'BEBE-003', name: 'Peluche de Conejo', description: 'Juguete de felpa suave de conejo', basePrice: '15.99', categoryId: '00000000-0000-0000-0000-000000000052' },
+    { sku: 'BEBE-004', name: 'Toallitas Húmedas para Bebé 100ct', description: 'Toallitas húmedas gentiles', basePrice: '8.99', categoryId: '00000000-0000-0000-0000-000000000052' },
+    { sku: 'BEBE-005', name: 'Almohada de Lactancia', description: 'Almohada de soporte para amamantar', basePrice: '34.99', categoryId: '00000000-0000-0000-0000-000000000052' },
 
-    // Tools & Hardware (5)
-    { sku: 'TOOL-001', name: 'Screwdriver Set 10pc', description: 'Precision screwdriver set', basePrice: '24.99', categoryId: '00000000-0000-0000-0000-000000000053' },
-    { sku: 'TOOL-002', name: 'Tape Measure 25ft', description: 'Retractable tape measure', basePrice: '9.99', categoryId: '00000000-0000-0000-0000-000000000053' },
-    { sku: 'TOOL-003', name: 'Hammer Claw 16oz', description: 'Steel claw hammer', basePrice: '19.99', categoryId: '00000000-0000-0000-0000-000000000053' },
-    { sku: 'TOOL-004', name: 'Wrench Set Adjustable', description: 'Set of 3 adjustable wrenches', basePrice: '29.99', categoryId: '00000000-0000-0000-0000-000000000053' },
-    { sku: 'TOOL-005', name: 'Utility Knife', description: 'Retractable utility blade', basePrice: '8.99', categoryId: '00000000-0000-0000-0000-000000000053' },
+    // Herramientas y Ferretería (5)
+    { sku: 'HERR-001', name: 'Set de Destornilladores 10pzas', description: 'Set de destornilladores de precisión', basePrice: '24.99', categoryId: '00000000-0000-0000-0000-000000000053' },
+    { sku: 'HERR-002', name: 'Cinta Métrica 25ft', description: 'Cinta métrica enrollable', basePrice: '9.99', categoryId: '00000000-0000-0000-0000-000000000053' },
+    { sku: 'HERR-003', name: 'Martillo de uña 16oz', description: 'Martillo de acero con uña', basePrice: '19.99', categoryId: '00000000-0000-0000-0000-000000000053' },
+    { sku: 'HERR-004', name: 'Set de Llaves Ajustables', description: 'Set de 3 llaves ajustables', basePrice: '29.99', categoryId: '00000000-0000-0000-0000-000000000053' },
+    { sku: 'HERR-005', name: 'Cúter Retráctil', description: 'Hoja de cúter retráctil', basePrice: '8.99', categoryId: '00000000-0000-0000-0000-000000000053' },
 
-    // Luggage & Travel (5)
-    { sku: 'LUGG-001', name: 'Carry-On Suitcase 20in', description: 'Hard shell spinner suitcase', basePrice: '99.99', categoryId: '00000000-0000-0000-0000-000000000054' },
-    { sku: 'LUGG-002', name: 'Travel Pillow', description: 'Memory foam neck pillow', basePrice: '18.99', categoryId: '00000000-0000-0000-0000-000000000054' },
-    { sku: 'LUGG-003', name: 'TSA Lock', description: 'TSA approved combination lock', basePrice: '12.99', categoryId: '00000000-0000-0000-0000-000000000054' },
-    { sku: 'LUGG-004', name: 'Packing Cubes 6pc', description: 'Compression packing cubes', basePrice: '24.99', categoryId: '00000000-0000-0000-0000-000000000054' },
-    { sku: 'LUGG-005', name: 'Weekend Duffle Bag', description: 'Large canvas duffle bag', basePrice: '44.99', categoryId: '00000000-0000-0000-0000-000000000054' },
+    // Maletas y Viajes (5)
+    { sku: 'VIAJE-001', name: 'Maleta de Mano 20pulg', description: 'Maleta rígida con ruedas', basePrice: '99.99', categoryId: '00000000-0000-0000-0000-000000000054' },
+    { sku: 'VIAJE-002', name: 'Almohada de Viaje', description: 'Almohada de espuma para cuello', basePrice: '18.99', categoryId: '00000000-0000-0000-0000-000000000054' },
+    { sku: 'VIAJE-003', name: 'Candado TSA', description: 'Candado aprobado por TSA', basePrice: '12.99', categoryId: '00000000-0000-0000-0000-000000000054' },
+    { sku: 'VIAJE-004', name: 'Cubos de Empaque 6pzas', description: 'Cubos compressores para viaje', basePrice: '24.99', categoryId: '00000000-0000-0000-0000-000000000054' },
+    { sku: 'VIAJE-005', name: 'Bolsa de Fin de Semana', description: 'Bolsa de lona grande para viaje', basePrice: '44.99', categoryId: '00000000-0000-0000-0000-000000000054' },
 
-    // Jewelry & Watches (5)
-    { sku: 'JEWE-001', name: 'Silver Necklace Chain', description: 'Sterling silver 18in chain', basePrice: '34.99', categoryId: '00000000-0000-0000-0000-000000000055' },
-    { sku: 'JEWE-002', name: 'Leather Watch Band', description: 'Genuine leather watch strap', basePrice: '24.99', categoryId: '00000000-0000-0000-0000-000000000055' },
-    { sku: 'JEWE-003', name: 'Stud Earrings Gold', description: '14K gold stud earrings', basePrice: '79.99', categoryId: '00000000-0000-0000-0000-000000000055' },
-    { sku: 'JEWE-004', name: 'Bracelet Bangle', description: 'Stainless steel bangle bracelet', basePrice: '19.99', categoryId: '00000000-0000-0000-0000-000000000055' },
-    { sku: 'JEWE-005', name: 'Ring Sizer Kit', description: 'Ring size measuring kit', basePrice: '9.99', categoryId: '00000000-0000-0000-0000-000000000055' },
+    // Joyería y Relojes (5)
+    { sku: 'JOYA-001', name: 'Cadena de Plata 18pulg', description: 'Cadena de plata esterlina', basePrice: '34.99', categoryId: '00000000-0000-0000-0000-000000000055' },
+    { sku: 'JOYA-002', name: 'Correa de Cuero para Reloj', description: 'Correa de cuero genuino para reloj', basePrice: '24.99', categoryId: '00000000-0000-0000-0000-000000000055' },
+    { sku: 'JOYA-003', name: 'Aretes de Oro para Perforación', description: 'Aretes de oro 14K', basePrice: '79.99', categoryId: '00000000-0000-0000-0000-000000000055' },
+    { sku: 'JOYA-004', name: 'Pulsera de Acero Inoxidable', description: 'Pulsera tipo brazalete de acero', basePrice: '19.99', categoryId: '00000000-0000-0000-0000-000000000055' },
+    { sku: 'JOYA-005', name: 'Kit de Tallas para Anillos', description: 'Kit medidor de tallas de anillo', basePrice: '9.99', categoryId: '00000000-0000-0000-0000-000000000055' },
 
-    // Party & Events (5)
-    { sku: 'PART-001', name: 'Balloon Kit 100ct', description: 'Assorted color balloons', basePrice: '14.99', categoryId: '00000000-0000-0000-0000-000000000056' },
-    { sku: 'PART-002', name: 'Paper Plates 50ct', description: 'Heavy duty party plates', basePrice: '12.99', categoryId: '00000000-0000-0000-0000-000000000056' },
-    { sku: 'PART-003', name: 'Streamers Roll', description: 'Colorful party streamers', basePrice: '6.99', categoryId: '00000000-0000-0000-0000-000000000056' },
-    { sku: 'PART-004', name: 'Birthday Candles 24pc', description: 'Number birthday candles', basePrice: '5.99', categoryId: '00000000-0000-0000-0000-000000000056' },
-    { sku: 'PART-005', name: 'Party Banner', description: 'Happy Birthday banner', basePrice: '9.99', categoryId: '00000000-0000-0000-0000-000000000056' },
+    // Fiestas y Eventos (5)
+    { sku: 'FIEST-001', name: 'Kit de Globos 100ct', description: 'Globos de colores variados', basePrice: '14.99', categoryId: '00000000-0000-0000-0000-000000000056' },
+    { sku: 'FIEST-002', name: 'Platos de Papel 50ct', description: 'Platos resistentes para fiesta', basePrice: '12.99', categoryId: '00000000-0000-0000-0000-000000000056' },
+    { sku: 'FIEST-003', name: 'Serpentinas Navideñas', description: 'Serpentinas coloridas para fiesta', basePrice: '6.99', categoryId: '00000000-0000-0000-0000-000000000056' },
+    { sku: 'FIEST-004', name: 'Velas de Cumpleaños 24pzas', description: 'Velas numéricas para pastel', basePrice: '5.99', categoryId: '00000000-0000-0000-0000-000000000056' },
+    { sku: 'FIEST-005', name: 'Mantón Decorativo de Fiesta', description: 'Mantón decorativo para cumpleaños', basePrice: '9.99', categoryId: '00000000-0000-0000-0000-000000000056' },
 
-    // Digital Products (5)
-    { sku: 'DIGI-001', name: 'Gift Card $25', description: 'Digital gift card', basePrice: '25.00', categoryId: '00000000-0000-0000-0000-000000000057' },
-    { sku: 'DIGI-002', name: 'E-Book Bestseller', description: 'Digital ebook download', basePrice: '9.99', categoryId: '00000000-0000-0000-0000-000000000057' },
-    { sku: 'DIGI-003', name: 'Music Streaming 1 Month', description: 'Premium music subscription', basePrice: '9.99', categoryId: '00000000-0000-0000-0000-000000000057' },
-    { sku: 'DIGI-004', name: 'Cloud Storage 100GB', description: 'Annual cloud storage plan', basePrice: '19.99', categoryId: '00000000-0000-0000-0000-000000000057' },
-    { sku: 'DIGI-005', name: 'Online Course Access', description: 'Lifetime course access', basePrice: '49.99', categoryId: '00000000-0000-0000-0000-000000000057' },
+    // Productos Digitales (5)
+    { sku: 'DIGIT-001', name: 'Tarjeta de Regalo $25', description: 'Tarjeta de regalo digital', basePrice: '25.00', categoryId: '00000000-0000-0000-0000-000000000057' },
+    { sku: 'DIGIT-002', name: 'E-Book Best-seller', description: 'Descarga de ebook digital', basePrice: '9.99', categoryId: '00000000-0000-0000-0000-000000000057' },
+    { sku: 'DIGIT-003', name: 'Suscripción Streaming Música 1 Mes', description: 'Suscripción premium de música', basePrice: '9.99', categoryId: '00000000-0000-0000-0000-000000000057' },
+    { sku: 'DIGIT-004', name: 'Almacenamiento en la Nube 100GB', description: 'Plan anual de almacenamiento', basePrice: '19.99', categoryId: '00000000-0000-0000-0000-000000000057' },
+    { sku: 'DIGIT-005', name: 'Acceso a Curso en Línea', description: 'Acceso de por vida a curso', basePrice: '49.99', categoryId: '00000000-0000-0000-0000-000000000057' },
   ];
 
   const productsInsert = productsData.map((p, index) => ({
@@ -328,9 +322,9 @@ async function seed() {
   }));
 
   await db.insert(product).values(productsInsert).onConflictDoNothing();
-  console.log(`✓ ${productsInsert.length} Products creados\n`);
+  console.log(`✓ ${productsInsert.length} Productos creados\n`);
 
-  console.log('📥 Creando Inventory Moves (Stock Inicial)...');
+  console.log('📥 Creando Movimientos de Inventario (Stock Inicial)...');
   const movesData = productsInsert.map((p, index) => {
     const qty = String(Math.floor(Math.random() * 90) + 20);
     const daysBack = Math.floor(Math.random() * 60) + 15;
@@ -361,16 +355,16 @@ async function seed() {
   });
 
   await db.insert(inventoryMove).values(movesData).onConflictDoNothing();
-  console.log(`✓ ${movesData.length} Inventory Moves creados (INBOUND → DONE)\n`);
+  console.log(`✓ ${movesData.length} Movimientos de Inventario creados (INBOUND → DONE)\n`);
 
   console.log('✨ Seeds completados exitosamente!\n');
   console.log('📊 Resumen:');
   console.log(`   - Business: TechStore Ecommerce (${BUSINESS_ID})`);
-  console.log(`   - Locations: 5 (Warehouse, Supplier, Customer, Transit, Adjustment)`);
-  console.log(`   - Unit Measures: 14`);
-  console.log(`   - Categories: ${categories.length}`);
-  console.log(`   - Products: ${productsInsert.length}`);
-  console.log(`   - Inventory Moves: ${movesData.length}`);
+  console.log(`   - Locations: 5 (Almacén, Proveedor, Cliente, Tránsito, Ajuste)`);
+  console.log(`   - Unidades de Medida: 14`);
+  console.log(`   - Categorías: ${categories.length}`);
+  console.log(`   - Productos: ${productsInsert.length}`);
+  console.log(`   - Movimientos de Inventario: ${movesData.length}`);
   console.log('\n🔗 Business ID para uso en API:');
   console.log(`   ${BUSINESS_ID}\n`);
 
