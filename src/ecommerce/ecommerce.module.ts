@@ -13,8 +13,17 @@ import {
   DrizzleCustomerAddressRepository,
 } from "./infrastructure/persistence/drizzle-customer.repository.js";
 import { DrizzleShipmentRepository } from "./infrastructure/persistence/drizzle-shipment.repository.js";
+import {
+  AddToCartUseCase,
+  UpdateCartLineUseCase,
+  RemoveCartLineUseCase,
+  GetCartUseCase,
+  ApplyCouponUseCase,
+} from "./application/use-cases/index.js";
+import { CartController } from "./interfaces/http/cart.controller.js";
 
 @Module({
+  controllers: [CartController],
   providers: [
     {
       provide: ECOMMERCE_TOKENS.ORDER_REPOSITORY,
@@ -44,6 +53,11 @@ import { DrizzleShipmentRepository } from "./infrastructure/persistence/drizzle-
       provide: ECOMMERCE_TOKENS.SHIPMENT_REPOSITORY,
       useClass: DrizzleShipmentRepository,
     },
+    AddToCartUseCase,
+    UpdateCartLineUseCase,
+    RemoveCartLineUseCase,
+    GetCartUseCase,
+    ApplyCouponUseCase,
   ],
   exports: [
     ECOMMERCE_TOKENS.ORDER_REPOSITORY,
@@ -53,6 +67,11 @@ import { DrizzleShipmentRepository } from "./infrastructure/persistence/drizzle-
     ECOMMERCE_TOKENS.CUSTOMER_REPOSITORY,
     ECOMMERCE_TOKENS.CUSTOMER_ADDRESS_REPOSITORY,
     ECOMMERCE_TOKENS.SHIPMENT_REPOSITORY,
+    AddToCartUseCase,
+    UpdateCartLineUseCase,
+    RemoveCartLineUseCase,
+    GetCartUseCase,
+    ApplyCouponUseCase,
   ],
 })
 export class EcommerceModule {}
