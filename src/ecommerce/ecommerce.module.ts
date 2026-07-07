@@ -19,11 +19,17 @@ import {
   RemoveCartLineUseCase,
   GetCartUseCase,
   ApplyCouponUseCase,
+  CreateOrderFromCartUseCase,
+  ConfirmOrderUseCase,
+  CancelOrderUseCase,
+  GetOrderUseCase,
+  ListCustomerOrdersUseCase,
 } from "./application/use-cases/index.js";
 import { CartController } from "./interfaces/http/cart.controller.js";
+import { OrderController } from "./interfaces/http/order.controller.js";
 
 @Module({
-  controllers: [CartController],
+  controllers: [CartController, OrderController],
   providers: [
     {
       provide: ECOMMERCE_TOKENS.ORDER_REPOSITORY,
@@ -58,6 +64,11 @@ import { CartController } from "./interfaces/http/cart.controller.js";
     RemoveCartLineUseCase,
     GetCartUseCase,
     ApplyCouponUseCase,
+    CreateOrderFromCartUseCase,
+    ConfirmOrderUseCase,
+    CancelOrderUseCase,
+    GetOrderUseCase,
+    ListCustomerOrdersUseCase,
   ],
   exports: [
     ECOMMERCE_TOKENS.ORDER_REPOSITORY,
@@ -72,6 +83,11 @@ import { CartController } from "./interfaces/http/cart.controller.js";
     RemoveCartLineUseCase,
     GetCartUseCase,
     ApplyCouponUseCase,
+    CreateOrderFromCartUseCase,
+    ConfirmOrderUseCase,
+    CancelOrderUseCase,
+    GetOrderUseCase,
+    ListCustomerOrdersUseCase,
   ],
 })
 export class EcommerceModule {}

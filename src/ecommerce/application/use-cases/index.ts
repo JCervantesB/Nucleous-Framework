@@ -3,3 +3,8 @@ export * from "./update-cart-line.use-case.js";
 export * from "./remove-cart-line.use-case.js";
 export * from "./get-cart.use-case.js";
 export * from "./apply-coupon.use-case.js";
+export * from "./create-order-from-cart.use-case.js";
+export * from "./confirm-order.use-case.js";
+export * from "./cancel-order.use-case.js";
+export * from "./get-order.use-case.js";
+export * from "./list-customer-orders.use-case.js";
